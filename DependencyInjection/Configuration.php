@@ -1,0 +1,51 @@
+<?php
+/**
+ * This file is part of the XTAIN Joomla package.
+ *
+ * (c) Maximilian Ruta <mr@xtain.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace XTAIN\Bundle\JoomlaBundle\DependencyInjection;
+
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
+
+/**
+ * This is the class that validates and merges configuration from your app/config files
+ *
+ * @author  Maximilian Ruta <mr@xtain.net>
+ * @package XTAIN\Bundle\JoomlaBundle\DependencyInjection
+ */
+class Configuration implements ConfigurationInterface
+{
+    /**
+     * {@inheritDoc}
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function getConfigTreeBuilder()
+    {
+        $treeBuilder = new TreeBuilder();
+        $rootNode = $treeBuilder->root('xtain_joomla');
+
+        $rootNode
+            ->children()
+            ->arrayNode('install')
+            ->prototype('array')
+            ->prototype('array')
+            ->children()
+            ->scalarNode('resource')->end()
+            ->scalarNode('target')->end()
+            ->end()
+            ->end()
+            ->end()
+            ->end()
+            ->end();
+
+        return $treeBuilder;
+    }
+}

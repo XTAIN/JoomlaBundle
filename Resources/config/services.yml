@@ -1,0 +1,302 @@
+parameters:
+    joomla.class: XTAIN\Bundle\JoomlaBundle\Joomla\Joomla
+    joomla.controller.class: XTAIN\Bundle\JoomlaBundle\Controller\JoomlaController
+    joomla.warmer.patcher.class: XTAIN\Bundle\JoomlaBundle\CacheWarmer\JoomlaMonkeyPatchWarmer
+    joomla.listener.class: XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaRequestListener
+    joomla.twig.module.class: XTAIN\Bundle\JoomlaBundle\Twig\ModuleExtension
+    joomla.logger_proxy.class: XTAIN\Bundle\JoomlaBundle\Joomla\LoggerProxy
+
+    joomla.factory.loader.class: XTAIN\Bundle\JoomlaBundle\Factory\LoaderFactory
+    joomla.factory.factory.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\FactoryFactory
+    joomla.factory.uri.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Uri\UriFactory
+    joomla.factory.event.dispatcher.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Event\DispatcherFactory
+    joomla.factory.log.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Log\LogFactory
+    joomla.factory.profiler.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Profiler\ProfilerFactory
+    joomla.factory.cms.router.site.class: XTAIN\Bundle\JoomlaBundle\Factory\CMS\Router\SiteFactory
+    joomla.factory.application.base.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Application\BaseFactory
+    joomla.factory.application.web.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Application\WebFactory
+    joomla.factory.cms.application.site.class: XTAIN\Bundle\JoomlaBundle\Factory\CMS\Application\SiteFactory
+    joomla.factory.cms.application.administrator.class: XTAIN\Bundle\JoomlaBundle\Factory\CMS\Application\AdministratorFactory
+    joomla.factory.view.legacy.class: XTAIN\Bundle\JoomlaBundle\Factory\View\LegacyFactory
+    joomla.factory.document.html.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Document\HtmlFactory
+    joomla.factory.legacy.error.class: XTAIN\Bundle\JoomlaBundle\Factory\Legacy\Error\ErrorFactory
+    joomla.factory.database.driver.doctrine.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Database\Driver\DoctrineDriverFactory
+    joomla.factory.user.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\User\UserFactory
+
+    joomla.loader.class: XTAIN\Bundle\JoomlaBundle\Library\Loader
+    joomla.database.driver.doctrine.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver\DoctrineDriver
+    joomla.factory.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Factory
+    joomla.uri.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Uri\Uri
+    joomla.event.dispatcher.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Event\Dispatcher
+    joomla.log.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Log\Log
+    joomla.profiler.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Profiler\Profiler
+    joomla.cms.router.site.class: XTAIN\Bundle\JoomlaBundle\Library\CMS\Router\Site
+    joomla.application.base.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Application\Base
+    joomla.application.web.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Application\Web
+    joomla.cms.application.site.class: XTAIN\Bundle\JoomlaBundle\Library\CMS\Application\Site
+    joomla.cms.application.administrator.class: XTAIN\Bundle\JoomlaBundle\Library\CMS\Application\Administrator
+    joomla.view.legacy.class: XTAIN\Bundle\JoomlaBundle\Library\View\Legacy
+    joomla.document.html.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Document\Html
+    joomla.legacy.error.class: XTAIN\Bundle\JoomlaBundle\Library\Legacy\Error\Error
+    joomla.router.class: XTAIN\Bundle\JoomlaBundle\Routing\JoomlaRouter
+    joomla.router.default.class: XTAIN\Bundle\JoomlaBundle\Routing\DefaultRouter
+    joomla.document.class: JDocument
+    joomla.user.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\User\User
+
+    joomla.security.authentication.provider.class: XTAIN\Bundle\JoomlaBundle\Security\Authentication\Provider\JoomlaAuthenticationProvider
+    joomla.security.authentication.listener.class: XTAIN\Bundle\JoomlaBundle\Security\Firewall\JoomlaListener
+    joomla.security.user.provider.class: XTAIN\Bundle\JoomlaBundle\Security\User\JoomlaUserProvider
+
+    joomla.cache_key: "joomla"
+    joomla.root_dir: ~
+    joomla.cache_dir: "%kernel.cache_dir%/%joomla.cache_key%/cache"
+    joomla.override_dir: "%kernel.cache_dir%/%joomla.cache_key%/override"
+
+services:
+    joomla:
+        class: %joomla.class%
+        calls:
+            - [ setContainer, [ @service_container ] ]
+            - [ setFilesystem, [ @filesystem ] ]
+            - [ setRootDir, [ %joomla.root_dir% ] ]
+
+    joomla.controller:
+        class: %joomla.controller.class%
+        scope: request
+        calls:
+            - [ setJoomla, [ @joomla ] ]
+            - [ setRequest, [ @request ] ]
+            - [ setContainer, [ @service_container ] ]
+
+    joomla.warmer.patcher:
+        class: %joomla.warmer.patcher.class%
+        arguments: [ %joomla.root_dir%, %joomla.cache_dir%, %joomla.override_dir% ]
+        calls:
+            - [ addOverride, [ { class: JLoader, static: static, override: XTAIN\Bundle\JoomlaBundle\Library\Loader, file: "libraries/loader.php" } ] ]
+        tags:
+            - { name: kernel.cache_warmer }
+
+    joomla.listener:
+        class: %joomla.listener.class%
+        calls:
+            - [ setJoomla, [ @joomla ] ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 31 }
+
+    joomla.twig.module:
+        class: %joomla.twig.module.class%
+        calls:
+            - [ setJoomla, [ @joomla ] ]
+        tags:
+            - { name: twig.extension }
+
+    joomla.router:
+        class: %joomla.router.class%
+        public: false
+        calls:
+            - [ setContext, [ @router.request_context ] ]
+            - [ setLogger, [ @logger ] ]
+
+    joomla.router.default:
+        class: %joomla.router.default.class%
+        parent: router.default
+        tags:
+            - { name: joomla.router, priority: 0 }
+            - { name: monolog.logger }
+
+    joomla.logger_proxy:
+        class: %joomla.logger_proxy.class%
+        calls:
+            - [ setLogger, [ @logger ] ]
+        tags:
+            - { name: monolog.logger }
+
+    # Joomla Class Factories
+
+    joomla.factory.loader:
+        class: %joomla.factory.loader.class%
+        calls:
+            - [ setOverrideDir, [ %joomla.override_dir% ] ]
+            - [ setKernel, [ @kernel ] ]
+
+    joomla.factory.factory:
+        class: %joomla.factory.factory.class%
+
+    joomla.factory.uri:
+        class: %joomla.factory.uri.class%
+        calls:
+            - [ setRouter, [ @router ] ]
+
+    joomla.factory.profiler:
+        class: %joomla.factory.profiler.class%
+        calls:
+            - [ setContainer, [ @service_container ] ]
+
+    joomla.factory.log:
+        class: %joomla.factory.log.class%
+        calls:
+            - [ setLoggerProxy, [ @joomla.logger_proxy ] ]
+
+    joomla.factory.event.dispatcher:
+        class: %joomla.factory.event.dispatcher.class%
+        calls:
+            - [ setEventDispatcher, [ @event_dispatcher ] ]
+            - [ setContainer, [ @service_container ] ]
+
+    joomla.factory.cms.router.site:
+        class: %joomla.factory.cms.router.site.class%
+
+    joomla.factory.application.base:
+        class: %joomla.factory.application.base.class%
+
+    joomla.factory.application.web:
+        class: %joomla.factory.application.web.class%
+
+    joomla.factory.cms.application.site:
+        class: %joomla.factory.cms.application.site.class%
+        calls:
+            - [ setContainer, [ @service_container ] ]
+
+    joomla.factory.cms.application.administrator:
+        class: %joomla.factory.cms.application.administrator.class%
+
+    joomla.factory.view.legacy:
+        class: %joomla.factory.view.legacy.class%
+        calls:
+            - [ setTwigEnvironment, [ @twig ] ]
+
+    joomla.factory.document.html:
+        scope: request
+        class: %joomla.factory.document.html.class%
+        calls:
+            - [ setAssetsPackage, [ @templating.helper.assets ] ]
+            - [ setRouter, [ @router ] ]
+            - [ setTwigEnvironment, [ @twig ] ]
+
+    joomla.factory.legacy.error:
+        class: %joomla.factory.legacy.error.class%
+
+    joomla.factory.database.driver.doctrine:
+        class: %joomla.factory.database.driver.doctrine.class%
+        calls:
+            - [ setEntityManager, [ @doctrine.orm.default_entity_manager ] ]
+
+    joomla.factory.user:
+        class: %joomla.factory.user.class%
+
+    # Joomla Services
+
+    joomla.loader:
+        class: %joomla.loader.class%
+        factory_service: joomla.factory.loader
+        factory_method: getInstance
+
+    joomla.factory:
+        class: %joomla.factory.class%
+        tags:
+          - { name: joomla.service, factory: joomla.factory.factory, class: JFactory, file: "libraries/joomla/factory.php", static: static }
+
+    joomla.uri:
+        class: %joomla.uri.class%
+        tags:
+          - { name: joomla.service, factory: joomla.factory.uri, class: JUri, file: "libraries/joomla/uri/uri.php" }
+
+    joomla.profiler:
+        class: %joomla.profiler.class%
+        factory_service: joomla.factory.profiler
+        factory_method: getInstance
+        tags:
+          - { name: joomla.service, class: JProfiler, file: "libraries/joomla/profiler/profiler.php" }
+
+    joomla.log:
+        class: %joomla.log.class%
+        factory_service: joomla.factory.log
+        factory_method: getInstance
+        tags:
+          - { name: joomla.service, class: JLog, file: "libraries/joomla/log/log.php" }
+
+    joomla.cms.router.site:
+        class: %joomla.cms.router.site.class%
+        factory_service: joomla.factory.cms.router.site
+        factory_method: getInstance
+        tags:
+          - { name: joomla.service, class: JRouterSite, file: "libraries/cms/router/site.php" }
+
+    joomla.event.dispatcher:
+        class: %joomla.event.dispatcher.class%
+        tags:
+          - { name: joomla.service, factory: joomla.factory.event.dispatcher, class: JEventDispatcher, file: "libraries/joomla/event/dispatcher.php" }
+
+    joomla.application.base:
+        abstract: true
+        class: %joomla.application.base.class%
+        tags:
+          - { name: joomla.service, factory: joomla.factory.application.base, class: JApplicationBase, file: "libraries/joomla/application/base.php" }
+
+    joomla.application.web:
+        abstract: true
+        class: %joomla.application.web.class%
+        tags:
+          - { name: joomla.service, factory: joomla.factory.application.web, class: JApplicationWeb, file: "libraries/joomla/application/web.php" }
+
+    joomla.cms.application.site:
+        class: %joomla.cms.application.site.class%
+        factory_service: joomla.factory.cms.application.site
+        factory_method: getInstance
+        tags:
+          - { name: joomla.service, class: JApplicationSite, file: "libraries/cms/application/site.php" }
+
+    joomla.cms.application.administrator:
+        class: %joomla.cms.application.administrator.class%
+        factory_service: joomla.factory.cms.application.administrator
+        factory_method: getInstance
+        tags:
+          - { name: joomla.service, class: JApplicationAdministrator, file: "libraries/cms/application/administrator.php" }
+
+    joomla.view.legacy:
+        abstract: true
+        class: %joomla.view.legacy.class%
+        tags:
+         - { name: joomla.service, factory: joomla.factory.view.legacy, class: JViewLegacy, file: "libraries/legacy/view/legacy.php" }
+
+    joomla.document.html:
+        abstract: true
+        class: %joomla.document.html.class%
+        tags:
+         - { name: joomla.service, factory: joomla.factory.document.html, class: JDocumentHtml, file: "libraries/joomla/document/html/html.php" }
+
+    joomla.user:
+        class: %joomla.user.class%
+        tags:
+         - { name: joomla.service, factory: joomla.factory.user, class: JUser, file: "libraries/joomla/user/user.php" }
+
+    joomla.legacy.error:
+        abstract: true
+        class: %joomla.legacy.error.class%
+        factory_service: joomla.factory.legacy.error
+        tags:
+          - { name: joomla.service, class: JError, file: "libraries/legacy/error/error.php" }
+
+    joomla.database.driver.doctrine:
+        class: %joomla.database.driver.doctrine.class%
+        factory_service: joomla.factory.database.driver.doctrine
+        tags:
+            - { name: joomla.service, class: JDatabaseDriverDoctrine }
+
+    joomla.document:
+        class: %joomla.document.class%
+        factory_service: joomla
+        factory_method: getDocument
+
+    # Joomla Security
+
+    joomla.security.authentication.provider:
+        class:     %joomla.security.authentication.provider.class%
+        arguments: [ @security.user_checker, "%anonymous_key%" ]
+
+    joomla.security.authentication.listener:
+        class:     %joomla.security.authentication.listener.class%
+        arguments: [ @security.context, @security.authentication.manager, "%anonymous_key%", @joomla ]
+
+    joomla.security.user.provider:
+        class: %joomla.security.user.provider.class%

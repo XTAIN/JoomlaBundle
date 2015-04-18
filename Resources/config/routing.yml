@@ -1,0 +1,7 @@
+joomla_administrator:
+    path: /administrator/
+    defaults: { _controller: joomla.controller:administrator }
+
+joomla_administrator_index:
+    path: /administrator/index.php
+    defaults: { _controller: joomla.controller:administrator }

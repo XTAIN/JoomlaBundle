@@ -1,0 +1,73 @@
+<!doctype html>
+<!--[if lt IE 7]>
+<html class=" no-js lt-ie9 lt-ie8 lt-ie7" xmlns="http://www.w3.org/1999/xhtml"> <![endif]-->
+<!--[if IE 7]>
+<html class=" no-js lt-ie9 lt-ie8" xmlns="http://www.w3.org/1999/xhtml"> <![endif]-->
+<!--[if IE 8]>
+<html class=" no-js lt-ie9" xmlns="http://www.w3.org/1999/xhtml"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class=" no-js" xmlns="http://www.w3.org/1999/xhtml"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet/less" href="/templates/xtaingroup/css/main.less" type="text/css"/>
+    <link rel="stylesheet" href="/templates/system/css/system.css" type="text/css"/>
+    <script src="/templates/xtaingroup/javascript/less.js" type="text/javascript"></script>
+</head>
+<body class="">
+<!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
+chromium.org/developers/how-tos/chrome-frame-getting-started -->
+<!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a
+    different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a>
+    to experience this site.</p><![endif]-->
+<header role="banner" id="header">
+    {% if joomla_module_position_count("navigation") > 0 %}
+        <div id="nav">
+            {{ joomla_module_position("navigation") }}
+        </div>
+    {% endif %}
+    {% if joomla_module_position_count("teaser") > 0 %}
+        <div id="teaser">
+            {{ joomla_module_position("teaser") }}
+        </div>
+    {% endif %}
+    {% if joomla_module_position_count("headerbg") > 0 %}
+        <div id="headerbg">
+            {{ joomla_module_position("headerbg") }}
+        </div>
+    {% endif %}
+</header>
+
+{% if joomla_module_position_count("contentTop") > 0 %}
+    <section id="contentTop" class="section">
+        {{ joomla_module_position("contentTop") }}
+    </section>
+{% endif %}
+
+<div id="main" role="main" name="content">
+    {% block message %}{% endblock %}
+    {% block main %}{% endblock %}
+</div>
+
+{% if joomla_module_position_count("contentBottom") > 0 %}
+    <section id="contentBottom" class="section">
+        {{ joomla_module_position("contentBottom") }}
+    </section>
+{% endif %}
+
+{% if joomla_module_position_count("copyright") > 0 or joomla_module_position_count("sitebar") > 0 %}
+    <footer role="contentinfo">
+        <div>
+            {{ joomla_module_position("copyright") }}
+            {{ joomla_module_position("sitebar") }}
+        </div>
+    </footer>
+{% endif %}
+
+</body>
+</html>
+
+
+
+
