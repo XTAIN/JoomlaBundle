@@ -180,6 +180,21 @@ class Loader extends \JProxy_JLoader
     }
 
     /**
+     * @param string $class
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public static function injectStaticDependencies($class)
+    {
+        $dependencyFactory = self::$factory->getDependencyFactory($class);
+        if (!isset(self::$injected[$class]) && $dependencyFactory !== null) {
+            self::$injected[$class] = true;
+            $dependencyFactory->injectStaticDependencies();
+        }
+    }
+
+    /**
      * @param string $key
      * @param string $base
      *
@@ -194,12 +209,7 @@ class Loader extends \JProxy_JLoader
             $searchPaths = self::$instance->getLibrarySearchPaths();
             foreach ($searchPaths as $searchPath) {
                 if (parent::import($key, $searchPath)) {
-                    $dependencyFactory = self::$factory->getDependencyFactory($class);
-                    if (!isset(self::$injected[$class]) && $dependencyFactory !== null) {
-                        self::$injected[$class] = true;
-                        $dependencyFactory->injectStaticDependencies();
-                    }
-
+                    self::injectStaticDependencies($class);
                     return true;
                 }
                 unset(self::$imported[$key]);
@@ -223,11 +233,7 @@ class Loader extends \JProxy_JLoader
         $existsBefore = class_exists($class, false);
         $success = parent::load($class);
         if (!$existsBefore && class_exists($class, false)) {
-            $dependencyFactory = self::$factory->getDependencyFactory($class);
-            if (!isset(self::$injected[$class]) && $dependencyFactory !== null) {
-                self::$injected[$class] = true;
-                $dependencyFactory->injectStaticDependencies();
-            }
+            self::injectStaticDependencies($class);
         }
 
         return $success;
@@ -244,11 +250,7 @@ class Loader extends \JProxy_JLoader
         $existsBefore = class_exists($class, false);
         $success = parent::loadByPsr0($class);
         if (!$existsBefore && class_exists($class, false)) {
-            $dependencyFactory = self::$factory->getDependencyFactory($class);
-            if (!isset(self::$injected[$class]) && $dependencyFactory !== null) {
-                self::$injected[$class] = true;
-                $dependencyFactory->injectStaticDependencies();
-            }
+            self::injectStaticDependencies($class);
         }
 
         return $success;
@@ -274,11 +276,7 @@ class Loader extends \JProxy_JLoader
         $existsBefore = class_exists($class, false);
         $success = parent::loadByAlias($class);
         if (!$existsBefore && class_exists($class, false)) {
-            $dependencyFactory = self::$factory->getDependencyFactory($class);
-            if (!isset(self::$injected[$class]) && $dependencyFactory !== null) {
-                self::$injected[$class] = true;
-                $dependencyFactory->injectStaticDependencies();
-            }
+            self::injectStaticDependencies($class);
         }
 
         return $success;
@@ -313,11 +311,7 @@ class Loader extends \JProxy_JLoader
                     $return = self::_load(substr($class, strlen($prefix)), $lookup);
                 }
                 if ($realClass === $class && !$existsBefore && class_exists($realClass, false)) {
-                    $dependencyFactory = self::$factory->getDependencyFactory($class);
-                    if (!isset(self::$injected[$class]) && $dependencyFactory !== null) {
-                        self::$injected[$class] = true;
-                        $dependencyFactory->injectStaticDependencies();
-                    }
+                    self::injectStaticDependencies($class);
                 }
 
                 return $return;

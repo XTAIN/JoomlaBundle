@@ -22,6 +22,8 @@ parameters:
     joomla.factory.legacy.error.class: XTAIN\Bundle\JoomlaBundle\Factory\Legacy\Error\ErrorFactory
     joomla.factory.database.driver.doctrine.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Database\Driver\DoctrineDriverFactory
     joomla.factory.user.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\User\UserFactory
+    joomla.factory.component.symfony.field.route.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\Field\RouteFactory
+    joomla.factory.component.symfony.view.symfony.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\View\SymfonyFactory
 
     joomla.loader.class: XTAIN\Bundle\JoomlaBundle\Library\Loader
     joomla.database.driver.doctrine.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver\DoctrineDriver
@@ -183,6 +185,22 @@ services:
 
     joomla.factory.user:
         class: %joomla.factory.user.class%
+
+    joomla.factory.component.symfony.field.route:
+        class: %joomla.factory.component.symfony.field.route.class%
+        calls:
+            - [ setRouter, [ @router ] ]
+        tags:
+          - { name: joomla.injector, class: JFormFieldRoute }
+
+    joomla.factory.component.symfony.view.symfony:
+        class: %joomla.factory.component.symfony.view.symfony.class%
+        calls:
+            - [ setRouter, [ @router ] ]
+            - [ setRequestStack, [ @request_stack ] ]
+            - [ setKernel, [ @http_kernel ] ]
+        tags:
+          - { name: joomla.injector, class: SymfonyViewSymfony }
 
     # Joomla Services
 
