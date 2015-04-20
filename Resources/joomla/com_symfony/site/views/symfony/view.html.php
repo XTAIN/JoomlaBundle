@@ -79,22 +79,32 @@ class SymfonyViewSymfony extends JViewLegacy
      */
     public function display($tpl = null)
     {
-        $path = array();
+        $attributes = array();
         $query = array();
 
-        $input = JFactory::getApplication()->input;
-        $route = self::$router->getRouteCollection()->get($input->get('route'));
-        unset($path['_controller']);
+        $app = JFactory::getApplication();
+        $input = $app->input;
 
+        $routeName = $input->get('route', null, 'string');
+        $path = $input->get('path', null, 'string');
+
+        $route = self::$router->getRouteCollection()->get($routeName);
         $defaults = $route->getDefaults();
 
+        if ($path !== null) {
+            $path = rtrim($route->getPath(), '/') . '/' . $path;
+            $defaults = self::$router->match($path, null, false);
+        }
+
+        unset($attributes['_controller']);
+
         foreach ($defaults as $key => $default) {
-            if (!isset($path[$key])) {
-                $path[$key] = $default;
+            if (!isset($attributes[$key])) {
+                $attributes[$key] = $default;
             }
         }
 
-        $subRequest = self::$requestStack->getCurrentRequest()->duplicate($query, null, $path);
+        $subRequest = self::$requestStack->getCurrentRequest()->duplicate($query, null, $attributes);
 
         $this->response = self::$kernel->handle(
             $subRequest,
@@ -102,7 +112,7 @@ class SymfonyViewSymfony extends JViewLegacy
             false
         );
 
-        // Display the view
+            // Display the view
         parent::display($tpl);
     }
 }

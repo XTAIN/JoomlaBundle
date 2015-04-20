@@ -108,6 +108,7 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
      *
      * @param string  $pathinfo The path info to be parsed (raw format, i.e. not urldecoded)
      * @param Request $request Current request object
+     * @param bool    $fallback Fallback to Joomla
      *
      * @return array An array of parameters
      *
@@ -115,7 +116,7 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
      * @throws MethodNotAllowedException If the resource was found but the request method is not allowed
      * @author Maximilian Ruta <mr@xtain.net>
      */
-    public function match($pathinfo, Request $request = null)
+    public function match($pathinfo, Request $request = null, $fallback = true)
     {
         if (empty($this->router)) {
             throw new \LogicException('no routers in chain');
@@ -159,7 +160,7 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
             }
         }
 
-        if ($match === null && $exception instanceof ResourceNotFoundException) {
+        if ($fallback && $match === null && $exception instanceof ResourceNotFoundException) {
             $match = [
                 '_route'      => 'joomla_site',
                 '_controller' => 'joomla.controller:site'
