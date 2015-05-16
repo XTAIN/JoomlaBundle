@@ -12,8 +12,7 @@ namespace XTAIN\Bundle\JoomlaBundle\Component\Menu\View;
 
 use Symfony\Component\Routing\RouterInterface;
 
-if (!class_exists('JAdminCssMenu'))
-{
+if (!class_exists('JAdminCssMenu')) {
     require JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR . 'mod_menu' . DIRECTORY_SEPARATOR . 'menu.php';
 }
 
