@@ -21,12 +21,13 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use XTAIN\Bundle\JoomlaBundle\Controller\JoomlaController;
+use XTAIN\Bundle\JoomlaBundle\Entity\MenuRepository;
 
 /**
  * Class JoomlaRouter
  *
  * @author  Maximilian Ruta <mr@xtain.net>
- * @package XTAIN\Bundle\JoomlaBundle\Routing#
+ * @package XTAIN\Bundle\JoomlaBundle\Routing
  */
 class JoomlaRouter implements RouterInterface, RequestMatcherInterface
 {
@@ -49,6 +50,19 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
      * @var RouterInterface[]
      */
     protected $router = [];
+
+    /**
+     * @var MenuRepository
+     */
+    protected $menuRepository;
+
+    /**
+     * @param MenuRepository $menuRepository
+     */
+    public function __construct(MenuRepository $menuRepository)
+    {
+        $this->menuRepository = $menuRepository;
+    }
 
     /**
      * Sets a logger instance on the object
@@ -98,6 +112,39 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
     public function getContext()
     {
         return $this->context;
+    }
+
+    /**
+     * @param Route $searchRoute
+     *
+     * @return null|string
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function findMatchingPaths(Route $searchRoute)
+    {
+        static $cachedRoutes;
+
+        if (!isset($cachedRoutes)) {
+            $cachedRoutes = array();
+        }
+
+        $routeCollection = $this->getRouteCollection();
+
+        if (isset($cachedRoutes[$searchRoute->getPath()])) {
+            return $cachedRoutes[$searchRoute->getPath()];
+        }
+
+        /** @var Route $route */
+        foreach ($routeCollection as $name => $route) {
+            $routePath = $route->getPath();
+            if (preg_match('#^' . preg_quote($routePath, '#') . '#', $searchRoute->getPath())) {
+                $cachedRoutes[$searchRoute->getPath()] = $name;
+
+                return $name;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -197,12 +244,13 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
      * @param string      $name
      * @param array       $parameters
      * @param bool|string $referenceType
+     * @param bool        $joomlaRoute
      *
      * @return string
      * @throws RouteNotFoundException              If the named route doesn't exist
      * @author Maximilian Ruta <mr@xtain.net>
      */
-    public function generate($name, $parameters = [], $referenceType = self::ABSOLUTE_PATH)
+    public function generate($name, $parameters = [], $referenceType = self::ABSOLUTE_PATH, $joomlaRoute = true)
     {
         if (null === $name || $name == '') {
             throw new RouteNotFoundException('Could not generate route from empty name.');
@@ -210,6 +258,30 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
 
         if ($name == 'joomla') {
             return \JRoute::_('index.php' . http_build_query($parameters), false);
+        }
+
+        $baseRoute = $this->getRouteCollection()->get($name);
+        $baseLink = null;
+        $matchingRouteName = null;
+
+        if ($joomlaRoute && $baseRoute !== null) {
+            $matchingRouteName = $this->findMatchingPaths($baseRoute);
+            $item = $this->menuRepository->findByViewRoute($matchingRouteName);
+
+            if ($item !== null) {
+                $matchingRoutePath = $this->generate($matchingRouteName, [], $referenceType, false);
+
+                $app = \JFactory::getApplication();
+                $joomlaRouter = $app::getRouter();
+
+                if ($item !== null) {
+                    if ($joomlaRouter->getMode() == \JROUTER_MODE_SEF) {
+                        $baseLink = \JRoute::_('index.php?Itemid=' . $item->getId());
+                    } else {
+                        $baseLink = \JRoute::_($item->getLink() . '&path=');
+                    }
+                }
+            }
         }
 
         $route = null;
@@ -235,6 +307,12 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
                 );
             $this->logger->critical('Routing - ' . $routeNotFoundException->getMessage());
             throw $routeNotFoundException;
+        }
+
+        if ($baseLink !== null) {
+            $route = preg_replace('#' . preg_quote($matchingRoutePath) . '#', '', $route);
+
+            $route = rtrim($baseLink, '/') . '/' . ltrim($route, '/');
         }
 
         return $route;

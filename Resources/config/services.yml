@@ -12,6 +12,7 @@ parameters:
     joomla.factory.event.dispatcher.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Event\DispatcherFactory
     joomla.factory.log.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Log\LogFactory
     joomla.factory.profiler.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Profiler\ProfilerFactory
+    joomla.factory.session.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Session\SessionFactory
     joomla.factory.cms.router.site.class: XTAIN\Bundle\JoomlaBundle\Factory\CMS\Router\SiteFactory
     joomla.factory.application.base.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Application\BaseFactory
     joomla.factory.application.web.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Application\WebFactory
@@ -32,6 +33,7 @@ parameters:
     joomla.event.dispatcher.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Event\Dispatcher
     joomla.log.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Log\Log
     joomla.profiler.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Profiler\Profiler
+    joomla.session.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Session\Session
     joomla.cms.router.site.class: XTAIN\Bundle\JoomlaBundle\Library\CMS\Router\Site
     joomla.application.base.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Application\Base
     joomla.application.web.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Application\Web
@@ -48,6 +50,8 @@ parameters:
     joomla.security.authentication.provider.class: XTAIN\Bundle\JoomlaBundle\Security\Authentication\Provider\JoomlaAuthenticationProvider
     joomla.security.authentication.listener.class: XTAIN\Bundle\JoomlaBundle\Security\Firewall\JoomlaListener
     joomla.security.user.provider.class: XTAIN\Bundle\JoomlaBundle\Security\User\JoomlaUserProvider
+
+    joomla.menu_repository.class: XTAIN\Bundle\JoomlaBundle\Entity\MenuRepository
 
     joomla.cache_key: "joomla"
     joomla.root_dir: ~
@@ -95,6 +99,7 @@ services:
     joomla.router:
         class: %joomla.router.class%
         public: false
+        arguments: [ @joomla.menu_repository ]
         calls:
             - [ setContext, [ @router.request_context ] ]
             - [ setLogger, [ @logger ] ]
@@ -138,6 +143,11 @@ services:
         class: %joomla.factory.log.class%
         calls:
             - [ setLoggerProxy, [ @joomla.logger_proxy ] ]
+
+    joomla.factory.session:
+        class: %joomla.factory.session.class%
+        calls:
+            - [ setSession, [ @session ] ]
 
     joomla.factory.event.dispatcher:
         class: %joomla.factory.event.dispatcher.class%
@@ -233,6 +243,11 @@ services:
         tags:
           - { name: joomla.service, class: JLog, file: "libraries/joomla/log/log.php" }
 
+    joomla.session:
+        class: %joomla.session.class%
+        tags:
+          - { name: joomla.service, static: static, factory: joomla.factory.session, class: JSession, file: "libraries/joomla/session/session.php" }
+
     joomla.cms.router.site:
         class: %joomla.cms.router.site.class%
         factory_service: joomla.factory.cms.router.site
@@ -318,3 +333,12 @@ services:
 
     joomla.security.user.provider:
         class: %joomla.security.user.provider.class%
+
+    # Joomla Repositories
+
+    joomla.menu_repository:
+        class: %joomla.menu_repository.class%
+        factory_service: doctrine.orm.default_entity_manager
+        factory_method: getRepository
+        arguments:
+            - XTAINJoomlaBundle:Menu

@@ -1,0 +1,107 @@
+XTAIN\Bundle\JoomlaBundle\Entity\Menu:
+    type: entity
+    table: cms_menu
+    repositoryClass: XTAIN\Bundle\JoomlaBundle\Entity\MenuRepository
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        menutype:
+            type: string
+            length: 24
+            nullable: true
+        title:
+            type: string
+            length: 255
+            nullable: true
+        alias:
+            type: string
+            length: 255
+            nullable: true
+        note:
+            type: string
+            length: 255
+            nullable: true
+        path:
+            type: string
+            length: 1024
+            nullable: true
+        link:
+            type: string
+            length: 1024
+            nullable: true
+        type:
+            type: string
+            length: 16
+            nullable: true
+        published:
+            type: integer
+            length: 4
+            nullable: true
+        parentId:
+            type: integer
+            length: 10
+            column: parent_id
+            nullable: true
+        level:
+            type: integer
+            length: 10
+            nullable: true
+        componentId:
+            type: integer
+            length: 10
+            column: component_id
+            nullable: true
+        checkedOut:
+            type: integer
+            length: 10
+            column: checked_out
+            nullable: true
+        checkedOutTime:
+            type: datetime
+            column: checked_out_time
+            nullable: true
+        browserNav:
+            type: smallint
+            length: 4
+            nullable: true
+        access:
+            type: integer
+            length: 10
+            nullable: true
+        img:
+            type: string
+            length: 255
+            nullable: true
+        templateStyleId:
+            type: integer
+            column: template_style_id
+            length: 10
+            nullable: true
+        params:
+            type: json_array
+            nullable: true
+        lft:
+            type: integer
+            length: 11
+            nullable: true
+        rgt:
+            type: integer
+            length: 11
+            nullable: true
+        home:
+            type: smallint
+            length: 3
+            nullable: true
+        language:
+            type: string
+            length: 7
+            nullable: true
+        clientId:
+            type: smallint
+            column: client_id
+            length: 4
+            nullable: true
+    lifecycleCallbacks: {  }
