@@ -186,13 +186,13 @@ class Session extends \JProxy_JSession
 
     public function destroy()
     {
-        self::$session->set('joomla', []);
+        self::$session->invalidate();
         $this->_state = 'destroyed';
     }
 
     public function restart()
     {
-        self::$session->set('joomla', []);
+        self::$session->invalidate();
 
         $this->_validate();
         $this->_setCounter();
