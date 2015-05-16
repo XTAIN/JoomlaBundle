@@ -63,14 +63,27 @@ class ModuleExtension extends \Twig_Extension implements JoomlaAwareInterface
         return count(\JModuleHelper::getModules($zone));
     }
 
-    public function renderModulePosition($zone, array $parameters = [])
+    protected function overrideParams($module, $override)
+    {
+        $params = json_decode($module->params, true);
+
+        if ($params !== false) {
+            $params = array_merge($params, $override);
+            $module->params = json_encode($params);
+        }
+    }
+
+    public function renderModulePosition($zone, array $parameters = [], array $override = [])
     {
         $this->joomla->getApplication();
         $renderer = $this->joomla->getDocument()->loadRenderer('module');
         $modules = \JModuleHelper::getModules($zone);
         $html = '';
         foreach ($modules as $module) {
+            $params = $module->params;
+            $this->overrideParams($module, $override);
             $html .= $renderer->render($module, $parameters);
+            $module->params = $params;
         }
 
         return $html;

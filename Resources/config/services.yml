@@ -13,6 +13,7 @@ parameters:
     joomla.factory.log.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Log\LogFactory
     joomla.factory.profiler.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Profiler\ProfilerFactory
     joomla.factory.session.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Session\SessionFactory
+    joomla.factory.cms.module.helper.class: XTAIN\Bundle\JoomlaBundle\Factory\CMS\Module\HelperFactory
     joomla.factory.cms.router.site.class: XTAIN\Bundle\JoomlaBundle\Factory\CMS\Router\SiteFactory
     joomla.factory.application.base.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Application\BaseFactory
     joomla.factory.application.web.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Application\WebFactory
@@ -25,6 +26,7 @@ parameters:
     joomla.factory.user.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\User\UserFactory
     joomla.factory.component.symfony.field.route.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\Field\RouteFactory
     joomla.factory.component.symfony.view.symfony.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\View\SymfonyFactory
+    joomla.factory.component.menu.view.admin_menu.class: XTAIN\Bundle\JoomlaBundle\Component\Menu\View\AdminMenuFactory
 
     joomla.loader.class: XTAIN\Bundle\JoomlaBundle\Library\Loader
     joomla.database.driver.doctrine.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver\DoctrineDriver
@@ -34,6 +36,7 @@ parameters:
     joomla.log.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Log\Log
     joomla.profiler.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Profiler\Profiler
     joomla.session.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Session\Session
+    joomla.cms.module.helper.class: XTAIN\Bundle\JoomlaBundle\Library\CMS\Module\Helper
     joomla.cms.router.site.class: XTAIN\Bundle\JoomlaBundle\Library\CMS\Router\Site
     joomla.application.base.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Application\Base
     joomla.application.web.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Application\Web
@@ -155,14 +158,19 @@ services:
             - [ setEventDispatcher, [ @event_dispatcher ] ]
             - [ setContainer, [ @service_container ] ]
 
-    joomla.factory.cms.router.site:
-        class: %joomla.factory.cms.router.site.class%
-
     joomla.factory.application.base:
         class: %joomla.factory.application.base.class%
 
     joomla.factory.application.web:
         class: %joomla.factory.application.web.class%
+
+    joomla.factory.cms.module.helper:
+        class: %joomla.factory.cms.module.helper.class%
+        calls:
+            - [ setFileLocator, [ @file_locator ] ]
+
+    joomla.factory.cms.router.site:
+        class: %joomla.factory.cms.router.site.class%
 
     joomla.factory.cms.application.site:
         class: %joomla.factory.cms.application.site.class%
@@ -212,6 +220,13 @@ services:
         tags:
           - { name: joomla.injector, class: SymfonyViewSymfony }
 
+    joomla.factory.component.menu.view.admin_menu:
+        class: %joomla.factory.component.menu.view.admin_menu.class%
+        calls:
+            - [ setRouter, [ @router ] ]
+        tags:
+          - { name: joomla.injector, class: XTAIN\Bundle\JoomlaBundle\Component\Menu\View\AdminMenu }
+
     # Joomla Services
 
     joomla.loader:
@@ -247,6 +262,12 @@ services:
         class: %joomla.session.class%
         tags:
           - { name: joomla.service, static: static, factory: joomla.factory.session, class: JSession, file: "libraries/joomla/session/session.php" }
+
+    joomla.cms.module.helper:
+        class: %joomla.cms.module.helper.class%
+        abstract: true
+        tags:
+          - { name: joomla.service, static: static, factory: joomla.factory.cms.module.helper, class: JModuleHelper, file: "libraries/cms/module/helper.php" }
 
     joomla.cms.router.site:
         class: %joomla.cms.router.site.class%

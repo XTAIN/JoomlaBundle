@@ -41,14 +41,19 @@ class JoomlaRequestListener implements JoomlaAwareInterface
     public function onKernelRequest(GetResponseEvent $event)
     {
         $request = $event->getRequest();
-        $route = $request->attributes->get('_controller');
+        $controller = $request->attributes->get('_controller');
+        $route = $request->attributes->get('_route');
 
         $application = JoomlaInterface::SITE;
 
-        switch ($route) {
+        switch ($controller) {
             case 'joomla.controller:administrator':
                 $application = JoomlaInterface::ADMINISTRATOR;
                 break;
+        }
+
+        if (preg_match('/^sonata_admin/', $route)) {
+            $application = JoomlaInterface::ADMINISTRATOR;
         }
 
         $this->joomla->setApplication($application);
