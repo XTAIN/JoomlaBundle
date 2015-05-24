@@ -28,7 +28,7 @@ use RuntimeException;
  * @author  Maximilian Ruta <mr@xtain.net>
  * @package XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver
  */
-class DoctrineDriver extends \JDatabaseDriver
+class DoctrineDriver extends \JDatabaseDriver implements \Serializable
 {
     /**
      * @var EntityManagerInterface
@@ -859,5 +859,55 @@ class DoctrineDriver extends \JDatabaseDriver
         $this->setQuery('UNLOCK TABLES')->execute();
 
         return $this;
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.1.0)<br/>
+     * String representation of object
+     * @link http://php.net/manual/en/serializable.serialize.php
+     * @return string the string representation of the object or null
+     */
+    public function serialize()
+    {
+        $data = array();
+
+        $skip = array(
+            'connection',
+            'platform',
+            'driver'
+        );
+
+        foreach ($this as $key => $value) {
+            if (in_array($key, $skip)) {
+                continue;
+            }
+            $data[$key] = $value;
+        }
+
+        return serialize($data);
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.1.0)<br/>
+     * Constructs the object
+     * @link http://php.net/manual/en/serializable.unserialize.php
+     * @param string $serialized <p>
+     * The string representation of the object.
+     * </p>
+     * @return void
+     */
+    public function unserialize($serialized)
+    {
+        $data = unserialize($serialized);
+
+        foreach ($data as $key => $value) {
+            $this->{$key} = $value;
+        }
+
+        \XTAIN\Bundle\JoomlaBundle\Library\Loader::injectStaticDependencies(__CLASS__);
+
+        $this->connection = self::$entityManager->getConnection();
+        $this->platform = $this->connection->getDatabasePlatform();
+        $this->driver = $this->connection->getDriver();
     }
 }
