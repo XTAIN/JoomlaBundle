@@ -149,6 +149,12 @@ class AssetsFindCommand extends ContainerAwareCommand
             $output->writeln(sprintf('Found <comment>%s</comment>', trim($process->getOutput())));
         }
 
+        if (!$this->filesystem->exists($rootDir . DIRECTORY_SEPARATOR . '.git')) {
+            $output->writeln('<error>' . $rootDir . DIRECTORY_SEPARATOR . '.git' . '. Could only work with git vendors</error>');
+
+            return;
+        }
+
         $process = new Process('git status -z', $rootDir);
         $process->run();
 
