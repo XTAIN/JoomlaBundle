@@ -194,6 +194,8 @@ class DoctrineDriver extends \JDatabaseDriver implements \Serializable
             $query .= ' LIMIT ' . $this->offset . ', ' . $this->limit;
         }
 
+        $this->prepared = $this->connection->prepare($query);
+
         // Increment the query counter.
         $this->count++;
 
@@ -347,20 +349,9 @@ class DoctrineDriver extends \JDatabaseDriver implements \Serializable
     {
         $this->connect();
 
-        $this->freeResult();
-
-        if (is_string($query)) {
-            // Allows taking advantage of bound variables in a direct query:
-            $query = $this->getQuery(true)->setQuery($query);
+        if ($query instanceof \JDatabaseQueryLimitable && !is_null($this->limit) && !is_null($this->offset)) {
+            $query->setLimit($this->limit, $this->offset);
         }
-
-        if ($query instanceof \JDatabaseQueryLimitable && !is_null($offset) && !is_null($limit)) {
-            $query->setLimit($limit, $offset);
-        }
-
-        $query = $this->replacePrefix((string) $query);
-
-        $this->prepared = $this->connection->prepare($query);
 
         // Store reference to the JDatabaseQuery instance:
         parent::setQuery($query, $offset, $limit);
