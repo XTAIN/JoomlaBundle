@@ -49,12 +49,22 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
     /**
      * @var RouterInterface[]
      */
-    protected $router = [];
+    protected $router = array();
 
     /**
      * @var MenuRepository
      */
     protected $menuRepository;
+
+    /**
+     * @var array
+     */
+    protected $cachedRoutes = array();
+
+    /**
+     * @var array
+     */
+    protected $sortedRoutes = array();
 
     /**
      * @param MenuRepository $menuRepository
@@ -115,6 +125,35 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
     }
 
     /**
+     * @return array
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function getSortedRoutes()
+    {
+        if (!empty($this->sortedRoutes)) {
+            return $this->sortedRoutes;
+        }
+
+        $routeCollection = $this->getRouteCollection();
+
+        foreach ($routeCollection as $name => $route) {
+            $this->sortedRoutes[$route->getPath()] = $name;
+        }
+
+        uksort($this->sortedRoutes, function ($a, $b) {
+            if (strlen($a) == strlen($b)) {
+                return 0;
+            }
+            if (strlen($a) < strlen($b)) {
+                return -1;
+            }
+            return 1;
+        });
+
+        return $this->sortedRoutes;
+    }
+
+    /**
      * @param Route $searchRoute
      *
      * @return null|string
@@ -122,23 +161,14 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
      */
     public function findMatchingPaths(Route $searchRoute)
     {
-        static $cachedRoutes;
-
-        if (!isset($cachedRoutes)) {
-            $cachedRoutes = array();
-        }
-
-        $routeCollection = $this->getRouteCollection();
-
-        if (isset($cachedRoutes[$searchRoute->getPath()])) {
-            return $cachedRoutes[$searchRoute->getPath()];
+        if (isset($this->cachedRoutes[$searchRoute->getPath()])) {
+            return $this->cachedRoutes[$searchRoute->getPath()];
         }
 
         /** @var Route $route */
-        foreach ($routeCollection as $name => $route) {
-            $routePath = $route->getPath();
-            if (preg_match('#^' . preg_quote($routePath, '#') . '#', $searchRoute->getPath())) {
-                $cachedRoutes[$searchRoute->getPath()] = $name;
+        foreach ($this->getSortedRoutes() as $routePath => $name) {
+            if (preg_match('#^' . preg_quote(rtrim($routePath, '/') . '/', '#') . '#', $searchRoute->getPath())) {
+                $this->cachedRoutes[$searchRoute->getPath()] = $name;
 
                 return $name;
             }
