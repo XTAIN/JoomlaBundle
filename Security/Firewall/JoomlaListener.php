@@ -92,6 +92,8 @@ class JoomlaListener implements ListenerInterface
             } catch (AuthenticationException $failed) {
                 // TODO logging
             }
+        } else {
+            $this->securityContext->setToken(null);
         }
     }
 }

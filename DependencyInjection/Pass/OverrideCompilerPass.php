@@ -96,5 +96,31 @@ class OverrideCompilerPass implements CompilerPassInterface
                 }
             }
         }
+
+        $injectorServices = $container->findTaggedServiceIds('joomla.injector');
+
+        foreach ($injectorServices as $id => $attributesBag) {
+            $taggedServiceDefinition = $container->getDefinition($id);
+            foreach ($attributesBag as $attributes) {
+                $taggedServiceClass = $container->getParameterBag()->resolveValue(
+                    $taggedServiceDefinition->getClass()
+                );
+                if (!isset($attributes['class'])) {
+                    continue;
+                }
+
+                $joomlaClass = $container->getParameterBag()->resolveValue($attributes['class']);
+
+                if (is_a($taggedServiceClass, DependencyFactoryInterface::CLASS, true)) {
+                    $loaderFactoryDefinition->addMethodCall(
+                        'addDependencyFactory',
+                        [
+                            $joomlaClass,
+                            $id
+                        ]
+                    );
+                }
+            }
+        }
     }
 }

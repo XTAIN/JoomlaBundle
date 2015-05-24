@@ -42,7 +42,8 @@ class User extends \JProxy_JUser implements UserInterface, AdvancedUserInterface
     public function getRoles()
     {
         return [
-            'ROLE_USER'
+            'ROLE_USER',
+            'ROLE_ADMIN'
         ];
     }
 

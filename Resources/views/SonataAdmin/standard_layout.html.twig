@@ -1,0 +1,10 @@
+{% extends "SonataAdminBundle::standard_layout.html.twig" %}
+
+{% block side_bar_before_nav %}
+    {% block xtain_joomla_sonata_admin_navbar %}
+        {{ joomla_module_position('menu', {}, {
+            layout: '@XTAINJoomlaBundle/Resources/views/SonataAdmin/modules/mod_menu/default.php'
+        }) }}
+    {% endblock %}
+    {{ parent() }}
+{% endblock %}
