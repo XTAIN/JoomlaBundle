@@ -217,12 +217,15 @@ class XTAINJoomlaBundle extends Bundle
      */
     public function boot()
     {
-        if (!defined('JDEBUG')) {
-            if ($this->container->getParameter('kernel.debug')) {
-                define('JDEBUG', 2);
-            } else {
-                define('JDEBUG', 0);
-            }
+        if (defined('JDEBUG')) {
+            // dont boot bundle twice
+            return;
+        }
+
+        if ($this->container->getParameter('kernel.debug')) {
+            define('JDEBUG', 2);
+        } else {
+            define('JDEBUG', 0);
         }
 
         if ($this->container->has('debug.stopwatch')) {
