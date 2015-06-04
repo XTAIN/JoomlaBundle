@@ -1,0 +1,9 @@
+install:
+    com_symfony:
+        - { resource: @XTAINJoomlaBundle/Resources/joomla/com_symfony/admin, target: administrator/components/com_symfony }
+        - { resource: @XTAINJoomlaBundle/Resources/joomla/com_symfony/site, target: components/com_symfony }
+        - { resource: @XTAINJoomlaBundle/Resources/joomla/com_symfony/admin/language/en-GB/en-GB.com_symfony.sys.ini, target: administrator/language/en-GB/en-GB.com_symfony.sys.ini }
+        - { resource: @XTAINJoomlaBundle/Resources/joomla/com_symfony/admin/language/de-DE/de-DE.com_symfony.sys.ini, target: administrator/language/de-DE/de-DE.com_symfony.sys.ini }
+override:
+    - { class: JLoader, static: static, override: XTAIN\Bundle\JoomlaBundle\Library\Loader, file: "libraries/loader.php" }
+    - { class: JDatabaseQueryMysqli, override: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Query\JDatabaseQueryMysqli, file: "libraries/joomla/database/query/mysqli.php" }

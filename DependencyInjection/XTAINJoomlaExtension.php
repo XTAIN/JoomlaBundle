@@ -50,6 +50,8 @@ class XTAINJoomlaExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
+        $configs[] = Yaml::parse(__DIR__.'/../Resources/config/override.yml');
+
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
@@ -63,6 +65,13 @@ class XTAINJoomlaExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
+
+        $warmerPatcherDef = $container->getDefinition('joomla.warmer.patcher');
+        if (isset($config['override'])) {
+            foreach ($config['override'] as $override) {
+                $warmerPatcherDef->addMethodCall('addOverride', [ $override ]);
+            }
+        }
 
         if ($container->getParameter('joomla.root_dir') === null) {
             $reflector = new \ReflectionClass('Composer\Autoload\ClassLoader');

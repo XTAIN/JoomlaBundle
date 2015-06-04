@@ -80,8 +80,6 @@ services:
     joomla.warmer.patcher:
         class: %joomla.warmer.patcher.class%
         arguments: [ %joomla.root_dir%, %joomla.cache_dir%, %joomla.override_dir% ]
-        calls:
-            - [ addOverride, [ { class: JLoader, static: static, override: XTAIN\Bundle\JoomlaBundle\Library\Loader, file: "libraries/loader.php" } ] ]
         tags:
             - { name: kernel.cache_warmer }
 

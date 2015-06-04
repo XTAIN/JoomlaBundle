@@ -163,7 +163,7 @@ EOF;
         $code = str_replace('?>', '', $code);
         $code = preg_replace('/(final[\s]+)?class[\s]+' . preg_quote($oldName) . '/i', 'class ' . $newName, $code);
 
-        if ($static !== false) {
+        if ($static !== false && $static !== 'self') {
             // TODO this is a ugly hack!
             $code = str_replace('static::', $static . '::', $code);
             $code = str_replace('self::', $static . '::', $code);
