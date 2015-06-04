@@ -28,7 +28,7 @@ use RuntimeException;
  * @author  Maximilian Ruta <mr@xtain.net>
  * @package XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver
  */
-class DoctrineDriver extends \JDatabaseDriver
+class DoctrineDriver extends \JDatabaseDriver implements \Serializable
 {
     /**
      * @var EntityManagerInterface
@@ -189,10 +189,12 @@ class DoctrineDriver extends \JDatabaseDriver
         // Take a local copy so that we don't modify the original query and cause issues later
         $query = $this->replacePrefix((string) $this->sql);
 
-        if (!($this->sql instanceof JDatabaseQuery) && ($this->limit > 0 || $this->offset > 0)) {
+        if (!($this->sql instanceof \JDatabaseQuery) && ($this->limit > 0 || $this->offset > 0)) {
             // @TODO
             $query .= ' LIMIT ' . $this->offset . ', ' . $this->limit;
         }
+
+        $this->prepared = $this->connection->prepare($query);
 
         // Increment the query counter.
         $this->count++;
@@ -347,20 +349,9 @@ class DoctrineDriver extends \JDatabaseDriver
     {
         $this->connect();
 
-        $this->freeResult();
-
-        if (is_string($query)) {
-            // Allows taking advantage of bound variables in a direct query:
-            $query = $this->getQuery(true)->setQuery($query);
+        if ($query instanceof \JDatabaseQueryLimitable && !is_null($this->limit) && !is_null($this->offset)) {
+            $query->setLimit($this->limit, $this->offset);
         }
-
-        if ($query instanceof \JDatabaseQueryLimitable && !is_null($offset) && !is_null($limit)) {
-            $query->setLimit($limit, $offset);
-        }
-
-        $query = $this->replacePrefix((string) $query);
-
-        $this->prepared = $this->connection->prepare($query);
 
         // Store reference to the JDatabaseQuery instance:
         parent::setQuery($query, $offset, $limit);
@@ -859,5 +850,55 @@ class DoctrineDriver extends \JDatabaseDriver
         $this->setQuery('UNLOCK TABLES')->execute();
 
         return $this;
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.1.0)<br/>
+     * String representation of object
+     * @link http://php.net/manual/en/serializable.serialize.php
+     * @return string the string representation of the object or null
+     */
+    public function serialize()
+    {
+        $data = array();
+
+        $skip = array(
+            'connection',
+            'platform',
+            'driver'
+        );
+
+        foreach ($this as $key => $value) {
+            if (in_array($key, $skip)) {
+                continue;
+            }
+            $data[$key] = $value;
+        }
+
+        return serialize($data);
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.1.0)<br/>
+     * Constructs the object
+     * @link http://php.net/manual/en/serializable.unserialize.php
+     * @param string $serialized <p>
+     * The string representation of the object.
+     * </p>
+     * @return void
+     */
+    public function unserialize($serialized)
+    {
+        $data = unserialize($serialized);
+
+        foreach ($data as $key => $value) {
+            $this->{$key} = $value;
+        }
+
+        \XTAIN\Bundle\JoomlaBundle\Library\Loader::injectStaticDependencies(__CLASS__);
+
+        $this->connection = self::$entityManager->getConnection();
+        $this->platform = $this->connection->getDatabasePlatform();
+        $this->driver = $this->connection->getDriver();
     }
 }
