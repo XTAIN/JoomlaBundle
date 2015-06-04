@@ -88,7 +88,7 @@ class Config extends \JProxy_Config
             'user' => null,
             'password' => null,
             'db' => null,
-            'dbprefix' => 'cms_',
+            'dbprefix' => '',
             'gzip' => '0',
             'error_reporting' => 'default',
             'helpurl' => 'https://help.joomla.org/proxy/index.php?option=com_help&keyref=Help{major}{minor}:{keyref}',

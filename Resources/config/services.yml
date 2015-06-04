@@ -7,6 +7,7 @@ parameters:
     joomla.logger_proxy.class: XTAIN\Bundle\JoomlaBundle\Joomla\LoggerProxy
 
     joomla.factory.loader.class: XTAIN\Bundle\JoomlaBundle\Factory\LoaderFactory
+    joomla.factory.config.class: XTAIN\Bundle\JoomlaBundle\Factory\ConfigFactory
     joomla.factory.factory.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\FactoryFactory
     joomla.factory.uri.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Uri\UriFactory
     joomla.factory.event.dispatcher.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Event\DispatcherFactory
@@ -58,8 +59,10 @@ parameters:
 
     joomla.cache_key: "joomla"
     joomla.root_dir: ~
+    joomla.config_dir: "%kernel.root_dir%/config"
     joomla.cache_dir: "%kernel.cache_dir%/%joomla.cache_key%/cache"
     joomla.override_dir: "%kernel.cache_dir%/%joomla.cache_key%/override"
+    joomla.tmp_dir: "%kernel.cache_dir%/%joomla.cache_key%/tmp"
 
 services:
     joomla:
@@ -126,6 +129,14 @@ services:
         calls:
             - [ setOverrideDir, [ %joomla.override_dir% ] ]
             - [ setKernel, [ @kernel ] ]
+
+    joomla.factory.config:
+        class: %joomla.factory.config.class%
+        calls:
+            - [ setKernel, [ @kernel ] ]
+            - [ setContainer, [ @service_container ] ]
+        tags:
+          - { name: joomla.injector, class: XTAIN\Bundle\JoomlaBundle\Library\Config }
 
     joomla.factory.factory:
         class: %joomla.factory.factory.class%
