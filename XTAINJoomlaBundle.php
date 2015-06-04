@@ -79,7 +79,7 @@ class XTAINJoomlaBundle extends Bundle
         }
 
         if (!defined('JPATH_CONFIGURATION')) {
-            define('JPATH_CONFIGURATION', __DIR__ . DIRECTORY_SEPARATOR . 'Resources' . DIRECTORY_SEPARATOR . 'config');
+            define('JPATH_CONFIGURATION', $this->container->getParameter('joomla.config_dir'));
         }
 
         if (!defined('JPATH_ADMINISTRATOR')) {

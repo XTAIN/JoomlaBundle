@@ -73,6 +73,11 @@ class XTAINJoomlaExtension extends Extension
             }
         }
 
+        $configFactoryDef = $container->getDefinition('joomla.factory.config');
+        if (isset($config['config'])) {
+            $configFactoryDef->addMethodCall('setConfiguration', [ $config['config'] ]);
+        }
+
         if ($container->getParameter('joomla.root_dir') === null) {
             $reflector = new \ReflectionClass('Composer\Autoload\ClassLoader');
             $vendorDir = dirname(dirname($reflector->getFileName()));
