@@ -4,6 +4,9 @@ install:
         - { resource: @XTAINJoomlaBundle/Resources/joomla/com_symfony/site, target: components/com_symfony }
         - { resource: @XTAINJoomlaBundle/Resources/joomla/com_symfony/admin/language/en-GB/en-GB.com_symfony.sys.ini, target: administrator/language/en-GB/en-GB.com_symfony.sys.ini }
         - { resource: @XTAINJoomlaBundle/Resources/joomla/com_symfony/admin/language/de-DE/de-DE.com_symfony.sys.ini, target: administrator/language/de-DE/de-DE.com_symfony.sys.ini }
+    com_config:
+        - { resource: @XTAINJoomlaBundle/Resources/joomla/com_config/view/application/tmpl/default.php, target: administrator/components/com_config/view/application/tmpl/default.php }
 override:
     - { class: JLoader, static: static, override: XTAIN\Bundle\JoomlaBundle\Library\Loader, file: "libraries/loader.php" }
+    - { class: JPath, static: static, override: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Filesystem\Path, file: "libraries/joomla/filesystem/path.php" }
     - { class: JDatabaseQueryMysqli, override: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Query\JDatabaseQueryMysqli, file: "libraries/joomla/database/query/mysqli.php" }

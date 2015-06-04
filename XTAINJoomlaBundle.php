@@ -15,6 +15,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\OverrideCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\RoutingCompilerPass;
+use XTAIN\Bundle\JoomlaBundle\Joomla\OverrideUtils;
+use XTAIN\Bundle\JoomlaBundle\Library\Config;
 use XTAIN\Bundle\JoomlaBundle\Security\Factory\JoomlaFactory;
 
 /**
@@ -182,7 +184,9 @@ class XTAINJoomlaBundle extends Bundle
 
         // Pre-Load configuration. Don't remove the Output Buffering due to BOM issues, see JCode 26026
         ob_start();
-        require_once JPATH_CONFIGURATION . '/configuration.php';
+        $config = OverrideUtils::classReplace(JPATH_CONFIGURATION . '/configuration.php', 'JConfig', 'JProxy_Config');
+        eval($config);
+        \class_alias(Config::class, 'JConfig');
         ob_end_clean();
 
         // Set system error handling

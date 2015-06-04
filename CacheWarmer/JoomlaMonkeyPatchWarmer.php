@@ -11,6 +11,7 @@
 namespace XTAIN\Bundle\JoomlaBundle\CacheWarmer;
 
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmer;
+use XTAIN\Bundle\JoomlaBundle\Joomla\OverrideUtils;
 
 /**
  * Class JoomlaMonkeyPatchWarmer
@@ -105,7 +106,7 @@ EOF;
                 $path = dirname($file);
                 $static = empty($override['static']) ? false : $override['static'];
                 $proxyName = 'JProxy_' . $override['class'];
-                $code = $this->loadAs($baseDir . DIRECTORY_SEPARATOR . $file, $name, $proxyName, $static);
+                $code = OverrideUtils::classReplace($baseDir . DIRECTORY_SEPARATOR . $file, $name, $proxyName, $static);
 
                 $totalCode = <<<EOF
 <?php
@@ -147,28 +148,4 @@ EOF;
         }
     }
 
-    /**
-     * @param string $file
-     * @param string $oldName
-     * @param string $newName
-     * @param bool   $static
-     *
-     * @return mixed|string
-     * @author Maximilian Ruta <mr@xtain.net>
-     */
-    public static function loadAs($file, $oldName, $newName, $static = false)
-    {
-        $code = file_get_contents($file);
-        $code = str_replace('<?php', '', $code);
-        $code = str_replace('?>', '', $code);
-        $code = preg_replace('/(final[\s]+)?class[\s]+' . preg_quote($oldName) . '/i', 'class ' . $newName, $code);
-
-        if ($static !== false && $static !== 'self') {
-            // TODO this is a ugly hack!
-            $code = str_replace('static::', $static . '::', $code);
-            $code = str_replace('self::', $static . '::', $code);
-        }
-
-        return $code;
-    }
 }
