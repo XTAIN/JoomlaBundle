@@ -235,7 +235,7 @@ class XTAINJoomlaBundle extends Bundle
         $this->registerAlias();
         $this->bootstrapFramework();
 
-        // restore the symfony error handle
+        // restore the symfony error handler
         restore_error_handler();
         restore_exception_handler();
 
