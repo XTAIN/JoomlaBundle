@@ -191,7 +191,11 @@ class DoctrineDriver extends \JDatabaseDriver implements \Serializable
 
         if (!($this->sql instanceof \JDatabaseQuery) && ($this->limit > 0 || $this->offset > 0)) {
             // @TODO
-            $query .= ' LIMIT ' . $this->offset . ', ' . $this->limit;
+            if ($this->offset > 0) {
+                $query .= ' LIMIT ' . $this->offset . ', ' . $this->limit;
+            } else {
+                $query .= ' LIMIT ' . $this->limit;
+            }
         }
 
         $this->prepared = $this->connection->prepare($query);
