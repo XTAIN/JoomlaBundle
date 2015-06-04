@@ -329,7 +329,7 @@ services:
         class: %joomla.legacy.error.class%
         factory_service: joomla.factory.legacy.error
         tags:
-          - { name: joomla.service, class: JError, file: "libraries/legacy/error/error.php" }
+          - { name: joomla.service, static: static, class: JError, file: "libraries/legacy/error/error.php" }
 
     joomla.database.driver.doctrine:
         class: %joomla.database.driver.doctrine.class%
