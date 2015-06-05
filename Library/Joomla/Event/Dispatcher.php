@@ -59,17 +59,19 @@ class Dispatcher extends \JProxy_JEventDispatcher
 
     /**
      * @param string $event
-     * @param array  $args
+     * @param mixed  $args
      *
      * @return array
      *
      * @author Maximilian Ruta <mr@xtain.net>
      */
-    public function trigger($event, array $args = null)
+    public function trigger($event, $args = null)
     {
         if ($args === null) {
             $args = [];
         }
+
+        settype($args, 'array');
 
         $prefix = XTAINJoomlaBundle::STOPWATCH_PREFIX;
         $eventUnderscore = Inflector::tableize($event);
