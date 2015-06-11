@@ -184,7 +184,11 @@ class XTAINJoomlaBundle extends Bundle
 
         // Pre-Load configuration. Don't remove the Output Buffering due to BOM issues, see JCode 26026
         ob_start();
-        $config = OverrideUtils::classReplace(JPATH_CONFIGURATION . '/configuration.php', 'JConfig', 'JProxy_Config');
+        if (file_exists(JPATH_CONFIGURATION . '/configuration.php')) {
+            $config = OverrideUtils::classReplace(JPATH_CONFIGURATION . '/configuration.php', 'JConfig', 'JProxy_Config');
+        } else {
+            $config = 'class JProxy_Config {}';
+        }
         eval($config);
         \class_alias(Config::class, 'JConfig');
         ob_end_clean();
