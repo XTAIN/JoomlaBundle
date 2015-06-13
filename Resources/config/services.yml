@@ -370,7 +370,7 @@ services:
 
     joomla.installation.installer:
         class: %joomla.installation.installer.class%
-        arguments: [ @joomla ]
+        arguments: [ @joomla, @joomla.config ]
 
     # Joomla Security
 

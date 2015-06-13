@@ -15,6 +15,7 @@ use InstallationApplicationWeb;
 use XTAIN\Bundle\JoomlaBundle\Installation\Model\Configuration as ConfigurationModel;
 use XTAIN\Bundle\JoomlaBundle\Installation\Model\Database as DatabaseModel;
 use XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaInterface;
+use XTAIN\Bundle\JoomlaBundle\Library\Config;
 use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Factory;
 
 /**
@@ -31,11 +32,17 @@ class Installer implements InstallerInterface
     protected $joomla;
 
     /**
+     * @var Config
+     */
+    protected $config;
+
+    /**
      * @param JoomlaInterface $joomla
      */
-    public function __construct(JoomlaInterface $joomla)
+    public function __construct(JoomlaInterface $joomla, Config $config)
     {
         $this->joomla = $joomla;
+        $this->config = $config;
     }
 
     /**
@@ -54,18 +61,16 @@ class Installer implements InstallerInterface
         $app = new InstallationApplicationWeb();
         Factory::pushApplication($app);
 
-        $config = \JFactory::getConfig();
-
         // Get the database model.
         $db = new DatabaseModel();
 
         $dboptions = [
             'db_type'   => 'doctrine',
-            'db_host'   => $config->get('host'),
-            'db_user'   => $config->get('user'),
-            'db_pass'   => $config->get('password'),
-            'db_name'   => $config->get('db'),
-            'db_prefix' => $config->get('dbprefix'),
+            'db_host'   => $this->config->get('host'),
+            'db_user'   => $this->config->get('user'),
+            'db_pass'   => $this->config->get('password'),
+            'db_name'   => $this->config->get('db'),
+            'db_prefix' => $this->config->get('dbprefix'),
             'db_select' => true
         ];
 

@@ -56,6 +56,22 @@ class Config
     }
 
     /**
+     * @param string     $property
+     * @param mixed|null $default
+     *
+     * @return mixed
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function get($property, $default = null)
+    {
+        if (property_exists($this, $property)) {
+            return $this->{$property};
+        }
+
+        return $default;
+    }
+
+    /**
      * @param string $name
      * @param array  $arguments
      *
