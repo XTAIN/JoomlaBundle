@@ -50,14 +50,14 @@ class ScriptHandler
         if ($options['joomla-assets-install'] == 'copy') {
             $symlink = '--mode=copy';
         } elseif ($options['joomla-assets-install'] == 'symlink') {
-            $symlink = '--mode=symlink ';
+            $symlink = '--mode=symlink';
         }
 
         if (!static::hasDirectory($event, 'symfony-web-dir', $webDir, 'install joomla')) {
             return;
         }
 
-        static::executeCommand($event, $consoleDir, 'xtain:joomla:assets:install '.$symlink.escapeshellarg($webDir));
+        static::executeCommand($event, $consoleDir, 'xtain:joomla:assets:install '.$symlink.' '.escapeshellarg($webDir));
     }
 
     /**
