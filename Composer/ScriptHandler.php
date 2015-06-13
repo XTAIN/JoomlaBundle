@@ -137,6 +137,22 @@ class ScriptHandler
         }
     }
 
+    protected static function getPhpArguments()
+    {
+        $arguments = array();
+
+        $phpFinder = new PhpExecutableFinder();
+        if (method_exists($phpFinder, 'findArguments')) {
+            $arguments = $phpFinder->findArguments();
+        }
+
+        if (false !== $ini = php_ini_loaded_file()) {
+            $arguments[] = '--php-ini='.$ini;
+        }
+
+        return $arguments;
+    }
+
     protected static function getPhp($includeArgs = true)
     {
         $phpFinder = new PhpExecutableFinder();
