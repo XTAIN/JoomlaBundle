@@ -38,7 +38,7 @@ class ScriptHandler
     public static function installAssets(CommandEvent $event)
     {
         $options = static::getOptions($event);
-        $consoleDir = static::getConsoleDir($event, 'install joomla');
+        $consoleDir = static::getConsoleDir($event, 'install joomla assets');
 
         if (null === $consoleDir) {
             return;
@@ -53,11 +53,38 @@ class ScriptHandler
             $symlink = '--mode=symlink';
         }
 
-        if (!static::hasDirectory($event, 'symfony-web-dir', $webDir, 'install joomla')) {
+        if (!static::hasDirectory($event, 'symfony-web-dir', $webDir, 'install joomla assets')) {
             return;
         }
 
         static::executeCommand($event, $consoleDir, 'xtain:joomla:assets:install '.$symlink.' '.escapeshellarg($webDir));
+    }
+
+    public static function install(CommandEvent $event)
+    {
+        $options = static::getOptions($event);
+        $consoleDir = static::getConsoleDir($event, 'install joomla');
+
+        if (null === $consoleDir) {
+            return;
+        }
+
+        $username = '';
+        if ($options['joomla-admin-username'] !== null) {
+            $username = '--username='.escapeshellarg($options['joomla-admin-username']).' ';
+        }
+
+        $email = '';
+        if ($options['joomla-admin-email'] !== null) {
+            $email = '--username='.escapeshellarg($options['joomla-admin-email']).' ';
+        }
+
+        $password = '';
+        if ($options['joomla-admin-password'] !== null) {
+            $password = '--username='.escapeshellarg($options['joomla-admin-password']).' ';
+        }
+
+        static::executeCommand($event, $consoleDir, 'xtain:joomla:install '.$username.' '.$email.' '.$password);
     }
 
     /**
