@@ -22,6 +22,19 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 class Configuration implements ConfigurationInterface
 {
     /**
+     * @var string
+     */
+    protected $alias;
+
+    /**
+     * @param string $alias
+     */
+    public function __construct($alias)
+    {
+        $this->alias = $alias;
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @return void
@@ -30,7 +43,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('xtain_joomla');
+        $rootNode = $treeBuilder->root($this->alias);
 
         $rootNode
             ->children()
@@ -67,7 +80,8 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-                ->variableNode('config')->end()
+                ->variableNode('config')
+                ->end()
             ->end();
 
         return $treeBuilder;

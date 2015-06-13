@@ -18,4 +18,15 @@ namespace XTAIN\Bundle\JoomlaBundle\Library\Joomla\Application;
  */
 class Web extends \JProxy_JApplicationWeb
 {
+    /**
+     * @return string
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    protected function detectRequestUri()
+    {
+        if (php_sapi_name() == "cli") {
+            return 'http://localhost';
+        }
+        return parent::detectRequestUri();
+    }
 }

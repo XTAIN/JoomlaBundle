@@ -14,6 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -46,13 +47,97 @@ class XTAINJoomlaExtension extends Extension
     }
 
     /**
+     * @param ContainerBuilder $container
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function loadJoomlaConfig(ContainerBuilder $container)
+    {
+        if (!defined('JPATH_CONFIGURATION')) {
+            define('JPATH_CONFIGURATION', $container->getParameter('joomla.config_dir'));
+        }
+
+        // Pre-Load configuration. Don't remove the Output Buffering due to BOM issues, see JCode 26026
+        ob_start();
+        if (file_exists(JPATH_CONFIGURATION . '/configuration.php')) {
+            $config = OverrideUtils::classReplace(JPATH_CONFIGURATION . '/configuration.php', 'JConfig', 'JProxy_Config');
+        } else {
+            $config = 'class JProxy_Config {}';
+        }
+        eval($config);
+        ob_end_clean();
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     *
+     * @return array
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function getJoomlaConfig(ContainerBuilder $container)
+    {
+        $this->loadJoomlaConfig($container);
+
+        return get_class_vars('JProxy_Config');
+    }
+
+    /**
+     * @return array
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function getDefaultConfig()
+    {
+        $config = Yaml::parse(__DIR__.'/../Resources/config/default_joomla_config.yml');
+
+        if (!is_array($config)) {
+            return [];
+        }
+
+        return $config;
+    }
+
+    /**
+     * @param array            $config
+     * @param ContainerBuilder $container
+     *
+     * @return array
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function prepareConfig(array $config, ContainerBuilder $container)
+    {
+        $default = $this->getJoomlaConfig($container);
+
+        $reset = [
+            'debug',
+            'log_path',
+            'tmp_path',
+            'secret'
+        ];
+
+        foreach ($default as $key => $value) {
+            if (in_array($key, $reset)) {
+                unset($default[$key]);
+            }
+        }
+
+        $config = array_merge(
+            $default,
+            $this->getDefaultConfig(),
+            $config
+        );
+
+        return $config;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function load(array $configs, ContainerBuilder $container)
     {
         $configs[] = Yaml::parse(__DIR__.'/../Resources/config/override.yml');
 
-        $configuration = new Configuration();
+        $configuration = new Configuration($this->getAlias());
         $config = $this->processConfiguration($configuration, $configs);
 
         if (isset($config['install'])) {
@@ -73,10 +158,13 @@ class XTAINJoomlaExtension extends Extension
             }
         }
 
+        $config['config'] = $this->prepareConfig($config['config'], $container);
+
         $configFactoryDef = $container->getDefinition('joomla.factory.config');
         if (isset($config['config'])) {
             $configFactoryDef->addMethodCall('setConfiguration', [ $config['config'] ]);
         }
+
 
         if ($container->getParameter('joomla.root_dir') === null) {
             $reflector = new \ReflectionClass('Composer\Autoload\ClassLoader');

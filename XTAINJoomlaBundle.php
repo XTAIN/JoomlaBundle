@@ -16,7 +16,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\OverrideCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\RoutingCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\Joomla\OverrideUtils;
-use XTAIN\Bundle\JoomlaBundle\Library\Config;
 use XTAIN\Bundle\JoomlaBundle\Security\Factory\JoomlaFactory;
 
 /**
@@ -168,6 +167,13 @@ class XTAINJoomlaBundle extends Bundle
         \JLoader::register('JExtension', JPATH_PLATFORM . '/cms/installer/extension.php');
         \JLoader::registerAlias('JAdministrator', 'JApplicationAdministrator');
         \JLoader::registerAlias('JSite', 'JApplicationSite');
+
+
+        // Import filesystem and utilities classes since they aren't autoloaded
+        jimport('joomla.filesystem.file');
+        jimport('joomla.filesystem.folder');
+        jimport('joomla.filesystem.path');
+        jimport('joomla.utilities.arrayhelper');
     }
 
     /**
@@ -181,17 +187,6 @@ class XTAINJoomlaBundle extends Bundle
 
         // System includes
         require_once JPATH_LIBRARIES . '/import.legacy.php';
-
-        // Pre-Load configuration. Don't remove the Output Buffering due to BOM issues, see JCode 26026
-        ob_start();
-        if (file_exists(JPATH_CONFIGURATION . '/configuration.php')) {
-            $config = OverrideUtils::classReplace(JPATH_CONFIGURATION . '/configuration.php', 'JConfig', 'JProxy_Config');
-        } else {
-            $config = 'class JProxy_Config {}';
-        }
-        eval($config);
-        \class_alias(Config::class, 'JConfig');
-        ob_end_clean();
 
         // Set system error handling
         \JError::setErrorHandling(E_NOTICE, 'message');
@@ -226,11 +221,8 @@ class XTAINJoomlaBundle extends Bundle
             return;
         }
 
-        if ($this->container->getParameter('kernel.debug')) {
-            define('JDEBUG', 2);
-        } else {
-            define('JDEBUG', 0);
-        }
+        $config = $this->container->get('joomla.config');
+        define('JDEBUG', $config->debug);
 
         if ($this->container->has('debug.stopwatch')) {
             $stopwatch = $this->container->get('debug.stopwatch');

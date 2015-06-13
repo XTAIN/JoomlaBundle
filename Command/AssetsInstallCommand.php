@@ -100,6 +100,7 @@ EOT
                 } else {
                     $relativeOriginDir = $originDir;
                 }
+                $relativeOriginDir = rtrim($relativeOriginDir, DIRECTORY_SEPARATOR);
                 $this->filesystem->symlink($relativeOriginDir, $targetDir);
             } else {
                 $this->filesystem->mkdir($targetDir, 0777);

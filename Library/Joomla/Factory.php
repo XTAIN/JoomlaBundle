@@ -19,29 +19,58 @@ namespace XTAIN\Bundle\JoomlaBundle\Library\Joomla;
 class Factory extends \JProxy_JFactory
 {
     /**
-     * @param string $file
-     * @param string $type
-     * @param string $namespace
-     *
-     * @return \Joomla\Registry\Registry
+     * @var \SplStack
+     */
+    protected static $applicationStack;
+
+    /**
+     * @param null $id
+     * @return \JUser
      * @author Maximilian Ruta <mr@xtain.net>
      */
-    public static function getConfig($file = null, $type = 'PHP', $namespace = '')
-    {
-        $registry = parent::getConfig($file, $type, $namespace);
-        if ($file === null) {
-            $registry->set('debug', JDEBUG);
-            $registry->set('dbtype', 'doctrine');
-        }
-
-        return $registry;
-    }
-
     public static function getUser($id = null)
     {
         // force load of JUser so that the instanceof in parent method works correctly
         class_exists('JUser');
 
         return parent::getUser($id);
+    }
+
+    /**
+     * @return bool
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public static function hasApplication()
+    {
+        return !empty(self::$application);
+    }
+
+    /**
+     * @param \JApplicationCms $application
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public static function pushApplication(\JApplicationCms $application)
+    {
+        if (!(static::$applicationStack instanceof \SplStack)) {
+            static::$applicationStack = new \SplStack();
+        }
+
+        static::$applicationStack->push(static::$application);
+        static::$application = $application;
+    }
+
+    /**
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public static function popApplication()
+    {
+        if (!(static::$applicationStack instanceof \SplStack)) {
+            static::$applicationStack = new \SplStack();
+        }
+
+        static::$application = static::$applicationStack->pop();
     }
 }

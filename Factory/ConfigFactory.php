@@ -23,11 +23,6 @@ use XTAIN\Bundle\JoomlaBundle\Library\Config;
 class ConfigFactory implements DependencyFactoryInterface
 {
     /**
-     * @var ContainerInterface
-     */
-    protected $container;
-
-    /**
      * @var KernelInterface
      */
     protected $kernel;
@@ -38,14 +33,30 @@ class ConfigFactory implements DependencyFactoryInterface
     protected $config = [];
 
     /**
-     * @param ContainerInterface $container
-     *
-     * @return void
-     * @author Maximilian Ruta <mr@xtain.net>
+     * @var string
      */
-    public function setContainer(ContainerInterface $container)
+    protected $secret;
+
+    /**
+     * @var string
+     */
+    protected $tmpPath;
+
+    /**
+     * @var bool
+     */
+    protected $debug;
+
+    /**
+     * @param string $secret
+     * @param string $tmpPath
+     * @param bool   $debug
+     */
+    public function __construct($secret, $tmpPath, $debug)
     {
-        $this->container = $container;
+        $this->secret = $secret;
+        $this->tmpPath = $tmpPath;
+        $this->debug = $debug;
     }
 
     /**
@@ -75,8 +86,35 @@ class ConfigFactory implements DependencyFactoryInterface
      */
     public function injectStaticDependencies()
     {
-        Config::setKernel($this->kernel);
-        Config::setContainer($this->container);
-        Config::setConfiguration($this->config);
+        $config = $this->config;
+
+        if (!isset($config['log_path'])) {
+            $config['log_path'] = $this->kernel->getLogDir();
+        }
+
+        if (!isset($config['secret'])) {
+            $config['secret'] = $this->secret;
+        }
+
+        if (!isset($config['tmp_path'])) {
+            $config['tmp_path'] = $this->tmpPath;
+        }
+
+        if (!isset($config['debug'])) {
+            $config['debug'] = $this->debug ? 2 : 0;
+        }
+
+        Config::setConfiguration($config);
+    }
+
+    /**
+     * @return Config
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function getConfig()
+    {
+        $this->injectStaticDependencies();
+
+        return new Config();
     }
 }

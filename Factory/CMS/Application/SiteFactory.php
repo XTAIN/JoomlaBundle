@@ -22,33 +22,8 @@ use XTAIN\Bundle\JoomlaBundle\Library\CMS\Application\Site;
  * @author  Maximilian Ruta <mr@xtain.net>
  * @package XTAIN\Bundle\JoomlaBundle\Factory\CMS\Application
  */
-class SiteFactory implements FactoryInterface, DependencyFactoryInterface, ContainerAwareInterface
+class SiteFactory implements FactoryInterface
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-
-    /**
-     * Sets the Container.
-     *
-     * @param ContainerInterface|null $container A ContainerInterface instance or null
-     *
-     * @author Maximilian Ruta <mr@xtain.net>
-     */
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
-    }
-
-    /**
-     * @author Maximilian Ruta <mr@xtain.net>
-     */
-    public function injectStaticDependencies()
-    {
-        Site::setContainer($this->container);
-    }
-
     /**
      * @return \JApplicationSite
      * @author Maximilian Ruta <mr@xtain.net>

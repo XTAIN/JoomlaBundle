@@ -1,6 +1,6 @@
 XTAIN\Bundle\JoomlaBundle\Entity\Menu:
     type: entity
-    table: cms_menu
+    table: menu
     repositoryClass: XTAIN\Bundle\JoomlaBundle\Entity\MenuRepository
     id:
         id:
