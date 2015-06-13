@@ -75,7 +75,6 @@ class InstallationCommand extends ContainerAwareCommand
         /** @var InstallerInterface $installer */
         $installer = $this->getContainer()->get('joomla.installation.installer');
 
-
         if ($configuration->getUsername() === null) {
             $default = 'admin';
             $question = new Question(

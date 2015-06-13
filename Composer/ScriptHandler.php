@@ -69,22 +69,43 @@ class ScriptHandler
             return;
         }
 
-        $username = '';
-        if ($options['joomla-admin-username'] !== null) {
-            $username = '--username='.escapeshellarg($options['joomla-admin-username']).' ';
+        if ($event->getIO()->isInteractive()) {
+            $options['joomla-admin-username'] = $event->getIO()->ask(
+                sprintf(
+                    '<question>%s</question> (<comment>%s</comment>): ',
+                    'Joomla admin username',
+                    $options['joomla-admin-username']
+                ),
+                $options['joomla-admin-username']
+            );
         }
 
-        $email = '';
-        if ($options['joomla-admin-email'] !== null) {
-            $email = '--username='.escapeshellarg($options['joomla-admin-email']).' ';
+        if ($event->getIO()->isInteractive()) {
+            $options['joomla-admin-email'] = $event->getIO()->ask(
+                sprintf(
+                    '<question>%s</question> (<comment>%s</comment>): ',
+                    'Joomla admin email',
+                    $options['joomla-admin-email']
+                ),
+                $options['joomla-admin-email']
+            );
         }
 
-        $password = '';
-        if ($options['joomla-admin-password'] !== null) {
-            $password = '--username='.escapeshellarg($options['joomla-admin-password']).' ';
+        if ($event->getIO()->isInteractive()) {
+            $options['joomla-admin-password'] = $event->getIO()->ask(
+                sprintf(
+                    '<question>%s</question> (<comment>%s</comment>): ',
+                    'Joomla admin password',
+                    $options['joomla-admin-password']
+                ),
+                $options['joomla-admin-password']
+            );
         }
 
-        var_dump('xtain:joomla:install '.$username.' '.$email.' '.$password);
+        $username = '--username='.escapeshellarg($options['joomla-admin-username']).' ';
+        $email = '--email='.escapeshellarg($options['joomla-admin-email']).' ';
+        $password = '--password='.escapeshellarg($options['joomla-admin-password']).' ';
+
         static::executeCommand($event, $consoleDir, 'xtain:joomla:install '.$username.' '.$email.' '.$password);
     }
 
