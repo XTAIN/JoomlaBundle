@@ -4,7 +4,7 @@ host: null
 user: null
 password: null
 db: null
-dbprefix: jos_
+dbprefix: joomla_
 gzip: 0
 error_reporting: default
 helpurl: https://help.joomla.org/proxy/index.php?option=com_help&keyref=Help{major}{minor}:{keyref}
