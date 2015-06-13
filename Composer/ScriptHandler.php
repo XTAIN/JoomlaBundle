@@ -69,8 +69,6 @@ class ScriptHandler
             return;
         }
 
-        var_dump($options);
-        /*
         $username = '';
         if ($options['joomla-admin-username'] !== null) {
             $username = '--username='.escapeshellarg($options['joomla-admin-username']).' ';
@@ -85,8 +83,8 @@ class ScriptHandler
         if ($options['joomla-admin-password'] !== null) {
             $password = '--username='.escapeshellarg($options['joomla-admin-password']).' ';
         }
-        */
 
+        var_dump('xtain:joomla:install '.$username.' '.$email.' '.$password);
         static::executeCommand($event, $consoleDir, 'xtain:joomla:install '.$username.' '.$email.' '.$password);
     }
 
