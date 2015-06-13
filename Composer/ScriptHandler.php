@@ -29,7 +29,7 @@ class ScriptHandler
      */
     protected static $options = array(
         'symfony-web-dir' => 'web',
-        'joomla-assets-install' => 'symlink',
+        'joomla-assets-install' => 'relative',
         'joomla-admin-username' => null,
         'joomla-admin-email' => null,
         'joomla-admin-password' => null
