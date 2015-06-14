@@ -59,3 +59,4 @@ redis_server_port: 6379
 redis_server_auth:
 redis_server_db: 0
 massmailoff: 0
+offset: UTC

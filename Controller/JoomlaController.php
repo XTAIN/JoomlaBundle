@@ -15,11 +15,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use XTAIN\Bundle\JoomlaBundle\Joomla\Joomla;
 use XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaAwareInterface;
+use XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaControllerHelper;
 use XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
+ * Class JoomlaController
+ *
  * @author Maximilian Ruta <mr@xtain.net>
+ * @package XTAIN\Bundle\JoomlaBundle\Controller
  */
 class JoomlaController extends Controller implements JoomlaAwareInterface
 {
@@ -54,56 +58,32 @@ class JoomlaController extends Controller implements JoomlaAwareInterface
     }
 
     /**
+     * @return Response
      * @author Maximilian Ruta <mr@xtain.net>
      */
-    protected function buildResponse()
-    {
-        $this->joomla->defineState($this->request);
-
-        $this->joomla->render();
-
-        if ($this->joomla->is404()) {
-            $this->joomla->disableResponse();
-        }
-
-        if ($this->joomla->isFound()) {
-            // nothing
-        }
-    }
-
     public function site()
     {
         $token = $this->container->get('security.context')->getToken();
 
-        $this->buildResponse();
-        $response = $this->joomla->getResponse();
+        $helper = new JoomlaControllerHelper(
+            $this->joomla,
+            $this->request
+        );
 
-        if ($this->joomla->hasResponse()) {
-            return $response;
-            /*
-            $newResponse = new Response($response->getContent());
-            $response->setContent("");
-            $newResponse->setStatusCode($response->getStatusCode());
-            $newResponse->headers->replace($response->headers->allPreserveCase());
-            return $newResponse;
-                $this->render("XTAINJoomlaBundle:Joomla:index.html.twig", array(
-                'content' => $content
-            ), $response);
-            */
-        }
-
-        throw new NotFoundHttpException();
+        return $helper->getResponse();
     }
 
+    /**
+     * @return Response
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
     public function administrator()
     {
-        $this->buildResponse();
-        $response = $this->joomla->getResponse();
+        $helper = new JoomlaControllerHelper(
+            $this->joomla,
+            $this->request
+        );
 
-        if ($this->joomla->hasResponse()) {
-            return $response;
-        }
-
-        throw new NotFoundHttpException();
+        return $helper->getResponse();
     }
 }

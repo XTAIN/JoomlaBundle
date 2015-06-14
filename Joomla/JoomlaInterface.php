@@ -30,6 +30,31 @@ interface JoomlaInterface
     const ADMINISTRATOR = 'administrator';
 
     /**
+     * @var int
+     */
+    const STATE_FRESH = 0; // the Joomla instance is not initialized
+
+    /**
+     * @var int
+     */
+    const STATE_INIT = 1; // the Joomla instance has been initialized
+
+    /**
+     * @var int
+     */
+    const STATE_STATUS_DEFINED = 2; // the response status is known
+
+    /**
+     * @var int
+     */
+    const STATE_INNER_CONTENT = 3; // Joomla has generated the inner content
+
+    /**
+     * @var int
+     */
+    const STATE_RESPONSE = 4; // Joomla has generated the Response object
+
+    /**
      * Initializes the Joomla core
      *
      * @return void
@@ -113,6 +138,12 @@ interface JoomlaInterface
      * @author Maximilian Ruta <mr@xtain.net>
      */
     public function isInstalled();
+
+    /**
+     * @return int
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function getState();
 
     /**
      * This method builds the state of the current Joomla instance

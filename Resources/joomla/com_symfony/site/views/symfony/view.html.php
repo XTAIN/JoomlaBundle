@@ -23,6 +23,11 @@ class SymfonyViewSymfony extends JViewLegacy
     protected $output;
 
     /**
+     * @var \Symfony\Component\HttpFoundation\Response
+     */
+    protected $response;
+
+    /**
      * @var \Symfony\Component\Routing\RouterInterface
      */
     protected static $router;

@@ -40,6 +40,8 @@ XTAIN\Bundle\JoomlaBundle\Entity\Menu:
         path:
             type: string
             length: 1024
+            options:
+                default: ''
         link:
             type: string
             length: 1024
@@ -90,6 +92,8 @@ XTAIN\Bundle\JoomlaBundle\Entity\Menu:
         img:
             type: string
             length: 255
+            options:
+                default: ''
         templateStyleId:
             type: integer
             column: template_style_id

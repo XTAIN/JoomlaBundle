@@ -2,7 +2,8 @@ parameters:
     joomla.class: XTAIN\Bundle\JoomlaBundle\Joomla\Joomla
     joomla.controller.class: XTAIN\Bundle\JoomlaBundle\Controller\JoomlaController
     joomla.warmer.patcher.class: XTAIN\Bundle\JoomlaBundle\CacheWarmer\JoomlaMonkeyPatchWarmer
-    joomla.listener.class: XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaRequestListener
+    joomla.request_listener.class: XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaRequestListener
+    joomla.response_listener.class: XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaResponseListener
     joomla.twig.module.class: XTAIN\Bundle\JoomlaBundle\Twig\ModuleExtension
     joomla.logger_proxy.class: XTAIN\Bundle\JoomlaBundle\Joomla\LoggerProxy
 
@@ -27,6 +28,7 @@ parameters:
     joomla.factory.user.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\User\UserFactory
     joomla.factory.component.symfony.field.route.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\Field\RouteFactory
     joomla.factory.component.symfony.view.symfony.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\View\SymfonyFactory
+    joomla.factory.component.symfony.view.wrap.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\View\WrapFactory
     joomla.factory.component.menu.view.admin_menu.class: XTAIN\Bundle\JoomlaBundle\Component\Menu\View\AdminMenuFactory
 
     joomla.installation.installer.class: XTAIN\Bundle\JoomlaBundle\Installation\Installer
@@ -92,12 +94,20 @@ services:
         tags:
             - { name: kernel.cache_warmer }
 
-    joomla.listener:
-        class: %joomla.listener.class%
+    joomla.request_listener:
+        class: %joomla.request_listener.class%
         calls:
             - [ setJoomla, [ @joomla ] ]
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 31 }
+
+    joomla.response_listener:
+        class: %joomla.response_listener.class%
+        calls:
+            - [ setJoomla, [ @joomla ] ]
+            - [ setWrapFactory, [ @joomla.factory.component.symfony.view.wrap ] ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse, priority: 0 }
 
     joomla.twig.module:
         class: %joomla.twig.module.class%
@@ -232,6 +242,11 @@ services:
             - [ setKernel, [ @http_kernel ] ]
         tags:
           - { name: joomla.injector, class: SymfonyViewSymfony }
+
+    joomla.factory.component.symfony.view.wrap:
+        class: %joomla.factory.component.symfony.view.wrap.class%
+        tags:
+          - { name: joomla.injector, class: SymfonyViewWrap }
 
     joomla.factory.component.menu.view.admin_menu:
         class: %joomla.factory.component.menu.view.admin_menu.class%
