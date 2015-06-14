@@ -19,6 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Process\Process;
 use XTAIN\Bundle\JoomlaBundle\Installation\Configuration;
+use XTAIN\Bundle\JoomlaBundle\Installation\ExtensionInstallerInterface;
 use XTAIN\Bundle\JoomlaBundle\Installation\InstallerInterface;
 
 /**
@@ -75,6 +76,9 @@ class InstallationCommand extends ContainerAwareCommand
         /** @var InstallerInterface $installer */
         $installer = $this->getContainer()->get('joomla.installation.installer');
 
+        /** @var ExtensionInstallerInterface $extensionInstaller */
+        $extensionInstaller = $this->getContainer()->get('joomla.installation.extension_installer');
+
         if ($configuration->getUsername() === null) {
             $default = 'admin';
             $question = new Question(
@@ -117,5 +121,7 @@ class InstallationCommand extends ContainerAwareCommand
         }
 
         $installer->install($configuration);
+
+        $extensionInstaller->registerExtension('com_symfony', 'component');
     }
 }
