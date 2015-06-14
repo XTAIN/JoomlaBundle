@@ -103,15 +103,6 @@ class Extension
      */
     protected $state = 0;
 
-    public function __construct()
-    {
-        $date = new \DateTime();
-        $date->setTimezone(new \DateTimeZone('UTC'));
-        $date->setDate(0, 0, 0);
-        $date->setTime(0, 0, 0);
-        $this->checkedOutTime = $date;
-    }
-
     /**
      * @return int
      */

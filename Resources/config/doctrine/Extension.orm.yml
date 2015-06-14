@@ -63,7 +63,7 @@ XTAIN\Bundle\JoomlaBundle\Entity\Extension:
                 default: 0
                 unsigned: true
         checkedOutTime:
-            type: datetime
+            type: datetime_nullable
             column: checked_out_time
             options:
                 default: '0000-00-00 00:00:00'
