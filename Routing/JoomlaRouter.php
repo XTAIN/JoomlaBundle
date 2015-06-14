@@ -49,29 +49,19 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
     /**
      * @var RouterInterface[]
      */
-    protected $router = array();
+    protected $router = [];
 
     /**
-     * @var MenuRepositoryInterface
+     * @var PathMatcher
      */
-    protected $menuRepository;
-
-    /**
-     * @var array
-     */
-    protected $cachedRoutes = array();
-
-    /**
-     * @var array
-     */
-    protected $sortedRoutes = array();
+    protected $pathMatcher;
 
     /**
      * @param MenuRepositoryInterface $menuRepository
      */
     public function __construct(MenuRepositoryInterface $menuRepository)
     {
-        $this->menuRepository = $menuRepository;
+        $this->pathMatcher = new PathMatcher($this, $menuRepository);
     }
 
     /**
@@ -125,66 +115,13 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
     }
 
     /**
-     * @return array
-     * @author Maximilian Ruta <mr@xtain.net>
-     */
-    public function getSortedRoutes()
-    {
-        if (!empty($this->sortedRoutes)) {
-            return $this->sortedRoutes;
-        }
-
-        $routeCollection = $this->getRouteCollection();
-
-        foreach ($routeCollection as $name => $route) {
-            $this->sortedRoutes[$route->getPath()] = $name;
-        }
-
-        uksort($this->sortedRoutes, function ($a, $b) {
-            if (strlen($a) == strlen($b)) {
-                return 0;
-            }
-            if (strlen($a) < strlen($b)) {
-                return -1;
-            }
-            return 1;
-        });
-
-        return $this->sortedRoutes;
-    }
-
-    /**
-     * @param Route $searchRoute
-     *
-     * @return null|string
-     * @author Maximilian Ruta <mr@xtain.net>
-     */
-    public function findMatchingPaths(Route $searchRoute)
-    {
-        if (isset($this->cachedRoutes[$searchRoute->getPath()])) {
-            return $this->cachedRoutes[$searchRoute->getPath()];
-        }
-
-        /** @var Route $route */
-        foreach ($this->getSortedRoutes() as $routePath => $name) {
-            if (preg_match('#^' . preg_quote(rtrim($routePath, '/') . '/', '#') . '#', $searchRoute->getPath())) {
-                $this->cachedRoutes[$searchRoute->getPath()] = $name;
-
-                return $name;
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * Tries to match a URL path with a set of routes.
      *
      * If the matcher can not find information, it must throw one of the exceptions documented
      * below.
      *
      * @param string  $pathinfo The path info to be parsed (raw format, i.e. not urldecoded)
-     * @param Request $request Current request object
+     * @param Request $request  Current request object
      * @param bool    $fallback Fallback to Joomla
      *
      * @return array An array of parameters
@@ -290,28 +227,11 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
             return \JRoute::_('index.php' . http_build_query($parameters), false);
         }
 
-        $baseRoute = $this->getRouteCollection()->get($name);
         $baseLink = null;
-        $matchingRouteName = null;
+        $matchingRoutePath = null;
 
-        if ($joomlaRoute && $baseRoute !== null) {
-            $matchingRouteName = $this->findMatchingPaths($baseRoute);
-            $item = $this->menuRepository->findByViewRoute($matchingRouteName);
-
-            if ($item !== null) {
-                $matchingRoutePath = $this->generate($matchingRouteName, [], $referenceType, false);
-
-                $app = \JFactory::getApplication();
-                $joomlaRouter = $app::getRouter();
-
-                if ($item !== null) {
-                    if ($joomlaRouter->getMode() == \JROUTER_MODE_SEF) {
-                        $baseLink = \JRoute::_('index.php?Itemid=' . $item->getId());
-                    } else {
-                        $baseLink = \JRoute::_($item->getLink() . '&path=');
-                    }
-                }
-            }
+        if ($joomlaRoute) {
+            list($baseLink, $matchingRoutePath) = $this->pathMatcher->getBasePath($name, $referenceType);
         }
 
         $route = null;

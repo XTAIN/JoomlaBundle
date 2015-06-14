@@ -55,6 +55,7 @@ parameters:
     joomla.document.class: JDocument
     joomla.user.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\User\User
     joomla.config.class: XTAIN\Bundle\JoomlaBundle\Library\Config
+    joomla.routing.path_matcher: XTAIN\Bundle\JoomlaBundle\Routing\PathMatcher
 
     joomla.security.authentication.provider.class: XTAIN\Bundle\JoomlaBundle\Security\Authentication\Provider\JoomlaAuthenticationProvider
     joomla.security.authentication.listener.class: XTAIN\Bundle\JoomlaBundle\Security\Firewall\JoomlaListener
@@ -115,6 +116,10 @@ services:
             - [ setJoomla, [ @joomla ] ]
         tags:
             - { name: twig.extension }
+
+    joomla.routing.path_matcher:
+        class: %joomla.routing.path_matcher.class%
+        arguments: [ @router, @joomla.menu_repository ]
 
     joomla.router:
         class: %joomla.router.class%

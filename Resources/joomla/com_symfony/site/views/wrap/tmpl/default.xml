@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+    <layout title="COM_SYMFONY_WRAP_VIEW_DEFAULT_TITLE">
+        <message>COM_SYMFONY_WRAP_VIEW_DEFAULT_DESC</message>
+    </layout>
+
+
+    <!-- Add fields to the request variables for the layout. -->
+    <fields name="request">
+        <fieldset name="request"
+                  addfieldpath="/administrator/components/com_symfony/models/fields">
+
+            <field name="pattern" type="text" default=""
+                   label="COM_SYMFONY_FIELD_TEXT_PATTERN_LABEL"
+                   description="COM_SYMFONY_FIELD_TEXT_PATTERN_DESC" />
+        </fieldset>
+    </fields>
+</metadata>
