@@ -115,9 +115,6 @@ EOF;
  */
 $code
 
-//we dont need this anymore because we now use \XTAIN\Bundle\JoomlaBundle\Library::registerAlias
-//class $name extends \\$overrideClass {}
-
 EOF;
 
                 $cachePath = $this->overrideDir . DIRECTORY_SEPARATOR . $path;

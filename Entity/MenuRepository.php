@@ -7,7 +7,13 @@ namespace XTAIN\Bundle\JoomlaBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 
-class MenuRepository extends EntityRepository
+/**
+ * Class MenuRepository
+ *
+ * @author Maximilian Ruta <mr@xtain.net>
+ * @package XTAIN\Bundle\JoomlaBundle\Entity
+ */
+class MenuRepository extends EntityRepository implements MenuRepositoryInterface
 {
     /**
      * @param string $routeName
@@ -17,9 +23,11 @@ class MenuRepository extends EntityRepository
      */
     public function findByViewRoute($routeName)
     {
-        return $this->findOneBy(array(
-            'link' => 'index.php?option=com_symfony&view=symfony&route=' . $routeName
-        ));
+        return $this->findOneBy(
+            [
+                'link' => 'index.php?option=com_symfony&view=symfony&route=' . $routeName
+            ]
+        );
     }
 
 }

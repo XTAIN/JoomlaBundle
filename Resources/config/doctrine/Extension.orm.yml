@@ -1,0 +1,79 @@
+XTAIN\Bundle\JoomlaBundle\Entity\Extension:
+    type: entity
+    table: extensions
+    repositoryClass: XTAIN\Bundle\JoomlaBundle\Entity\ExtensionRepository
+    indexes:
+        element_clientid:
+            columns: [ element, client_id ]
+        element_folder_clientid:
+            columns: [ element, folder, client_id ]
+        extension:
+            columns: [ type, element, folder, client_id ]
+    id:
+        id:
+            type: integer
+            length: 11
+            column: extension_id
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: 100
+        type:
+            type: string
+            length: 20
+        element:
+            type: string
+            length: 100
+        folder:
+            type: string
+            length: 100
+        clientId:
+            type: smallint
+            column: client_id
+        enabled:
+            type: boolean
+            options:
+                default: 1
+        access:
+            type: integer
+            options:
+                default: 1
+                unsigned: true
+        protected:
+            type: smallint
+            options:
+                default: 0
+        manifestCache:
+            type: json_array
+            column: manifest_cache
+        params:
+            type: json_array
+        customData:
+            type: json_array
+            column: custom_data
+        systemData:
+            type: json_array
+            column: system_data
+        checkedOut:
+            type: integer
+            column: checked_out
+            options:
+                default: 0
+                unsigned: true
+        checkedOutTime:
+            type: datetime
+            column: checked_out_time
+            options:
+                default: '0000-00-00 00:00:00'
+        ordering:
+            type: integer
+            nullable: true
+            options:
+                default: 0
+        state:
+            type: integer
+            nullable: true
+            options:
+                default: 0

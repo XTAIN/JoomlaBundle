@@ -47,6 +47,14 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->arrayNode('orm')
+                    ->children()
+                        ->scalarNode('entity_manager')
+                            ->defaultNull()
+                            ->cannotBeEmpty()
+                        ->end()
+                    ->end()
+                ->end()
                 ->arrayNode('install')
                     ->useAttributeAsKey('name')
                     ->prototype('array')
@@ -63,7 +71,7 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->scalarNode('class')
                                 ->isRequired()
-                            ->cannotBeEmpty()
+                                ->cannotBeEmpty()
                             ->end()
                             ->scalarNode('override')
                                 ->isRequired()

@@ -21,7 +21,7 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use XTAIN\Bundle\JoomlaBundle\Controller\JoomlaController;
-use XTAIN\Bundle\JoomlaBundle\Entity\MenuRepository;
+use XTAIN\Bundle\JoomlaBundle\Entity\MenuRepositoryInterface;
 
 /**
  * Class JoomlaRouter
@@ -52,7 +52,7 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
     protected $router = array();
 
     /**
-     * @var MenuRepository
+     * @var MenuRepositoryInterface
      */
     protected $menuRepository;
 
@@ -67,9 +67,9 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
     protected $sortedRoutes = array();
 
     /**
-     * @param MenuRepository $menuRepository
+     * @param MenuRepositoryInterface $menuRepository
      */
-    public function __construct(MenuRepository $menuRepository)
+    public function __construct(MenuRepositoryInterface $menuRepository)
     {
         $this->menuRepository = $menuRepository;
     }

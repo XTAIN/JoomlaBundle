@@ -30,6 +30,7 @@ parameters:
     joomla.factory.component.menu.view.admin_menu.class: XTAIN\Bundle\JoomlaBundle\Component\Menu\View\AdminMenuFactory
 
     joomla.installation.installer.class: XTAIN\Bundle\JoomlaBundle\Installation\Installer
+    joomla.installation.extension_installer.class: XTAIN\Bundle\JoomlaBundle\Installation\ExtensionInstaller
     joomla.loader.class: XTAIN\Bundle\JoomlaBundle\Library\Loader
     joomla.database.driver.doctrine.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver\DoctrineDriver
     joomla.factory.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Factory
@@ -60,6 +61,7 @@ parameters:
     joomla.prefix_subscriber.class: XTAIN\Bundle\JoomlaBundle\Joomla\PrefixSubscriber
 
     joomla.menu_repository.class: XTAIN\Bundle\JoomlaBundle\Entity\MenuRepository
+    joomla.extension_repository.class: XTAIN\Bundle\JoomlaBundle\Entity\ExtensionRepository
 
     joomla.cache_key: "joomla"
     joomla.root_dir: ~
@@ -210,7 +212,7 @@ services:
     joomla.factory.database.driver.doctrine:
         class: %joomla.factory.database.driver.doctrine.class%
         calls:
-            - [ setEntityManager, [ @doctrine.orm.default_entity_manager ] ]
+            - [ setEntityManager, [ @joomla.orm.entity_manager ] ]
 
     joomla.factory.user:
         class: %joomla.factory.user.class%
@@ -368,6 +370,10 @@ services:
 
     # Joomla Installation
 
+    joomla.installation.extension_installer:
+        class: %joomla.installation.extension_installer.class%
+        arguments: [ @joomla.orm.entity_manager, @joomla.extension_repository ]
+
     joomla.installation.installer:
         class: %joomla.installation.installer.class%
         arguments: [ @joomla, @joomla.config ]
@@ -387,9 +393,20 @@ services:
 
     # Joomla Repositories
 
+    joomla.orm.entity_manager:
+        alias: doctrine.orm.default_entity_manager
+
     joomla.menu_repository:
         class: %joomla.menu_repository.class%
-        factory_service: doctrine.orm.default_entity_manager
+        factory_service: joomla.orm.entity_manager
         factory_method: getRepository
         arguments:
             - XTAINJoomlaBundle:Menu
+
+    joomla.extension_repository:
+        class: %joomla.extension_repository.class%
+        factory_service: joomla.orm.entity_manager
+        factory_method: getRepository
+        arguments:
+            - XTAINJoomlaBundle:Extension
+

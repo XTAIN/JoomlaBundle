@@ -177,5 +177,9 @@ class XTAINJoomlaExtension extends Extension
         }
 
         $container->setParameter('joomla.installations', $this->installations);
+
+        if (isset($config['orm']['entity_manager'])) {
+            $container->setAlias('joomla.orm.entity_manager', $config['orm']['entity_manager']);
+        }
     }
 }

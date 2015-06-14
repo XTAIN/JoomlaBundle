@@ -10,6 +10,12 @@
 
 namespace XTAIN\Bundle\JoomlaBundle\Entity;
 
+/**
+ * Class Menu
+ *
+ * @author Maximilian Ruta <mr@xtain.net>
+ * @package XTAIN\Bundle\JoomlaBundle\Entity
+ */
 class Menu
 {
     protected $id;
@@ -28,37 +34,37 @@ class Menu
 
     protected $type;
 
-    protected $published;
+    protected $published = 0;
 
-    protected $parentId;
+    protected $parentId = 1;
 
-    protected $level;
+    protected $level = 0;
 
-    protected $componentId;
+    protected $componentId = 0;
 
-    protected $checkedOut;
+    protected $checkedOut = 0;
 
     protected $checkedOutTime;
 
-    protected $browserNav;
+    protected $browserNav = 0;
 
-    protected $access;
+    protected $access = 0;
 
     protected $img;
 
-    protected $templateStyleId;
+    protected $templateStyleId = 0;
 
     protected $params;
 
-    protected $lft;
+    protected $lft = 0;
 
-    protected $rgt;
+    protected $rgt = 0;
 
-    protected $home;
+    protected $home = 0;
 
     protected $language;
 
-    protected $clientId;
+    protected $clientId = 0;
 
     /**
      * @return mixed

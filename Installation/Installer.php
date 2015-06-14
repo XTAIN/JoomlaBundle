@@ -65,7 +65,7 @@ class Installer implements InstallerInterface
         $db = new DatabaseModel();
 
         $dboptions = [
-            'db_type'   => 'doctrine',
+            'db_type'   => $this->config->get('dbtype'),
             'db_host'   => $this->config->get('host'),
             'db_user'   => $this->config->get('user'),
             'db_pass'   => $this->config->get('password'),
