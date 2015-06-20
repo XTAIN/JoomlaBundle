@@ -13,6 +13,10 @@
             <field name="pattern" type="text" default=""
                    label="COM_SYMFONY_FIELD_TEXT_PATTERN_LABEL"
                    description="COM_SYMFONY_FIELD_TEXT_PATTERN_DESC" />
+
+            <field name="path" type="text" default=""
+                   label="COM_SYMFONY_FIELD_TEXT_PATH_LABEL"
+                   description="COM_SYMFONY_FIELD_TEXT_PATH_DESC" />
         </fieldset>
     </fields>
 </metadata>

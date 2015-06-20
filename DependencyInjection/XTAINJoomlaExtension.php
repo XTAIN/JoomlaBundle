@@ -181,5 +181,12 @@ class XTAINJoomlaExtension extends Extension
         if (isset($config['orm']['entity_manager'])) {
             $container->setAlias('joomla.orm.entity_manager', $config['orm']['entity_manager']);
         }
+
+        $responseListenerDef = $container->getDefinition('joomla.response_listener');
+        if (isset($config['wrap']['patterns'])) {
+            foreach ($config['wrap']['patterns'] as $pattern) {
+                $responseListenerDef->addMethodCall('addWrapPattern', [ $pattern ]);
+            }
+        }
     }
 }

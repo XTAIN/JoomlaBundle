@@ -47,6 +47,14 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->arrayNode('wrap')
+                    ->fixXmlConfig('pattern')
+                    ->children()
+                        ->arrayNode('patterns')
+                            ->prototype('scalar')->end()
+                        ->end()
+                    ->end()
+                ->end()
                 ->arrayNode('orm')
                     ->children()
                         ->scalarNode('entity_manager')

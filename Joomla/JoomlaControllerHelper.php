@@ -13,6 +13,8 @@ namespace XTAIN\Bundle\JoomlaBundle\Joomla;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use XTAIN\Bundle\JoomlaBundle\Component\Symfony\View\WrapFactory;
+use XTAIN\Bundle\JoomlaBundle\Entity\Menu;
 
 /**
  * Class JoomlaControllerHelper
@@ -33,13 +35,20 @@ class JoomlaControllerHelper
     protected $request;
 
     /**
-     * @param JoomlaInterface $joomla
-     * @param Request         $request
+     * @var WrapFactory
      */
-    public function __construct(JoomlaInterface $joomla, Request $request)
+    protected $factory;
+
+    /**
+     * @param JoomlaInterface  $joomla
+     * @param Request          $request
+     * @param WrapFactory|null $factory
+     */
+    public function __construct(JoomlaInterface $joomla, Request $request, WrapFactory $factory = null)
     {
         $this->joomla = $joomla;
         $this->request = $request;
+        $this->factory = $factory;
     }
 
     /**
@@ -77,19 +86,31 @@ class JoomlaControllerHelper
     }
 
     /**
-     * @param Response $response
+     * @param Response  $response
+     * @param Menu|null $item
      *
      * @return Response
      * @author Maximilian Ruta <mr@xtain.net>
      */
-    public function wrapResponse(Response $response)
+    public function wrapResponse(Response $response, Menu $item = null)
     {
-        $server = $this->request->server;
-        $query = $this->request->query;
+        $this->factory->setResponse($response);
+        $server = clone $this->request->server;
+        $query = clone $this->request->query;
 
-        $server->set('REQUEST_URI', 'index.php');
         $query->set('option', 'com_symfony');
         $query->set('view', 'wrap');
+        if ($item !== null) {
+            $query->set('Itemid', $item->getId());
+        }
+
+        $uri = '/';
+        $queryString = Request::normalizeQueryString(http_build_query($query->all(), null, '&'));
+
+        if ($queryString !== '') {
+            $uri .= '?' . $queryString;
+        }
+        $server->set('REQUEST_URI', $uri);
 
         $request = new Request(
             $query->all(),

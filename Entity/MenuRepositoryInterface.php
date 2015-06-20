@@ -20,6 +20,15 @@ use Doctrine\Common\Persistence\ObjectRepository;
 interface MenuRepositoryInterface extends ObjectRepository, Selectable
 {
     /**
+     * @param string $component
+     * @param string $view
+     *
+     * @return Menu[]
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function findByComponentAndView($component, $view);
+
+    /**
      * @param string $routeName
      *
      * @return null|Menu

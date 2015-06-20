@@ -10,7 +10,9 @@
 
 namespace XTAIN\Bundle\JoomlaBundle\Routing;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
+use XTAIN\Bundle\JoomlaBundle\Entity\Menu;
 use XTAIN\Bundle\JoomlaBundle\Entity\MenuRepositoryInterface;
 
 /**
@@ -19,7 +21,7 @@ use XTAIN\Bundle\JoomlaBundle\Entity\MenuRepositoryInterface;
  * @author Maximilian Ruta <mr@xtain.net>
  * @package XTAIN\Bundle\JoomlaBundle\Routing
  */
-class PathMatcher
+class PathMatcher implements PathMatcherInterface
 {
     /**
      * @var array
@@ -107,7 +109,7 @@ class PathMatcher
 
     /**
      * @param string $name
-     * @param int    $referenceType
+     * @param bool   $referenceType
      *
      * @return array
      * @author Maximilian Ruta <mr@xtain.net>
@@ -141,5 +143,53 @@ class PathMatcher
             $baseLink,
             $matchingRoutePath
         ];
+    }
+
+    /**
+     * @param string $link
+     *
+     * @return array
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public static function parseParameters($link)
+    {
+        $pos = strpos($link, '?');
+        if ($pos !== null) {
+            $link = substr($link, $pos + 1);
+        }
+
+        $params = [];
+        parse_str($link, $params);
+
+        return $params;
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return null|Menu
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function findMenuPointForRequest(Request $request)
+    {
+        $items = $this->menuRepository->findByComponentAndView('com_symfony', 'wrap');
+
+        foreach ($items as $item) {
+            $link = $item->getLink();
+
+            $params = self::parseParameters($link);
+
+            if (!isset($params['pattern'])) {
+                continue;
+            }
+
+            $pattern = $params['pattern'];
+
+            if (preg_match('#' . $pattern . '#i', $request->getPathInfo())) {
+                return $item;
+            }
+        }
+
+        return null;
     }
 }

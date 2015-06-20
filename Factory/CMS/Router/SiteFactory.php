@@ -10,6 +10,8 @@
 
 namespace XTAIN\Bundle\JoomlaBundle\Factory\CMS\Router;
 
+use XTAIN\Bundle\JoomlaBundle\Entity\MenuRepositoryInterface;
+use XTAIN\Bundle\JoomlaBundle\Factory\DependencyFactoryInterface;
 use XTAIN\Bundle\JoomlaBundle\Factory\FactoryInterface;
 use XTAIN\Bundle\JoomlaBundle\Library\CMS\Router\Site;
 
@@ -19,8 +21,24 @@ use XTAIN\Bundle\JoomlaBundle\Library\CMS\Router\Site;
  * @author  Maximilian Ruta <mr@xtain.net>
  * @package XTAIN\Bundle\JoomlaBundle\Factory\CMS\Router
  */
-class SiteFactory implements FactoryInterface
+class SiteFactory implements FactoryInterface, DependencyFactoryInterface
 {
+    /**
+     * @var MenuRepositoryInterface
+     */
+    protected $menuRepository;
+
+    /**
+     * @param MenuRepositoryInterface $menuRepository
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function setMenuRepository(MenuRepositoryInterface $menuRepository)
+    {
+        $this->menuRepository = $menuRepository;
+    }
+
     /**
      * @return \JRouterSite
      * @author Maximilian Ruta <mr@xtain.net>
@@ -28,5 +46,13 @@ class SiteFactory implements FactoryInterface
     public function getInstance()
     {
         return Site::getInstance('site');
+    }
+
+    /**
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function injectStaticDependencies()
+    {
+        Site::setMenuRepository($this->menuRepository);
     }
 }

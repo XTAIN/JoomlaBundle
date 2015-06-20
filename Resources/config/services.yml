@@ -55,7 +55,7 @@ parameters:
     joomla.document.class: JDocument
     joomla.user.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\User\User
     joomla.config.class: XTAIN\Bundle\JoomlaBundle\Library\Config
-    joomla.routing.path_matcher: XTAIN\Bundle\JoomlaBundle\Routing\PathMatcher
+    joomla.routing.path_matcher.class: XTAIN\Bundle\JoomlaBundle\Routing\PathMatcher
 
     joomla.security.authentication.provider.class: XTAIN\Bundle\JoomlaBundle\Security\Authentication\Provider\JoomlaAuthenticationProvider
     joomla.security.authentication.listener.class: XTAIN\Bundle\JoomlaBundle\Security\Firewall\JoomlaListener
@@ -107,6 +107,7 @@ services:
         calls:
             - [ setJoomla, [ @joomla ] ]
             - [ setWrapFactory, [ @joomla.factory.component.symfony.view.wrap ] ]
+            - [ setPathMatcher, [ @joomla.routing.path_matcher ] ]
         tags:
             - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse, priority: 0 }
 
@@ -201,6 +202,8 @@ services:
 
     joomla.factory.cms.router.site:
         class: %joomla.factory.cms.router.site.class%
+        calls:
+            - [ setMenuRepository, [ @joomla.menu_repository ] ]
 
     joomla.factory.cms.application.site:
         class: %joomla.factory.cms.application.site.class%

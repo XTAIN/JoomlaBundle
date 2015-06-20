@@ -13,6 +13,7 @@ namespace XTAIN\Bundle\JoomlaBundle\Joomla;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use XTAIN\Bundle\JoomlaBundle\Component\Symfony\View\WrapFactory;
+use XTAIN\Bundle\JoomlaBundle\Routing\PathMatcherInterface;
 
 /**
  * Class JoomlaResponseListener
@@ -33,6 +34,16 @@ class JoomlaResponseListener implements JoomlaAwareInterface
     protected $factory;
 
     /**
+     * @var PathMatcherInterface
+     */
+    protected $pathMatcher;
+
+    /**
+     * @var string[]
+     */
+    protected $pattern = [];
+
+    /**
      * @param JoomlaInterface $joomla
      *
      * @return void
@@ -45,6 +56,17 @@ class JoomlaResponseListener implements JoomlaAwareInterface
     }
 
     /**
+     * @param string $pattern
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function addWrapPattern($pattern)
+    {
+        $this->pattern[] = $pattern;
+    }
+
+    /**
      * @param WrapFactory $factory
      *
      * @return void
@@ -53,6 +75,17 @@ class JoomlaResponseListener implements JoomlaAwareInterface
     public function setWrapFactory(WrapFactory $factory)
     {
         $this->factory = $factory;
+    }
+
+    /**
+     * @param PathMatcherInterface $pathMatcher
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function setPathMatcher(PathMatcherInterface $pathMatcher)
+    {
+        $this->pathMatcher = $pathMatcher;
     }
 
     /**
@@ -75,18 +108,34 @@ class JoomlaResponseListener implements JoomlaAwareInterface
             return;
         }
 
+        $menu = $this->pathMatcher->findMenuPointForRequest($event->getRequest());
+
+        if ($menu === null) {
+            $match = false;
+
+            foreach ($this->pattern as $pattern) {
+                if (preg_match('#' . $pattern . '#i', $event->getRequest()->getPathInfo())) {
+                    $match = true;
+                    break;
+                }
+            }
+
+            if (!$match) {
+                return;
+            }
+        }
+
         $response = $event->getResponse();
         $contentType = $response->headers->get('Content-Type');
 
         if ($contentType === null || $contentType === 'text/html') {
             $helper = new JoomlaControllerHelper(
                 $this->joomla,
-                $event->getRequest()
+                $event->getRequest(),
+                $this->factory
             );
 
-            $this->factory->setResponse($response);
-
-            $newResponse = $helper->wrapResponse($response);
+            $newResponse = $helper->wrapResponse($response, $menu);
             $response->setContent($newResponse->getContent());
         }
     }

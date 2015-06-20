@@ -65,7 +65,7 @@ class SymfonyRouter implements JComponentRouterInterface
      */
     public function build(&$query)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -82,7 +82,7 @@ class SymfonyRouter implements JComponentRouterInterface
     public function parse(&$segments)
     {
         $active = $this->menu->getActive();
-        $vars = array();
+        $vars = [];
 
         if (!empty($active)) {
             $vars = $active->query;

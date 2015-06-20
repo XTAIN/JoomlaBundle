@@ -406,6 +406,7 @@ class Joomla implements JoomlaInterface
     {
         $this->initialize();
 
+        $request->server->set('REQUEST_URI', $request->getRequestUri());
         $request->overrideGlobals();
 
         $this->state = self::STATE_INNER_CONTENT;
