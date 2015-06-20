@@ -58,6 +58,10 @@ class XTAINJoomlaExtension extends Extension
             define('JPATH_CONFIGURATION', $container->getParameter('joomla.config_dir'));
         }
 
+        if (class_exists('\JProxy_Config', false)) {
+            return;
+        }
+
         // Pre-Load configuration. Don't remove the Output Buffering due to BOM issues, see JCode 26026
         ob_start();
         if (file_exists(JPATH_CONFIGURATION . '/configuration.php')) {
