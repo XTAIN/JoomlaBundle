@@ -43,9 +43,6 @@
         "doctrine/inflector": "~1.0",
         "xtain/doctrine-extensions": "~1"
     },
-    "suggest": {
-        "xtain/jommla-sonata-admin-bundle": "Integrates SonataAdminBundle into Joomla Administrator"
-    },
     "autoload": {
         "psr-4": { "XTAIN\\Bundle\\JoomlaBundle\\": "" }
     }
