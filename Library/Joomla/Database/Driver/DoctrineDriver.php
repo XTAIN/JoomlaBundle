@@ -88,6 +88,11 @@ class DoctrineDriver extends \JDatabaseDriver implements \Serializable
     protected static $dbMinimum = '5.0.4';
 
     /**
+     * @var bool
+     */
+    protected $sessionSet = false;
+
+    /**
      * @param  EntityManagerInterface $entityManager
      *
      * @return void
@@ -186,6 +191,11 @@ class DoctrineDriver extends \JDatabaseDriver implements \Serializable
      */
     public function execute()
     {
+        if (!$this->sessionSet && $this->platform instanceof MySqlPlatform) {
+            $this->connection->exec("SET @@SESSION.sql_mode = '';");
+            $this->sessionSet = true;
+        }
+
         // Take a local copy so that we don't modify the original query and cause issues later
         $query = $this->replacePrefix((string) $this->sql);
 

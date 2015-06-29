@@ -227,7 +227,7 @@ class Html extends \JProxy_JDocumentHtml
         return array_merge(
             $context,
             [
-                'this' => $this
+                'joomla_view' => $this
             ]
         );
     }
