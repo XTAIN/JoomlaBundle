@@ -42,8 +42,22 @@ class ModuleExtension extends \Twig_Extension implements JoomlaAwareInterface
             new \Twig_SimpleFunction('joomla_module_position_count', [$this, 'countModulePosition']),
             new \Twig_SimpleFunction('joomla_message', [$this, 'message'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('joomla_component', [$this, 'component'], ['is_safe' => ['html']]),
-            new \Twig_SimpleFunction('joomla_module_position', [$this, 'renderModulePosition'], ['is_safe' => ['html']])
+            new \Twig_SimpleFunction('joomla_head', [$this, 'head'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('joomla_module_position', [$this, 'renderModulePosition'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('joomla_trans', [$this, 'trans'])
         ];
+    }
+
+    public function getFilters()
+    {
+        return array(
+            new \Twig_SimpleFilter('joomla_trans', [$this, 'trans'])
+        );
+    }
+
+    public function head()
+    {
+        return '<jdoc:include type="head" />';
     }
 
     public function component()
@@ -87,6 +101,24 @@ class ModuleExtension extends \Twig_Extension implements JoomlaAwareInterface
         }
 
         return $html;
+    }
+
+    /**
+     * @param string $string
+     * @param array  $replace
+     *
+     * @return string
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function trans($string, $replace = [])
+    {
+        $text = \JText::_($string);
+
+        foreach ($replace as $key => $value) {
+            $text = str_replace($key, $value, $text);
+        }
+
+        return $text;
     }
 
     public function getName()

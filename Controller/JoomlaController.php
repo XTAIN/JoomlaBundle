@@ -18,6 +18,7 @@ use XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaAwareInterface;
 use XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaControllerHelper;
 use XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * Class JoomlaController
