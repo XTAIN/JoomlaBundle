@@ -16,6 +16,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Yaml\Yaml;
+use XTAIN\Bundle\JoomlaBundle\Joomla\OverrideUtils;
 
 /**
  * This is the class that loads and manages your bundle configuration

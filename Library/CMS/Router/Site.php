@@ -32,7 +32,7 @@ class Site extends \JProxy_JRouterSite
      * @return void
      * @author Maximilian Ruta <mr@xtain.net>
      */
-    public function setMenuRepository(MenuRepositoryInterface $menuRepository)
+    public static function setMenuRepository(MenuRepositoryInterface $menuRepository)
     {
         self::$menuRepository = $menuRepository;
     }
