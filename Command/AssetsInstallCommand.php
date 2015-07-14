@@ -103,7 +103,9 @@ EOT
                 $relativeOriginDir = rtrim($relativeOriginDir, DIRECTORY_SEPARATOR);
                 $this->filesystem->symlink($relativeOriginDir, $targetDir);
             } else {
-                $this->filesystem->mkdir($targetDir, 0777);
+                if (!is_dir($targetDir)) {
+                    $this->filesystem->mkdir($targetDir, 0777);
+                }
                 $this->filesystem->mirror(
                     $originDir,
                     $targetDir,
@@ -128,7 +130,9 @@ EOT
                 }
                 $this->filesystem->symlink($relativeOriginDir, $targetDir);
             } else {
-                $this->filesystem->mkdir(dirname($targetDir), 0777);
+                if (!is_dir($targetDir)) {
+                    $this->filesystem->mkdir(dirname($targetDir), 0777);
+                }
                 $this->filesystem->copy($originDir, $targetDir);
             }
         }
