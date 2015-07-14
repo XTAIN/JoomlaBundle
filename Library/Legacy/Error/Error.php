@@ -33,4 +33,12 @@ class Error extends \JProxy_JError
 
         return parent::throwError($exception);
     }
+
+    public static function attachHandler()
+    {
+    }
+
+    public static function detachHandler()
+    {
+    }
 }
