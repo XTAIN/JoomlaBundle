@@ -87,6 +87,7 @@ EOT
      */
     protected function syncDir($originDir, $targetDir)
     {
+        echo $targetDir;
         if (is_dir($originDir)) {
             $this->output->writeln(
                 sprintf('Installing files for <comment>%s</comment> into <comment>%s</comment>', $originDir, $targetDir)
@@ -220,6 +221,11 @@ EOT
         $output->writeln(sprintf('Installing joomla as <comment>%s</comment>', $this->mode));
 
         foreach ($this->getContainer()->get('joomla')->getAssetRoots() as $assetRoot) {
+            if (dirname($assetRoot) != '.') {
+                if (!is_dir($targetArg . DIRECTORY_SEPARATOR . dirname($assetRoot))) {
+                    $this->filesystem->mkdir($targetArg . DIRECTORY_SEPARATOR . dirname($assetRoot));
+                }
+            }
             $this->syncDir($rootDir . DIRECTORY_SEPARATOR . $assetRoot, $targetArg . DIRECTORY_SEPARATOR . $assetRoot);
         }
 
