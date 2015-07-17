@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.2" type="plugin" group="content" method="upgrade">
+    <name>plg_content_twig</name>
+    <author>XTAIN oHG</author>
+    <creationDate>July 2015</creationDate>
+    <copyright>Copyright (C) 2015 XTAIN oHG. All rights reserved.</copyright>
+    <license>see LICENSE.txt</license>
+    <authorEmail>info@xtain.net</authorEmail>
+    <authorUrl>www.xtain.net</authorUrl>
+    <version>1.0</version>
+    <description>PLG_CONTENT_TWIG_XML_DESCRIPTION</description>
+    <files>
+        <filename plugin="twig">twig.php</filename>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.plg_content_twig.ini</language>
+        <language tag="en-GB">en-GB.plg_content_twig.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+        </fields>
+    </config>
+</extension>

@@ -211,6 +211,30 @@ class XTAINJoomlaBundle extends Bundle
     }
 
     /**
+     * @return mixed|null
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    protected function getCurrentErrorHandler()
+    {
+        $handler = set_error_handler('var_dump', 0);
+        restore_error_handler();
+
+        return $handler;
+    }
+
+    /**
+     * @return mixed|null
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    protected function getCurrentExceptionHandler()
+    {
+        $handler = set_error_handler('var_dump', 0);
+        restore_error_handler();
+
+        return $handler;
+    }
+
+    /**
      * @return void
      * @author Maximilian Ruta <mr@xtain.net>
      */
@@ -229,14 +253,21 @@ class XTAINJoomlaBundle extends Bundle
             $stopwatch->start(self::STOPWATCH_PREFIX . 'bootstrap', self::STOPWATCH_CATEGORY_NAME);
         }
 
+        $errorHandler = $this->getCurrentErrorHandler();
+        $exceptionHandler = $this->getCurrentExceptionHandler();
+
         $this->defineConstants();
         $this->registerAutoloader();
         $this->registerAlias();
         $this->bootstrapFramework();
 
         // restore the symfony error handler
-        restore_error_handler();
-        restore_exception_handler();
+        if ($errorHandler !== null) {
+            set_error_handler($errorHandler);
+        }
+        if ($exceptionHandler !== null) {
+            set_exception_handler($exceptionHandler);
+        }
 
         if ($this->container->has('debug.stopwatch')) {
             $stopwatch = $this->container->get('debug.stopwatch');

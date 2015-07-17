@@ -12,6 +12,7 @@ namespace XTAIN\Bundle\JoomlaBundle\Composer;
 
 use Composer\Script\CommandEvent;
 use XTAIN\Composer\Symfony\Util\Console;
+use XTAIN\Composer\Symfony\Util\Kernel;
 
 /**
  * Class ScriptHandler
@@ -57,6 +58,23 @@ class ScriptHandler
         ];
 
         $console->execute('xtain:joomla:assets:install', $arguments);
+        $kernel = new Kernel($event);
+        foreach ($kernel->getBundles() as $bundleName => $path) {
+            $doctrine = $path . DIRECTORY_SEPARATOR . 'Resources' .
+                                DIRECTORY_SEPARATOR . 'config' .
+                                DIRECTORY_SEPARATOR . 'doctrine';
+
+            $isEasyExtends = false;
+            if (is_dir($doctrine)) {
+                $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($doctrine));
+                foreach ($iterator as $file) {
+                    if (preg_match('/\.skeleton$/', $file->getFilename())) {
+                        $isEasyExtends = true;
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     public static function install(CommandEvent $event)
