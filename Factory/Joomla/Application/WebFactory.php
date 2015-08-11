@@ -10,7 +10,8 @@
 
 namespace XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Application;
 
-use XTAIN\Bundle\JoomlaBundle\Factory\AbstractFactoryInterface;
+use XTAIN\Bundle\JoomlaBundle\Factory\DependencyFactoryInterface;
+use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Application\Web;
 
 /**
  * Class WebFactory
@@ -18,6 +19,29 @@ use XTAIN\Bundle\JoomlaBundle\Factory\AbstractFactoryInterface;
  * @author  Maximilian Ruta <mr@xtain.net>
  * @package XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Application
  */
-class WebFactory implements AbstractFactoryInterface
+class WebFactory implements DependencyFactoryInterface
 {
+    /**
+     * @var \JConfig
+     */
+    protected $config;
+
+    /**
+     * @param \JConfig $config
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function setConfig(\JConfig $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function injectStaticDependencies()
+    {
+        Web::setConfig($this->config);
+    }
 }

@@ -19,6 +19,22 @@ namespace XTAIN\Bundle\JoomlaBundle\Library\Joomla\Application;
 class Web extends \JProxy_JApplicationWeb
 {
     /**
+     * @var \JConfig
+     */
+    protected static $defaultConfig;
+
+    /**
+     * @param \JConfig $config
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public static function setConfig(\JConfig $config)
+    {
+        self::$defaultConfig = $config;
+    }
+
+    /**
      * @return string
      * @author Maximilian Ruta <mr@xtain.net>
      */
@@ -28,5 +44,17 @@ class Web extends \JProxy_JApplicationWeb
             return 'http://localhost';
         }
         return parent::detectRequestUri();
+    }
+
+    /**
+     * @param string $file
+     * @param string $class
+     *
+     * @return \JConfig
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    protected function fetchConfigurationData($file = '', $class = 'JConfig')
+    {
+        return self::$defaultConfig;
     }
 }
