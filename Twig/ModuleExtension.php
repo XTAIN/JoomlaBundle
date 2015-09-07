@@ -81,10 +81,12 @@ class ModuleExtension extends \Twig_Extension implements JoomlaAwareInterface
     {
         $params = json_decode($module->params, true);
 
-        if ($params !== false) {
-            $params = array_merge($params, $override);
-            $module->params = json_encode($params);
+        if (!is_array($params)) {
+            $params = [];
         }
+
+        $params = array_merge($params, $override);
+        $module->params = json_encode($params);
     }
 
     public function renderModulePosition($zone, array $parameters = [], array $override = [])
