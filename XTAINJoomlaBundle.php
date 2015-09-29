@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\OverrideCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\RoutingCompilerPass;
+use XTAIN\Bundle\JoomlaBundle\Joomla\ErrorHandler;
 use XTAIN\Bundle\JoomlaBundle\Joomla\OverrideUtils;
 use XTAIN\Bundle\JoomlaBundle\Security\Factory\JoomlaFactory;
 

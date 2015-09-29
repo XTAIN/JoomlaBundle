@@ -10,6 +10,8 @@
 
 namespace XTAIN\Bundle\JoomlaBundle\Library\Joomla;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 /**
  * Class Factory
  *
@@ -19,9 +21,34 @@ namespace XTAIN\Bundle\JoomlaBundle\Library\Joomla;
 class Factory extends \JProxy_JFactory
 {
     /**
+     * @var ContainerInterface
+     */
+    protected static $container;
+
+    /**
      * @var \SplStack
      */
     protected static $applicationStack;
+
+    /**
+     * @param ContainerInterface $container
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public static function setContainer(ContainerInterface $container)
+    {
+        self::$container = $container;
+    }
+
+    /**
+     * @return ContainerInterface
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public static function getContainer()
+    {
+        return self::$container;
+    }
 
     /**
      * @param null $id

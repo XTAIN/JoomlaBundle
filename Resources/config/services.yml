@@ -163,6 +163,8 @@ services:
 
     joomla.factory.factory:
         class: %joomla.factory.factory.class%
+        calls:
+            - [ setContainer, [ @service_container ] ]
 
     joomla.factory.uri:
         class: %joomla.factory.uri.class%

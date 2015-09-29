@@ -10,7 +10,9 @@
 
 namespace XTAIN\Bundle\JoomlaBundle\Factory\Joomla;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use XTAIN\Bundle\JoomlaBundle\Factory\DependencyFactoryInterface;
+use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Factory;
 
 /**
  * Class FactoryFactory
@@ -21,10 +23,27 @@ use XTAIN\Bundle\JoomlaBundle\Factory\DependencyFactoryInterface;
 class FactoryFactory implements DependencyFactoryInterface
 {
     /**
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    /**
+     * @param ContainerInterface $container
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function setContainer(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
+    /**
      * @return void
      * @author Maximilian Ruta <mr@xtain.net>
      */
     public function injectStaticDependencies()
     {
+        Factory::setContainer($this->container);
     }
 }
