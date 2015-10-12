@@ -279,8 +279,7 @@ services:
 
     joomla.loader:
         class: %joomla.loader.class%
-        factory_service: joomla.factory.loader
-        factory_method: getInstance
+        factory: [@joomla.factory.loader, getInstance]
 
     joomla.factory:
         class: %joomla.factory.class%
@@ -294,15 +293,13 @@ services:
 
     joomla.profiler:
         class: %joomla.profiler.class%
-        factory_service: joomla.factory.profiler
-        factory_method: getInstance
+        factory: [@joomla.factory.profiler, getInstance]
         tags:
           - { name: joomla.service, class: JProfiler, file: "libraries/joomla/profiler/profiler.php" }
 
     joomla.log:
         class: %joomla.log.class%
-        factory_service: joomla.factory.log
-        factory_method: getInstance
+        factory: [@joomla.factory.log, getInstance]
         tags:
           - { name: joomla.service, class: JLog, file: "libraries/joomla/log/log.php" }
 
@@ -319,8 +316,7 @@ services:
 
     joomla.cms.router.site:
         class: %joomla.cms.router.site.class%
-        factory_service: joomla.factory.cms.router.site
-        factory_method: getInstance
+        factory: [@joomla.factory.cms.router.site, getInstance]
         tags:
           - { name: joomla.service, class: JRouterSite, file: "libraries/cms/router/site.php" }
 
@@ -343,15 +339,13 @@ services:
 
     joomla.cms.application.site:
         class: %joomla.cms.application.site.class%
-        factory_service: joomla.factory.cms.application.site
-        factory_method: getInstance
+        factory: [@joomla.factory.cms.application.site, getInstance]
         tags:
           - { name: joomla.service, class: JApplicationSite, file: "libraries/cms/application/site.php" }
 
     joomla.cms.application.administrator:
         class: %joomla.cms.application.administrator.class%
-        factory_service: joomla.factory.cms.application.administrator
-        factory_method: getInstance
+        factory: [@joomla.factory.cms.application.administrator, getInstance]
         tags:
           - { name: joomla.service, class: JApplicationAdministrator, file: "libraries/cms/application/administrator.php" }
 
@@ -387,13 +381,11 @@ services:
 
     joomla.document:
         class: %joomla.document.class%
-        factory_service: joomla
-        factory_method: getDocument
+        factory: [@joomla, getDocument]
 
     joomla.config:
         class: %joomla.config.class%
-        factory_service: joomla.factory.config
-        factory_method: getConfig
+        factory: [@joomla.factory.config, getConfig]
 
     # Doctrine
 
@@ -433,15 +425,13 @@ services:
 
     joomla.menu_repository:
         class: %joomla.menu_repository.class%
-        factory_service: joomla.orm.entity_manager
-        factory_method: getRepository
+        factory: [@joomla.orm.entity_manager, getRepository]
         arguments:
             - XTAINJoomlaBundle:Menu
 
     joomla.extension_repository:
         class: %joomla.extension_repository.class%
-        factory_service: joomla.orm.entity_manager
-        factory_method: getRepository
+        factory: [@joomla.orm.entity_manager, getRepository]
         arguments:
             - XTAINJoomlaBundle:Extension
 
