@@ -11,7 +11,7 @@
 namespace XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Document;
 
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Templating\Asset\PackageInterface;
+use Symfony\Component\Asset\PackageInterface;
 use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Document\Html;
 
 /**
