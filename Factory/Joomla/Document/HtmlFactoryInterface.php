@@ -10,7 +10,7 @@
 
 namespace XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Document;
 
-use Symfony\Component\Asset\PackageInterface;
+use Symfony\Component\Templating\Asset\PackageInterface;
 use XTAIN\Bundle\JoomlaBundle\Factory\DependencyFactoryInterface;
 
 /**

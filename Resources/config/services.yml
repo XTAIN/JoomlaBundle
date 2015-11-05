@@ -225,7 +225,7 @@ services:
         scope: request
         class: %joomla.factory.document.html.class%
         calls:
-            - [ setAssetsPackage, [ @assets.empty_package ] ]
+            - [ setAssetsPackage, [ @templating.helper.assets ] ]
             - [ setRouter, [ @router ] ]
             - [ setTwigEnvironment, [ @twig ] ]
 

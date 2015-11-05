@@ -12,7 +12,7 @@ namespace XTAIN\Bundle\JoomlaBundle\Library\Joomla\Document;
 
 use Joomla\Registry\Registry;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Asset\PackageInterface;
+use Symfony\Component\Templating\Asset\PackageInterface;
 use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Uri\Uri;
 
 /**
