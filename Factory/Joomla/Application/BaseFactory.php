@@ -10,7 +10,10 @@
 
 namespace XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Application;
 
-use XTAIN\Bundle\JoomlaBundle\Factory\AbstractFactoryInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use XTAIN\Bundle\JoomlaBundle\Factory\DependencyFactoryInterface;
+use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Application\Base;
 
 /**
  * Class BaseFactory
@@ -18,6 +21,28 @@ use XTAIN\Bundle\JoomlaBundle\Factory\AbstractFactoryInterface;
  * @author  Maximilian Ruta <mr@xtain.net>
  * @package XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Application
  */
-class BaseFactory implements AbstractFactoryInterface
+class BaseFactory implements DependencyFactoryInterface, ContainerAwareInterface
 {
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    /**
+     * Sets the Container.
+     *
+     * @param ContainerInterface|null $container A ContainerInterface instance or null
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function injectStaticDependencies()
+    {
+        Base::setContainer($this->container);
+    }
 }

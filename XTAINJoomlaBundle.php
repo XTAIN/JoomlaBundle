@@ -13,6 +13,7 @@ namespace XTAIN\Bundle\JoomlaBundle;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\ModuleCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\OverrideCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\RoutingCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\Joomla\ErrorHandler;
@@ -53,6 +54,7 @@ class XTAINJoomlaBundle extends Bundle
 
         $container->addCompilerPass(new OverrideCompilerPass());
         $container->addCompilerPass(new RoutingCompilerPass());
+        $container->addCompilerPass(new ModuleCompilerPass());
     }
 
     /**

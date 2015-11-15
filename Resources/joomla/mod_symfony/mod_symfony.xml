@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="3.1" client="site" method="upgrade">
+    <name>mod_symfony</name>
+    <author>XTAIN oHG</author>
+    <creationDate>July 2015</creationDate>
+    <copyright>Copyright (C) 2015 XTAIN oHG. All rights reserved.</copyright>
+    <license>see LICENSE.txt</license>
+    <authorEmail>info@xtain.net</authorEmail>
+    <authorUrl>www.xtain.net</authorUrl>
+    <version>1.0</version>
+    <description>MOD_SYMFONY_DESCRIPTION</description>
+    <files>
+        <filename module="mod_symfony">mod_symfony.php</filename>
+        <folder>fields</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_symfony.ini</language>
+        <language tag="en-GB">en-GB.mod_symfony.sys.ini</language>
+        <language tag="de-DE">de-DE.mod_symfony.ini</language>
+        <language tag="de-DE">de-DE.mod_symfony.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params" addfieldpath="/modules/mod_symfony/models/fields">
+            <fieldset name="basic" >
+                <field
+                        name="service"
+                        type="symfonymodules"
+                        label="MOD_SYMFONY_FIELD_SERVICE_LABEL"
+                        description="MOD_SYMFONY_FIELD_SERVICE_DESC" />
+                <field
+                        name="settings"
+                        type="symfonysettings"
+                        label="MOD_SYMFONY_FIELD_SETTINGS_LABEL"
+                        description="MOD_SYMFONY_FIELD_SETTINGS_DESC" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

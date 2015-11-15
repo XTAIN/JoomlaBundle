@@ -1,0 +1,95 @@
+XTAIN\Bundle\JoomlaBundle\Entity\Module:
+    type: entity
+    table: modules
+    repositoryClass: XTAIN\Bundle\JoomlaBundle\Entity\ModuleRepository
+    indexes:
+        published:
+            columns: [ published, access ]
+        newsfeeds:
+            columns: [ module, published ]
+        idx_language:
+            columns: [ language ]
+    id:
+        id:
+            type: integer
+            length: 11
+            generator:
+                strategy: AUTO
+    fields:
+        assetId:
+            type: integer
+            length: 10
+            column: asset_id
+            options:
+                unsigned: true
+                default: 0
+        title:
+            type: string
+            length: 100
+        note:
+            type: string
+            length: 255
+        content:
+            type: text
+        ordering:
+            type: integer
+            length: 11
+            options:
+                default: 0
+        position:
+            type: string
+            length: 50
+        checkedOut:
+            type: integer
+            length: 10
+            column: checked_out
+            options:
+                unsigned: true
+                default: 0
+        checkedOutTime:
+            type: datetime_nullable
+            column: checked_out_time
+            options:
+                default: '0000-00-00 00:00:00'
+        publishUp:
+            type: datetime_nullable
+            column: publish_up
+            options:
+                default: '0000-00-00 00:00:00'
+        publishDown:
+            type: datetime_nullable
+            column: publish_down
+            options:
+                default: '0000-00-00 00:00:00'
+        published:
+            type: smallint
+            length: 1
+            options:
+                default: 0
+        module:
+            type: string
+            length: 50
+            nullable: true
+        access:
+            type: integer
+            length: 10
+            options:
+                unsigned: true
+                default: 0
+        showtitle:
+            type: smallint
+            length: 3
+            options:
+                unsigned: true
+                default: 1
+        params:
+            type: json_array
+        client:
+            type: smallint
+            length: 4
+            column: client_id
+            options:
+                default: 0
+        language:
+            type: string
+            length: 7

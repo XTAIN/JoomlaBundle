@@ -12,6 +12,7 @@ namespace XTAIN\Bundle\JoomlaBundle\Library\Joomla\Application;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use XTAIN\Bundle\JoomlaBundle\Joomla\ApplicationClosedException;
+use XTAIN\Bundle\JoomlaBundle\Joomla\ApplicationInterface;
 
 /**
  * Class Base
@@ -19,7 +20,7 @@ use XTAIN\Bundle\JoomlaBundle\Joomla\ApplicationClosedException;
  * @author  Maximilian Ruta <mr@xtain.net>
  * @package XTAIN\Bundle\JoomlaBundle\Library\Joomla\Application
  */
-abstract class Base extends \JProxy_JApplicationBase
+abstract class Base extends \JProxy_JApplicationBase implements ApplicationInterface
 {
     /**
      * @var ContainerInterface

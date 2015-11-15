@@ -27,6 +27,8 @@ parameters:
     joomla.factory.database.driver.doctrine.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Database\Driver\DoctrineDriverFactory
     joomla.factory.user.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\User\UserFactory
     joomla.factory.component.symfony.field.route.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\Field\RouteFactory
+    joomla.factory.component.symfony.field.symfony_modules.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\Field\SymfonyModules
+    joomla.factory.component.symfony.field.symfony_settings.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\Field\SymfonySettings
     joomla.factory.component.symfony.view.symfony.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\View\SymfonyFactory
     joomla.factory.component.symfony.view.wrap.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\View\WrapFactory
     joomla.factory.component.menu.view.admin_menu.class: XTAIN\Bundle\JoomlaBundle\Component\Menu\View\AdminMenuFactory
@@ -62,10 +64,13 @@ parameters:
     joomla.security.authentication.listener.class: XTAIN\Bundle\JoomlaBundle\Security\Firewall\JoomlaListener
     joomla.security.user.provider.class: XTAIN\Bundle\JoomlaBundle\Security\User\JoomlaUserProvider
 
+    joomla.component.module.module_manager.class: XTAIN\Bundle\JoomlaBundle\Component\Module\ModuleManager
+
     joomla.prefix_subscriber.class: XTAIN\Bundle\JoomlaBundle\Joomla\PrefixSubscriber
 
     joomla.menu_repository.class: XTAIN\Bundle\JoomlaBundle\Entity\MenuRepository
     joomla.extension_repository.class: XTAIN\Bundle\JoomlaBundle\Entity\ExtensionRepository
+    joomla.module_repository.class: XTAIN\Bundle\JoomlaBundle\Entity\ModuleRepository
 
     joomla.cache_key: "joomla"
     joomla.root_dir: ~
@@ -194,6 +199,8 @@ services:
 
     joomla.factory.application.base:
         class: %joomla.factory.application.base.class%
+        calls:
+            - [ setContainer, [ @service_container ] ]
 
     joomla.factory.application.web:
         class: %joomla.factory.application.web.class%
@@ -245,7 +252,22 @@ services:
         calls:
             - [ setRouter, [ @router ] ]
         tags:
-          - { name: joomla.injector, class: JFormFieldRoute }
+          - { name: joomla.injector, class: XTAIN\Bundle\JoomlaBundle\Component\Field\Route }
+
+    joomla.factory.component.symfony.field.symfony_modules:
+        class: %joomla.factory.component.symfony.field.symfony_modules.class%
+        calls:
+            - [ setModuleManager, [ @joomla.component.module.module_manager ] ]
+        tags:
+          - { name: joomla.injector, class: XTAIN\Bundle\JoomlaBundle\Component\Field\SymfonyModules }
+
+    joomla.factory.component.symfony.field.symfony_settings:
+        class: %joomla.factory.component.symfony.field.symfony_settings.class%
+        calls:
+            - [ setModuleManager, [ @joomla.component.module.module_manager ] ]
+            - [ setModuleRepository, [ @joomla.module_repository ] ]
+        tags:
+          - { name: joomla.injector, class: XTAIN\Bundle\JoomlaBundle\Component\Field\SymfonySettings }
 
     joomla.factory.component.symfony.view.symfony:
         class: %joomla.factory.component.symfony.view.symfony.class%
@@ -418,6 +440,19 @@ services:
     joomla.security.user.provider:
         class: %joomla.security.user.provider.class%
 
+    # Joomla Component
+
+    joomla.component.module.abstract_module:
+        abstract: true
+        calls:
+            - [ setFormFactory, [ @form.factory ] ]
+            - [ setTwigEnvironment, [ @twig ] ]
+
+    joomla.component.module.module_manager:
+        class: %joomla.component.module.module_manager.class%
+        calls:
+            - [ setContainer, [ @service_container ] ]
+
     # Joomla Repositories
 
     joomla.orm.entity_manager:
@@ -434,4 +469,10 @@ services:
         factory: [@joomla.orm.entity_manager, getRepository]
         arguments:
             - XTAINJoomlaBundle:Extension
+
+    joomla.module_repository:
+        class: %joomla.module_repository.class%
+        factory: [@joomla.orm.entity_manager, getRepository]
+        arguments:
+            - XTAINJoomlaBundle:Module
 

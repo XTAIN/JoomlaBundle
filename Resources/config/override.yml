@@ -10,6 +10,12 @@ install:
         - { resource: @XTAINJoomlaBundle/Resources/joomla/plg_content_twig, target: plugins/content/twig }
         - { resource: @XTAINJoomlaBundle/Resources/joomla/plg_content_twig/language/en-GB/en-GB.plg_content_twig.sys.ini, target: language/en-GB/en-GB.plg_content_twig.sys.ini }
         - { resource: @XTAINJoomlaBundle/Resources/joomla/plg_content_twig/language/en-GB/en-GB.plg_content_twig.ini, target: language/en-GB/en-GB.plg_content_twig.ini }
+    mod_symfony:
+        - { resource: @XTAINJoomlaBundle/Resources/joomla/mod_symfony, target: modules/mod_symfony }
+        - { resource: @XTAINJoomlaBundle/Resources/joomla/mod_symfony/en-GB.mod_symfony.sys.ini, target: language/en-GB/en-GB.mod_symfony.sys.ini }
+        - { resource: @XTAINJoomlaBundle/Resources/joomla/mod_symfony/en-GB.mod_symfony.ini, target: language/en-GB/en-GB.mod_symfony.ini }
+        - { resource: @XTAINJoomlaBundle/Resources/joomla/mod_symfony/de-DE.mod_symfony.sys.ini, target: language/de-DE/de-DE.mod_symfony.sys.ini }
+        - { resource: @XTAINJoomlaBundle/Resources/joomla/mod_symfony/de-DE.mod_symfony.ini, target: language/de-DE/de-DE.mod_symfony.ini }
 override:
     - { class: JLoader, static: static, override: XTAIN\Bundle\JoomlaBundle\Library\Loader, file: "libraries/loader.php" }
     - { class: JPath, static: static, override: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Filesystem\Path, file: "libraries/joomla/filesystem/path.php" }

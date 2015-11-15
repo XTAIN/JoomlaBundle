@@ -1,0 +1,15 @@
+{%- block form_row -%}
+    <div class="control-group">
+        <div class="control-label">{{- form_label(form) -}}</div>
+        {{- form_errors(form) -}}
+        <div class="controls">{{- form_widget(form) -}}</div>
+    </div>
+{%- endblock form_row -%}
+
+{%- block _jform_params_row -%}
+    {{- form_widget(form) -}}
+{%- endblock _jform_params_row -%}
+
+{%- block _jform_params_settings_row -%}
+    {{- form_widget(form) -}}
+{%- endblock _jform_params_settings_row -%}
