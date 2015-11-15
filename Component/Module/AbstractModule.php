@@ -63,11 +63,6 @@ abstract class AbstractModule implements ModuleRendererInterface
         $this->module = $module;
     }
 
-    public function render()
-    {
-        return $this->module->getTitle();
-    }
-
     /**
      * @return FormBuilderInterface
      * @author Maximilian Ruta <mr@xtain.net>
