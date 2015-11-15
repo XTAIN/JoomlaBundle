@@ -43,7 +43,7 @@ class ModuleExtension extends \Twig_Extension implements JoomlaAwareInterface
             new \Twig_SimpleFunction('joomla_message', [$this, 'message'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('joomla_component', [$this, 'component'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('joomla_head', [$this, 'head'], ['is_safe' => ['html']]),
-            new \Twig_SimpleFunction('joomla_module_position', [$this, 'renderModulePosition'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('joomla_module_position', [$this, 'renderModulePosition'], ['needs_environment' => true, 'is_safe' => ['html']]),
             new \Twig_SimpleFunction('joomla_trans', [$this, 'trans'])
         ];
     }
@@ -89,20 +89,43 @@ class ModuleExtension extends \Twig_Extension implements JoomlaAwareInterface
         $module->params = json_encode($params);
     }
 
-    public function renderModulePosition($zone, array $parameters = [], array $override = [])
+    public function renderModulePosition(\Twig_Environment $twig, $zone, array $parameters = [], array $override = [])
     {
         $this->joomla->getApplication();
         $renderer = $this->joomla->getDocument()->loadRenderer('module');
         $modules = \JModuleHelper::getModules($zone);
-        $html = '';
+        $modulesClones = [];
         foreach ($modules as $module) {
             $params = $module->params;
             $this->overrideParams($module, $override);
-            $html .= $renderer->render($module, $parameters);
+            $content = $renderer->render($module, $parameters);
+
+            $moduleRenderer = null;
+            if (isset($module->renderer)) {
+                $moduleRenderer = $module->renderer;
+            }
+
+            unset($module->renderer);
+            $clone = clone $module;
+            $clone->content = $content;
+            $module->renderer = $clone->renderer = $moduleRenderer;
+            $clone->params = json_decode($clone->params, true);
+            $modulesClones[] = $clone;
             $module->params = $params;
         }
 
-        return $html;
+        $result = '';
+        if (isset($parameters['decorator'])) {
+            $result = $twig->render($parameters['decorator'], [
+                'modules' => $modulesClones
+            ]);
+        } else {
+            foreach ($modulesClones as $moduleClone) {
+                $result .= $moduleClone->content;
+            }
+        }
+
+        return $result;
     }
 
     /**
