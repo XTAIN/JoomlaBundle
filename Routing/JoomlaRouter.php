@@ -224,7 +224,7 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
         }
 
         if ($name == 'joomla') {
-            return \JRoute::_('index.php' . http_build_query($parameters), false);
+            return \JRoute::_('index.php?' . http_build_query($parameters), false);
         }
 
         $baseLink = null;
