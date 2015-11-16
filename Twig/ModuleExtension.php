@@ -67,9 +67,15 @@ class ModuleExtension extends \Twig_Extension implements JoomlaAwareInterface
         return '<jdoc:include type="head" />';
     }
 
-    public function component()
+    public function component($directRender = false)
     {
-        return '<jdoc:include type="component" />';
+        $document = \JFactory::getDocument();
+
+        if ($directRender) {
+            return $document->getBuffer('component');
+        } else {
+            return '<jdoc:include type="component" />';
+        }
     }
 
     public function message()

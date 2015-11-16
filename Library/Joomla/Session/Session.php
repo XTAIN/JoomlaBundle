@@ -207,4 +207,9 @@ class Session extends \JProxy_JSession
     {
         return;
     }
+
+    public static function checkToken($method = 'post')
+    {
+        return true;
+    }
 }

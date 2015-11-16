@@ -26,6 +26,7 @@ parameters:
     joomla.factory.legacy.error.class: XTAIN\Bundle\JoomlaBundle\Factory\Legacy\Error\ErrorFactory
     joomla.factory.database.driver.doctrine.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Database\Driver\DoctrineDriverFactory
     joomla.factory.user.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\User\UserFactory
+    joomla.factory.mail.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Mail\MailFactory
     joomla.factory.component.symfony.field.route.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\Field\RouteFactory
     joomla.factory.component.symfony.field.symfony_modules.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\Field\SymfonyModules
     joomla.factory.component.symfony.field.symfony_settings.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\Field\SymfonySettings
@@ -41,6 +42,7 @@ parameters:
     joomla.factory.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Factory
     joomla.uri.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Uri\Uri
     joomla.event.dispatcher.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Event\Dispatcher
+    joomla.mail.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Mail\Mail
     joomla.log.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Log\Log
     joomla.profiler.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Profiler\Profiler
     joomla.session.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Session\Session
@@ -181,6 +183,11 @@ services:
         calls:
             - [ setContainer, [ @service_container ] ]
 
+    joomla.factory.mail:
+        class: %joomla.factory.mail.class%
+        calls:
+            - [ setMailer, [ @mailer ] ]
+
     joomla.factory.log:
         class: %joomla.factory.log.class%
         calls:
@@ -318,6 +325,11 @@ services:
         factory: [@joomla.factory.profiler, getInstance]
         tags:
           - { name: joomla.service, class: JProfiler, file: "libraries/joomla/profiler/profiler.php" }
+
+    joomla.mail:
+        class: %joomla.mail.class%
+        tags:
+          - { name: joomla.service, class: JMail, factory: joomla.factory.mail, file: "libraries/joomla/mail/mail.php" }
 
     joomla.log:
         class: %joomla.log.class%
