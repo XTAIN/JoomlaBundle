@@ -12,6 +12,7 @@ namespace XTAIN\Bundle\JoomlaBundle\Twig;
 
 use XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaAwareInterface;
 use XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaInterface;
+use XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaHelper;
 
 /**
  * Class ModuleExtension
@@ -150,13 +151,7 @@ class ModuleExtension extends \Twig_Extension implements JoomlaAwareInterface
      */
     public function trans($string, $replace = [])
     {
-        $text = \JText::_($string);
-
-        foreach ($replace as $key => $value) {
-            $text = str_replace($key, $value, $text);
-        }
-
-        return $text;
+        return JoomlaHelper::trans($string, $replace);
     }
 
     /**

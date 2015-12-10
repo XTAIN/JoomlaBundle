@@ -363,9 +363,11 @@ class DoctrineDriver extends \JDatabaseDriver implements \Serializable
     {
         $this->connect();
 
+        /*
         if ($query instanceof \JDatabaseQueryLimitable && !is_null($this->limit) && !is_null($this->offset)) {
             $query->setLimit($this->limit, $this->offset);
         }
+        */
 
         // Store reference to the JDatabaseQuery instance:
         parent::setQuery($query, $offset, $limit);

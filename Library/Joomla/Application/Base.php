@@ -55,4 +55,13 @@ abstract class Base extends \JProxy_JApplicationBase implements ApplicationInter
     {
         throw new ApplicationClosedException($code);
     }
+
+    /**
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function symfonyInitialise()
+    {
+
+    }
 }

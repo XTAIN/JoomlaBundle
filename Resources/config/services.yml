@@ -2,6 +2,7 @@ parameters:
     joomla.class: XTAIN\Bundle\JoomlaBundle\Joomla\Joomla
     joomla.controller.class: XTAIN\Bundle\JoomlaBundle\Controller\JoomlaController
     joomla.warmer.patcher.class: XTAIN\Bundle\JoomlaBundle\CacheWarmer\JoomlaMonkeyPatchWarmer
+    joomla.locale_listener.class: XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaLocaleListener
     joomla.request_listener.class: XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaRequestListener
     joomla.response_listener.class: XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaResponseListener
     joomla.twig.module.class: XTAIN\Bundle\JoomlaBundle\Twig\ModuleExtension
@@ -102,6 +103,13 @@ services:
         arguments: [ %joomla.root_dir%, %joomla.cache_dir%, %joomla.override_dir% ]
         tags:
             - { name: kernel.cache_warmer }
+
+    joomla.locale_listener:
+        class: %joomla.locale_listener.class%
+        calls:
+            - [ setJoomla, [ @joomla ] ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 0 }
 
     joomla.request_listener:
         class: %joomla.request_listener.class%

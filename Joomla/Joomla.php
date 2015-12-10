@@ -237,6 +237,8 @@ class Joomla implements JoomlaInterface
 
         $this->restoreBufferLevel($currentLevel);
 
+        $this->getApplication()->symfonyInitialise();
+
         $this->state = self::STATE_INIT;
     }
 
