@@ -24,7 +24,7 @@ class Site extends \JProxy_JRouterSite
     /**
      * @var MenuRepositoryInterface
      */
-    protected static $menuRepository;
+    protected $menuRepository;
 
     /**
      * @param \XTAIN\Bundle\JoomlaBundle\Entity\MenuRepositoryInterface $menuRepository
@@ -32,9 +32,9 @@ class Site extends \JProxy_JRouterSite
      * @return void
      * @author Maximilian Ruta <mr@xtain.net>
      */
-    public static function setMenuRepository(MenuRepositoryInterface $menuRepository)
+    public function setMenuRepository(MenuRepositoryInterface $menuRepository)
     {
-        self::$menuRepository = $menuRepository;
+        $this->menuRepository = $menuRepository;
     }
 
     /**
@@ -49,9 +49,9 @@ class Site extends \JProxy_JRouterSite
         $menuId = $uri->getVar('Itemid');
         parent::_buildSefRoute($uri);
 
-        if ($option == 'com_symfony' && !empty($menuId)) {
+        if ($option == 'com_symfony' && !empty($menuId) && isset($this->menuRepository)) {
             /** @var Menu $item */
-            $item = self::$menuRepository->find($menuId);
+            $item = $this->menuRepository->find($menuId);
             if ($item !== null) {
                 $params = PathMatcher::parseParameters($item->getLink());
                 if (isset($params['path'])) {
