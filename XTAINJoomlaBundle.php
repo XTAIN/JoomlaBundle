@@ -10,13 +10,14 @@
 
 namespace XTAIN\Bundle\JoomlaBundle;
 
+use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\DoctrineCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\ModuleCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\OverrideCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\RoutingCompilerPass;
-use XTAIN\Bundle\JoomlaBundle\Joomla\ErrorHandler;
 use XTAIN\Bundle\JoomlaBundle\Joomla\OverrideUtils;
 use XTAIN\Bundle\JoomlaBundle\Security\Factory\JoomlaFactory;
 
@@ -52,6 +53,7 @@ class XTAINJoomlaBundle extends Bundle
         $extension = $container->getExtension('security');
         $extension->addSecurityListenerFactory(new JoomlaFactory());
 
+        $container->addCompilerPass(new DoctrineCompilerPass());
         $container->addCompilerPass(new OverrideCompilerPass());
         $container->addCompilerPass(new RoutingCompilerPass());
         $container->addCompilerPass(new ModuleCompilerPass());
@@ -115,7 +117,8 @@ class XTAINJoomlaBundle extends Bundle
      */
     protected function registerAutoloader()
     {
-        $this->container->get('joomla.loader');
+        $loader = $this->container->get('joomla.loader');
+        $loader->setup();
     }
 
     /**
@@ -263,6 +266,8 @@ class XTAINJoomlaBundle extends Bundle
         $this->registerAutoloader();
         $this->registerAlias();
         $this->bootstrapFramework();
+
+        $this->container->get('joomla.database.driver.doctrine');
 
         // restore the symfony error handler
         if ($errorHandler !== null) {

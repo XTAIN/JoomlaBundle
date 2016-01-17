@@ -56,10 +56,10 @@ class Installer implements InstallerInterface
         // Register the Installation application
         \JLoader::registerPrefix('Installation', JPATH_INSTALLATION);
 
-        $this->joomla->initialize();
-
         $app = new InstallationApplicationWeb();
         Factory::pushApplication($app);
+
+        $this->joomla->initialize();
 
         // Get the database model.
         $db = new DatabaseModel();

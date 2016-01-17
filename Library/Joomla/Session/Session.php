@@ -10,6 +10,7 @@
 
 namespace XTAIN\Bundle\JoomlaBundle\Library\Joomla\Session;
 
+use ArrayIterator;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
@@ -39,6 +40,20 @@ class Session extends \JProxy_JSession
     public function __construct($store = 'none', array $options = array())
     {
         $this->_state = 'inactive';
+    }
+
+    /**
+     * Returns a clone of the internal data pointer
+     *
+     * @return  \Joomla\Registry\Registry
+     */
+    public function getData()
+    {
+        if ($this->data === null) {
+            return new \Joomla\Registry\Registry();
+        }
+
+        return clone $this->data;
     }
 
     /**
