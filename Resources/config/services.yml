@@ -401,7 +401,7 @@ services:
         abstract: true
         class: %joomla.document.html.class%
         tags:
-         - { name: joomla.service, factory: joomla.factory.document.html, class: JDocumentHtml, file: "libraries/joomla/document/html/html.php" }
+         - { name: joomla.service, factory: joomla.factory.document.html, class: JDocumentHtml, file: "libraries/joomla/document/html.php" }
 
     joomla.user:
         class: %joomla.user.class%
