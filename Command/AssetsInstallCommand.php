@@ -87,7 +87,6 @@ EOT
      */
     protected function syncDir($originDir, $targetDir)
     {
-        echo $targetDir;
         if (is_dir($originDir)) {
             $this->output->writeln(
                 sprintf('Installing files for <comment>%s</comment> into <comment>%s</comment>', $originDir, $targetDir)

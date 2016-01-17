@@ -2,6 +2,7 @@ parameters:
     joomla.class: XTAIN\Bundle\JoomlaBundle\Joomla\Joomla
     joomla.controller.class: XTAIN\Bundle\JoomlaBundle\Controller\JoomlaController
     joomla.warmer.patcher.class: XTAIN\Bundle\JoomlaBundle\CacheWarmer\JoomlaMonkeyPatchWarmer
+    joomla.locale_listener.class: XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaLocaleListener
     joomla.request_listener.class: XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaRequestListener
     joomla.response_listener.class: XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaResponseListener
     joomla.twig.module.class: XTAIN\Bundle\JoomlaBundle\Twig\ModuleExtension
@@ -26,7 +27,10 @@ parameters:
     joomla.factory.legacy.error.class: XTAIN\Bundle\JoomlaBundle\Factory\Legacy\Error\ErrorFactory
     joomla.factory.database.driver.doctrine.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Database\Driver\DoctrineDriverFactory
     joomla.factory.user.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\User\UserFactory
+    joomla.factory.mail.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Mail\MailFactory
     joomla.factory.component.symfony.field.route.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\Field\RouteFactory
+    joomla.factory.component.symfony.field.symfony_modules.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\Field\SymfonyModules
+    joomla.factory.component.symfony.field.symfony_settings.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\Field\SymfonySettings
     joomla.factory.component.symfony.view.symfony.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\View\SymfonyFactory
     joomla.factory.component.symfony.view.wrap.class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\View\WrapFactory
     joomla.factory.component.menu.view.admin_menu.class: XTAIN\Bundle\JoomlaBundle\Component\Menu\View\AdminMenuFactory
@@ -39,6 +43,7 @@ parameters:
     joomla.factory.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Factory
     joomla.uri.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Uri\Uri
     joomla.event.dispatcher.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Event\Dispatcher
+    joomla.mail.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Mail\Mail
     joomla.log.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Log\Log
     joomla.profiler.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Profiler\Profiler
     joomla.session.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Session\Session
@@ -62,10 +67,13 @@ parameters:
     joomla.security.authentication.listener.class: XTAIN\Bundle\JoomlaBundle\Security\Firewall\JoomlaListener
     joomla.security.user.provider.class: XTAIN\Bundle\JoomlaBundle\Security\User\JoomlaUserProvider
 
+    joomla.component.module.module_manager.class: XTAIN\Bundle\JoomlaBundle\Component\Module\ModuleManager
+
     joomla.prefix_subscriber.class: XTAIN\Bundle\JoomlaBundle\Joomla\PrefixSubscriber
 
     joomla.menu_repository.class: XTAIN\Bundle\JoomlaBundle\Entity\MenuRepository
     joomla.extension_repository.class: XTAIN\Bundle\JoomlaBundle\Entity\ExtensionRepository
+    joomla.module_repository.class: XTAIN\Bundle\JoomlaBundle\Entity\ModuleRepository
 
     joomla.cache_key: "joomla"
     joomla.root_dir: ~
@@ -95,6 +103,13 @@ services:
         arguments: [ %joomla.root_dir%, %joomla.cache_dir%, %joomla.override_dir% ]
         tags:
             - { name: kernel.cache_warmer }
+
+    joomla.locale_listener:
+        class: %joomla.locale_listener.class%
+        calls:
+            - [ setJoomla, [ @joomla ] ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 0 }
 
     joomla.request_listener:
         class: %joomla.request_listener.class%
@@ -176,6 +191,11 @@ services:
         calls:
             - [ setContainer, [ @service_container ] ]
 
+    joomla.factory.mail:
+        class: %joomla.factory.mail.class%
+        calls:
+            - [ setMailer, [ @mailer ] ]
+
     joomla.factory.log:
         class: %joomla.factory.log.class%
         calls:
@@ -194,6 +214,8 @@ services:
 
     joomla.factory.application.base:
         class: %joomla.factory.application.base.class%
+        calls:
+            - [ setContainer, [ @service_container ] ]
 
     joomla.factory.application.web:
         class: %joomla.factory.application.web.class%
@@ -245,7 +267,22 @@ services:
         calls:
             - [ setRouter, [ @router ] ]
         tags:
-          - { name: joomla.injector, class: JFormFieldRoute }
+          - { name: joomla.injector, class: XTAIN\Bundle\JoomlaBundle\Component\Field\Route }
+
+    joomla.factory.component.symfony.field.symfony_modules:
+        class: %joomla.factory.component.symfony.field.symfony_modules.class%
+        calls:
+            - [ setModuleManager, [ @joomla.component.module.module_manager ] ]
+        tags:
+          - { name: joomla.injector, class: XTAIN\Bundle\JoomlaBundle\Component\Field\SymfonyModules }
+
+    joomla.factory.component.symfony.field.symfony_settings:
+        class: %joomla.factory.component.symfony.field.symfony_settings.class%
+        calls:
+            - [ setModuleManager, [ @joomla.component.module.module_manager ] ]
+            - [ setModuleRepository, [ @joomla.module_repository ] ]
+        tags:
+          - { name: joomla.injector, class: XTAIN\Bundle\JoomlaBundle\Component\Field\SymfonySettings }
 
     joomla.factory.component.symfony.view.symfony:
         class: %joomla.factory.component.symfony.view.symfony.class%
@@ -279,8 +316,7 @@ services:
 
     joomla.loader:
         class: %joomla.loader.class%
-        factory_service: joomla.factory.loader
-        factory_method: getInstance
+        factory: [@joomla.factory.loader, getInstance]
 
     joomla.factory:
         class: %joomla.factory.class%
@@ -294,15 +330,18 @@ services:
 
     joomla.profiler:
         class: %joomla.profiler.class%
-        factory_service: joomla.factory.profiler
-        factory_method: getInstance
+        factory: [@joomla.factory.profiler, getInstance]
         tags:
           - { name: joomla.service, class: JProfiler, file: "libraries/joomla/profiler/profiler.php" }
 
+    joomla.mail:
+        class: %joomla.mail.class%
+        tags:
+          - { name: joomla.service, class: JMail, factory: joomla.factory.mail, file: "libraries/joomla/mail/mail.php" }
+
     joomla.log:
         class: %joomla.log.class%
-        factory_service: joomla.factory.log
-        factory_method: getInstance
+        factory: [@joomla.factory.log, getInstance]
         tags:
           - { name: joomla.service, class: JLog, file: "libraries/joomla/log/log.php" }
 
@@ -319,8 +358,7 @@ services:
 
     joomla.cms.router.site:
         class: %joomla.cms.router.site.class%
-        factory_service: joomla.factory.cms.router.site
-        factory_method: getInstance
+        factory: [@joomla.factory.cms.router.site, getInstance]
         tags:
           - { name: joomla.service, class: JRouterSite, file: "libraries/cms/router/site.php" }
 
@@ -343,15 +381,13 @@ services:
 
     joomla.cms.application.site:
         class: %joomla.cms.application.site.class%
-        factory_service: joomla.factory.cms.application.site
-        factory_method: getInstance
+        factory: [@joomla.factory.cms.application.site, getInstance]
         tags:
           - { name: joomla.service, class: JApplicationSite, file: "libraries/cms/application/site.php" }
 
     joomla.cms.application.administrator:
         class: %joomla.cms.application.administrator.class%
-        factory_service: joomla.factory.cms.application.administrator
-        factory_method: getInstance
+        factory: [@joomla.factory.cms.application.administrator, getInstance]
         tags:
           - { name: joomla.service, class: JApplicationAdministrator, file: "libraries/cms/application/administrator.php" }
 
@@ -387,13 +423,11 @@ services:
 
     joomla.document:
         class: %joomla.document.class%
-        factory_service: joomla
-        factory_method: getDocument
+        factory: [@joomla, getDocument]
 
     joomla.config:
         class: %joomla.config.class%
-        factory_service: joomla.factory.config
-        factory_method: getConfig
+        factory: [@joomla.factory.config, getConfig]
 
     # Doctrine
 
@@ -426,6 +460,19 @@ services:
     joomla.security.user.provider:
         class: %joomla.security.user.provider.class%
 
+    # Joomla Component
+
+    joomla.component.module.abstract_module:
+        abstract: true
+        calls:
+            - [ setFormFactory, [ @form.factory ] ]
+            - [ setTwigEnvironment, [ @twig ] ]
+
+    joomla.component.module.module_manager:
+        class: %joomla.component.module.module_manager.class%
+        calls:
+            - [ setContainer, [ @service_container ] ]
+
     # Joomla Repositories
 
     joomla.orm.entity_manager:
@@ -433,15 +480,19 @@ services:
 
     joomla.menu_repository:
         class: %joomla.menu_repository.class%
-        factory_service: joomla.orm.entity_manager
-        factory_method: getRepository
+        factory: [@joomla.orm.entity_manager, getRepository]
         arguments:
             - XTAINJoomlaBundle:Menu
 
     joomla.extension_repository:
         class: %joomla.extension_repository.class%
-        factory_service: joomla.orm.entity_manager
-        factory_method: getRepository
+        factory: [@joomla.orm.entity_manager, getRepository]
         arguments:
             - XTAINJoomlaBundle:Extension
+
+    joomla.module_repository:
+        class: %joomla.module_repository.class%
+        factory: [@joomla.orm.entity_manager, getRepository]
+        arguments:
+            - XTAINJoomlaBundle:Module
 

@@ -9,6 +9,9 @@ XTAIN\Bundle\JoomlaBundle\Entity\Extension:
             columns: [ element, folder, client_id ]
         extension:
             columns: [ type, element, folder, client_id ]
+    uniqueConstraints:
+        custom_name_client:
+            columns: [ name, client_id ]
     id:
         id:
             type: integer

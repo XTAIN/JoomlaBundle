@@ -11,6 +11,7 @@
 namespace XTAIN\Bundle\JoomlaBundle\Component\Symfony\Field;
 
 use Symfony\Component\Routing\RouterInterface;
+use XTAIN\Bundle\JoomlaBundle\Component\Field\Route;
 use XTAIN\Bundle\JoomlaBundle\Factory\DependencyFactoryInterface;
 
 /**
@@ -26,7 +27,7 @@ class RouteFactory implements DependencyFactoryInterface
     protected $router;
 
     /**
-     * @param \Symfony\Bundle\FrameworkBundle\Routing\RouterInterface $router
+     * @param \Symfony\Component\Routing\RouterInterface $router
      *
      * @return void
      * @author Maximilian Ruta <mr@xtain.net>
@@ -41,6 +42,6 @@ class RouteFactory implements DependencyFactoryInterface
      */
     public function injectStaticDependencies()
     {
-        \JFormFieldRoute::setRouter($this->router);
+        Route::setRouter($this->router);
     }
 }

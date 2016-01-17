@@ -44,6 +44,8 @@ class FactoryFactory implements DependencyFactoryInterface
      */
     public function injectStaticDependencies()
     {
-        Factory::setContainer($this->container);
+        if (!is_null($this->container)) {
+            Factory::setContainer($this->container);
+        }
     }
 }
