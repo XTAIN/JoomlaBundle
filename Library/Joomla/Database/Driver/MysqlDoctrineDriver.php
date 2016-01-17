@@ -23,7 +23,6 @@ use RuntimeException;
  */
 class MysqlDoctrineDriver extends AbstractDoctrineDriver
 {
-
     /**
      * Constructor.
      *
@@ -40,6 +39,74 @@ class MysqlDoctrineDriver extends AbstractDoctrineDriver
     }
 
     /**
+     * Drops a table from the database.
+     *
+     * @param   string $table    The name of the database table to drop.
+     * @param   bool   $ifExists Optionally specify that the table must exist before it is dropped.
+     *
+     * @return  JDatabaseDriver     Returns this object to support chaining.
+     * @throws  RuntimeException
+     * @author Maximiian Ruta <mr@xtain.net>
+     */
+    public function dropTable($table, $ifExists = true)
+    {
+        $query = $this->getQuery(true);
+
+        $query->setQuery('DROP TABLE ' . ($ifExists ? 'IF EXISTS ' : '') . $this->quoteName($table));
+
+        $this->setQuery($query);
+
+        $this->execute();
+
+        return $this;
+    }
+
+    /**
+     * Retrieve a PDO database connection attribute
+     * http://www.php.net/manual/en/pdo.getattribute.php
+     *
+     * Usage: $db->getOption(PDO::ATTR_CASE);
+     *
+     * @param   mixed  $key  One of the PDO::ATTR_* Constants
+     *
+     * @return mixed
+     *
+     * @since  12.1
+     */
+    public function getOption($key)
+    {
+        $this->connect();
+
+        /** @var \PDO $pdo */
+        $pdo = $this->connection->getWrappedConnection();
+
+        return $pdo->getAttribute($key);
+    }
+
+    /**
+     * Retrieve a PDO database connection attribute
+     * http://www.php.net/manual/en/pdo.getattribute.php
+     *
+     * Usage: $db->getOption(PDO::ATTR_CASE);
+     *
+     * @param   mixed  $key  One of the PDO::ATTR_* Constants
+     * @param   mixed  $value
+     *
+     * @return mixed
+     *
+     * @since  12.1
+     */
+    public function setOption($key, $value)
+    {
+        $this->connect();
+
+        /** @var \PDO $pdo */
+        $pdo = $this->connection->getWrappedConnection();
+
+        return $pdo->setAttribute($key, $value);
+    }
+
+    /**
      * Method to get the database collation in use by sampling a text field of a table in the database.
      *
      * @return  mixed  The collation in use by the database or bool    false if not supported.
@@ -47,7 +114,6 @@ class MysqlDoctrineDriver extends AbstractDoctrineDriver
      */
     public function getCollation()
     {
-        // TODO
         // Attempt to get the database collation by accessing the server system variable.
         $this->setQuery('SHOW VARIABLES LIKE "collation_database"');
         $result = $this->loadObject();
@@ -70,7 +136,6 @@ class MysqlDoctrineDriver extends AbstractDoctrineDriver
      */
     public function getTableCreate($tables)
     {
-        // TODO
         // Initialise variables.
         $result = [];
 
@@ -101,7 +166,6 @@ class MysqlDoctrineDriver extends AbstractDoctrineDriver
      */
     public function getTableColumns($table, $typeOnly = true)
     {
-        // TODO
         $result = [];
 
         // Set the query to get the table fields statement.
@@ -135,7 +199,6 @@ class MysqlDoctrineDriver extends AbstractDoctrineDriver
      */
     public function getTableKeys($tables)
     {
-        // TODO
         // Get the details columns information.
         $this->setQuery('SHOW KEYS FROM ' . $this->quoteName($tables));
 
@@ -153,7 +216,6 @@ class MysqlDoctrineDriver extends AbstractDoctrineDriver
      */
     public function getTableList()
     {
-        // TODO
         // Set the query to get the tables statement.
         $this->setQuery($this->platform->getListTablesSQL());
         $tables = $this->loadColumn();
@@ -169,8 +231,7 @@ class MysqlDoctrineDriver extends AbstractDoctrineDriver
      */
     public function getVersion()
     {
-        // TODO
-        return '';
+        $this->getOption(\PDO::ATTR_SERVER_VERSION);
     }
 
     /**
@@ -184,7 +245,6 @@ class MysqlDoctrineDriver extends AbstractDoctrineDriver
      */
     public function lockTable($tableName)
     {
-        // TODO
         $this->setQuery('LOCK TABLES ' . $this->quoteName($tableName) . ' WRITE')->execute();
 
         return $this;
@@ -204,7 +264,6 @@ class MysqlDoctrineDriver extends AbstractDoctrineDriver
      */
     public function renameTable($oldTable, $newTable, $backup = null, $prefix = null)
     {
-        // TODO
         $this->setQuery('RENAME TABLE ' . $this->quoteName($oldTable) . ' TO ' . $this->quoteName($newTable));
 
         $this->execute();
@@ -221,7 +280,6 @@ class MysqlDoctrineDriver extends AbstractDoctrineDriver
      */
     public function unlockTables()
     {
-        // TODO
         $this->setQuery('UNLOCK TABLES')->execute();
 
         return $this;

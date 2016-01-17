@@ -13,11 +13,6 @@ namespace XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Statement;
-use Doctrine\DBAL\Platforms\MySqlPlatform;
-use Doctrine\DBAL\Platforms\OraclePlatform;
-use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
-use Doctrine\DBAL\Platforms\SqlitePlatform;
-use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\ORM\EntityManagerInterface;
 use JDatabaseQueryPreparable;
 use RuntimeException;
@@ -165,50 +160,6 @@ abstract class AbstractDoctrineDriver extends \JDatabaseDriver implements \Seria
      */
     public function disconnect()
     {
-    }
-
-    /**
-     * Return the query string to alter the database character set.
-     *
-     * @param   string  $dbName  The database name
-     *
-     * @return  string  The query that alter the database query string
-     *
-     * @since   12.2
-     */
-    public function getAlterDbCharacterSet($dbName)
-    {
-        if ($this->platform instanceof SqlitePlatform) {
-            $charset = $this->utf8mb4 ? 'utf8mb4' : 'utf8';
-
-            return 'PRAGMA encoding = "' . $charset . '"';
-        }
-
-        return parent::getAlterDbCharacterSet($dbName);
-    }
-
-    /**
-     * This function replaces a string identifier <var>$prefix</var> with the string held is the
-     * <var>tablePrefix</var> class variable.
-     *
-     * @param   string  $query   The SQL statement to prepare.
-     * @param   string  $prefix  The common table prefix.
-     *
-     * @return  string  The processed SQL statement.
-     *
-     * @since   12.1
-     */
-    public function replacePrefix($query, $prefix = '#__')
-    {
-        if ($this->platform instanceof SqlitePlatform) {
-            $query = trim($query);
-
-            $replacedQuery = str_replace($prefix, $this->tablePrefix, $query);
-
-            return $replacedQuery;
-        }
-
-        return parent::replacePrefix($query, $prefix);
     }
 
     /**
@@ -660,29 +611,6 @@ abstract class AbstractDoctrineDriver extends \JDatabaseDriver implements \Seria
         $this->freeResult();
 
         return false;
-    }
-
-    /**
-     * Drops a table from the database.
-     *
-     * @param   string $table    The name of the database table to drop.
-     * @param   bool   $ifExists Optionally specify that the table must exist before it is dropped.
-     *
-     * @return  JDatabaseDriver     Returns this object to support chaining.
-     * @throws  RuntimeException
-     * @author Maximiian Ruta <mr@xtain.net>
-     */
-    public function dropTable($table, $ifExists = true)
-    {
-        $query = $this->getQuery(true);
-
-        $query->setQuery('DROP TABLE ' . ($ifExists ? 'IF EXISTS ' : '') . $this->quoteName($table));
-
-        $this->setQuery($query);
-
-        $this->execute();
-
-        return $this;
     }
 
     /**
