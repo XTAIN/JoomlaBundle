@@ -56,6 +56,11 @@ class DoctrineDriver extends \JDatabaseDriver implements \Serializable
      * @var    Statement  The prepared statement.
      */
     protected $prepared;
+ 
+    /**
+     * @var    \Doctrine\DBAL\Driver  The driver.
+     */
+    protected $driver;
 
     /**
      * Contains the current query execution status
@@ -180,6 +185,30 @@ class DoctrineDriver extends \JDatabaseDriver implements \Serializable
      */
     public function disconnect()
     {
+    }
+    
+    /**
+     * This function replaces a string identifier <var>$prefix</var> with the string held is the
+     * <var>tablePrefix</var> class variable.
+     *
+     * @param   string  $query   The SQL statement to prepare.
+     * @param   string  $prefix  The common table prefix.
+     *
+     * @return  string  The processed SQL statement.
+     *
+     * @since   12.1
+     */
+    public function replacePrefix($query, $prefix = '#__')
+    {
+        if ($this->platform instanceof SqlitePlatform) {
+            $query = trim($query);
+
+            $replacedQuery = str_replace($prefix, $this->tablePrefix, $query);
+
+            return $replacedQuery;
+        } else {
+            return parent::replacePrefix($query, $prefix);
+        }
     }
 
     /**
