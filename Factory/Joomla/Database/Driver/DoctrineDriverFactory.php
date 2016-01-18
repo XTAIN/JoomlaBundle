@@ -12,6 +12,7 @@ namespace XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Database\Driver;
 
 use Doctrine\ORM\EntityManagerInterface;
 use XTAIN\Bundle\JoomlaBundle\Factory\DependencyFactoryInterface;
+use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver\AbstractDoctrineDriver;
 use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver\DoctrineDriver;
 
 /**
@@ -28,6 +29,11 @@ class DoctrineDriverFactory implements DependencyFactoryInterface
     protected $entityManager;
 
     /**
+     * @var string[]
+     */
+    protected $drivers = [];
+
+    /**
      * @param EntityManagerInterface $entityManager
      *
      * @author Maximilian Ruta <mr@xtain.net>
@@ -38,10 +44,53 @@ class DoctrineDriverFactory implements DependencyFactoryInterface
     }
 
     /**
+     * @param string $class
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function addDatabasePlatform($class)
+    {
+        $this->drivers[] = $class;
+    }
+
+    /**
+     * @return AbstractDoctrineDriver
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    protected function findMatchingPlatform()
+    {
+        $platform = $this->entityManager->getConnection()->getDatabasePlatform();
+
+        foreach ($this->drivers as $class) {
+            if ($class::supportsPlatform($platform)) {
+                return $class;
+            }
+        }
+
+        throw new \RuntimeException(sprintf('Unsupported Database Platform %s', get_class($platform)));
+    }
+
+    /**
+     * @return AbstractDoctrineDriver
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function getInstance()
+    {
+        $platform = $this->findMatchingPlatform();
+
+        \XTAIN\Bundle\JoomlaBundle\Library\Loader::registerAlias('JDatabaseDriverDoctrine', $platform);
+
+        $this->injectStaticDependencies();
+
+        return \JFactory::getDbo();
+    }
+
+    /**
      * @author Maximilian Ruta <mr@xtain.net>
      */
     public function injectStaticDependencies()
     {
-        DoctrineDriver::setEntityManager($this->entityManager);
+        AbstractDoctrineDriver::setEntityManager($this->entityManager);
     }
 }
