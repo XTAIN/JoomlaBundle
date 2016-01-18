@@ -1,24 +1,34 @@
 <?php
 /**
- * Created by IntelliJ IDEA.
- * User: hanmac
- * Date: 14.01.16
- * Time: 11:07
+ * This file is part of the XTAIN Joomla package.
+ *
+ * (c) Hans Mackowiak <hmackowiak@xtain.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace XTAIN\Bundle\JoomlaBundle\Routing;
 
 use Symfony\Component\Routing\Generator\UrlGenerator as BaseGenerator;
 
+/**
+ * Class UrlGenerator
+ *
+ * @author  Hans Mackowiak <hmackowiak@xtain.net>
+ * @package XTAIN\Bundle\JoomlaBundle\Routing
+ */
 class UrlGenerator extends BaseGenerator
 {
     /**
-     * @var JoomlaUrlPatcher
+     * @var UrlPatcher
      */
     private $patcher;
 
     /**
-     * @param JoomlaUrlPatcher $patcher
+     * @param UrlPatcher $patcher
+     *
+     * @author Hans Mackowiak <hmackowiak@xtain.net>
      * @return UrlGenerator
      */
     public function setPatcher($patcher)
@@ -34,10 +44,8 @@ class UrlGenerator extends BaseGenerator
     {
 
         if (isset($this->patcher)) {
-            $menu = $this->patcher->getRouteByName($name);
+            if($this->patcher->overrideRouteTokens($name, $tokens)) {
 
-            if (isset($menu)) {
-                return \JRoute::_($menu->getPath(), false);
             }
         }
 

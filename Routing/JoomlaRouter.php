@@ -47,7 +47,7 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
     protected $context;
 
     /**
-     * @var JoomlaUrlPatcher
+     * @var UrlPatcher
      */
     protected $urlPatcher;
 
@@ -97,7 +97,7 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
         }
     }
 
-    public function setUrlPatcher(JoomlaUrlPatcher $urlPatcher)
+    public function setUrlPatcher(UrlPatcher $urlPatcher)
     {
         $this->urlPatcher = $urlPatcher;
 
