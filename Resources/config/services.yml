@@ -62,7 +62,7 @@ parameters:
     joomla.user.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\User\User
     joomla.config.class: XTAIN\Bundle\JoomlaBundle\Library\Config
     joomla.routing.path_matcher.class: XTAIN\Bundle\JoomlaBundle\Routing\PathMatcher
-    joomla.routing.joomla_url_patcher.class: XTAIN\Bundle\JoomlaBundle\Routing\JoomlaUrlPatcher
+    joomla.routing.url_patcher.class: XTAIN\Bundle\JoomlaBundle\Routing\UrlPatcher
 
     joomla.security.authentication.provider.class: XTAIN\Bundle\JoomlaBundle\Security\Authentication\Provider\JoomlaAuthenticationProvider
     joomla.security.authentication.listener.class: XTAIN\Bundle\JoomlaBundle\Security\Firewall\JoomlaListener
@@ -139,8 +139,8 @@ services:
         class: %joomla.routing.path_matcher.class%
         arguments: [ @router, @joomla.menu_repository ]
 
-    joomla.routing.joomla_url_patcher:
-        class: %joomla.routing.joomla_url_patcher.class%
+    joomla.routing.url_patcher:
+        class: %joomla.routing.url_patcher.class%
         arguments: [ @joomla.menu_repository ]
 
     joomla.router:
@@ -150,7 +150,7 @@ services:
         calls:
             - [ setContext, [ @router.request_context ] ]
             - [ setLogger, [ @logger ] ]
-            - [ setUrlPatcher, [ @joomla.routing.joomla_url_patcher ]]
+            - [ setUrlPatcher, [ @joomla.routing.url_patcher ]]
 
     joomla.router.default:
         class: %joomla.router.default.class%
