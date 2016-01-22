@@ -41,6 +41,7 @@ parameters:
     joomla.loader.class: XTAIN\Bundle\JoomlaBundle\Library\Loader
     joomla.factory.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Factory
     joomla.uri.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Uri\Uri
+    joomla.language.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Language\Language
     joomla.event.dispatcher.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Event\Dispatcher
     joomla.mail.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Mail\Mail
     joomla.log.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Log\Log
@@ -326,6 +327,11 @@ services:
         class: %joomla.uri.class%
         tags:
           - { name: joomla.service, factory: joomla.factory.uri, class: JUri, file: "libraries/joomla/uri/uri.php" }
+
+    joomla.language:
+        class: %joomla.language.class%
+        tags:
+          - { name: joomla.service, class: JLanguage, file: "libraries/joomla/language/language.php" }
 
     joomla.profiler:
         class: %joomla.profiler.class%
