@@ -13,7 +13,6 @@ namespace XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Database\Driver;
 use Doctrine\ORM\EntityManagerInterface;
 use XTAIN\Bundle\JoomlaBundle\Factory\DependencyFactoryInterface;
 use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver\AbstractDoctrineDriver;
-use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver\DoctrineDriver;
 
 /**
  * Class DoctrineDriverFactory
