@@ -231,8 +231,8 @@ class XTAINJoomlaBundle extends Bundle
      */
     protected function getCurrentExceptionHandler()
     {
-        $handler = set_error_handler('var_dump', 0);
-        restore_error_handler();
+        $handler = set_exception_handler('var_dump');
+        restore_exception_handler();
 
         return $handler;
     }
