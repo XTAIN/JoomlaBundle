@@ -39,7 +39,6 @@ parameters:
     joomla.installation.installer.class: XTAIN\Bundle\JoomlaBundle\Installation\Installer
     joomla.installation.extension_installer.class: XTAIN\Bundle\JoomlaBundle\Installation\ExtensionInstaller
     joomla.loader.class: XTAIN\Bundle\JoomlaBundle\Library\Loader
-    joomla.database.driver.doctrine.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver\DoctrineDriver
     joomla.factory.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Factory
     joomla.uri.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Uri\Uri
     joomla.event.dispatcher.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Event\Dispatcher
@@ -416,10 +415,19 @@ services:
           - { name: joomla.service, static: static, class: JError, file: "libraries/legacy/error/error.php" }
 
     joomla.database.driver.doctrine:
-        class: %joomla.database.driver.doctrine.class%
+        class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver\AbstractDoctrineDriver
         factory_service: joomla.factory.database.driver.doctrine
+        factory_method: getInstance
+
+    joomla.database.driver.mysql_doctrine:
+        class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver\MysqlDoctrineDriver
         tags:
-            - { name: joomla.service, class: JDatabaseDriverDoctrine }
+          - { name: joomla.database }
+
+    joomla.database.driver.sqlite_doctrine:
+        class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver\SqliteDoctrineDriver
+        tags:
+          - { name: joomla.database }
 
     joomla.document:
         class: %joomla.document.class%

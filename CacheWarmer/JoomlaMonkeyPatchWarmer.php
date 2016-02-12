@@ -95,7 +95,7 @@ EOF;
             $file = $override['file'];
             $name = $override['class'];
             $overrideClass = $override['override'];
-            if (substr($overrideClass, 0, 1) != '\\') {
+            if ($overrideClass !== null && substr($overrideClass, 0, 1) != '\\') {
                 $overrideClass = '\\' . $overrideClass;
             }
 
@@ -106,6 +106,7 @@ EOF;
                 $path = dirname($file);
                 $static = empty($override['static']) ? false : $override['static'];
                 $proxyName = 'JProxy_' . $override['class'];
+                $proxyNameSafe = var_export($proxyName, true);
                 $code = OverrideUtils::classReplace($baseDir . DIRECTORY_SEPARATOR . $file, $name, $proxyName, $static);
 
                 $totalCode = <<<EOF
@@ -126,16 +127,18 @@ EOF;
                 $cacheFileSafe = var_export($cacheFile, true);
                 $classMap .= <<<EOF
 // adding register class
-\XTAIN\Bundle\JoomlaBundle\Library\Loader::register($nameSafe, $cacheFileSafe);
+\XTAIN\Bundle\JoomlaBundle\Library\Loader::register($proxyNameSafe, $cacheFileSafe);
 
 EOF;
             }
 
-            $classMap .= <<<EOF
+            if ($overrideClass !== null) {
+                $classMap .= <<<EOF
 // adding override class
 \XTAIN\Bundle\JoomlaBundle\Library\Loader::registerAlias($nameSafe, $overrideSafe);
 
 EOF;
+            }
         }
 
         file_put_contents($this->overrideDir . DIRECTORY_SEPARATOR . 'classmap.php', $classMap);
