@@ -19,6 +19,7 @@ use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\ModuleCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\OverrideCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\RoutingCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\Joomla\OverrideUtils;
+use XTAIN\Bundle\JoomlaBundle\Library\Loader;
 use XTAIN\Bundle\JoomlaBundle\Security\Factory\JoomlaFactory;
 
 /**
@@ -128,6 +129,8 @@ class XTAINJoomlaBundle extends Bundle
     protected function bootstrapCms()
     {
         global $_PROFILER;
+
+        Loader::addImportIgnore('phputf8.');
 
         // Register the library base path for CMS libraries.
         \JLoader::registerPrefix('J', JPATH_PLATFORM . '/cms', false, true);

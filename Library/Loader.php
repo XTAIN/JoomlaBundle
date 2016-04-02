@@ -39,6 +39,11 @@ class Loader extends \JProxy_JLoader
     /**
      * @var array
      */
+    protected static $importIgnoreList = [];
+
+    /**
+     * @var array
+     */
     protected $overridePaths = [];
 
     /**
@@ -203,6 +208,12 @@ class Loader extends \JProxy_JLoader
      */
     public static function import($key, $base = null)
     {
+        foreach (self::$importIgnoreList as $item) {
+            if (strpos($key, $item) === 0) {
+                return true;
+            }
+        }
+
         $class = self::getClassByKey($key);
         $class = strtolower($class);
         if ($base === null) {
@@ -220,6 +231,17 @@ class Loader extends \JProxy_JLoader
         }
 
         return parent::import($key, $base);
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public static function addImportIgnore($key)
+    {
+        self::$importIgnoreList[] = $key;
     }
 
     /**
