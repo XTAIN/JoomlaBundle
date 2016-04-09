@@ -47,6 +47,11 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
     protected $context;
 
     /**
+     * @var UrlPatcher
+     */
+    protected $urlPatcher;
+
+    /**
      * @var RouterInterface[]
      */
     protected $router = [];
@@ -89,6 +94,21 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
 
         foreach ($this->router as $router) {
             $router->setContext($context);
+        }
+    }
+
+    public function setUrlPatcher(UrlPatcher $urlPatcher)
+    {
+        $this->urlPatcher = $urlPatcher;
+
+        foreach ($this->router as $router) {
+            if (method_exists($router, 'getGenerator')) {
+                /** @var UrlGenerator $generator */
+                $generator = $router->getGenerator();
+                if (method_exists($generator, "setPatcher")) {
+                    $generator->setPatcher($urlPatcher);
+                }
+            }
         }
     }
 
@@ -238,6 +258,14 @@ class JoomlaRouter implements RouterInterface, RequestMatcherInterface
         foreach ($this->router as $router) {
             if ($router === null) {
                 continue;
+            }
+
+            if (method_exists($router, 'getGenerator')) {
+                /** @var UrlGenerator $generator */
+                $generator = $router->getGenerator();
+                if (method_exists($generator, "setPatcher")) {
+                    $generator->setPatcher($this->urlPatcher);
+                }
             }
 
             try {

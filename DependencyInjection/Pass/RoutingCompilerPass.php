@@ -13,6 +13,9 @@ namespace XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\Routing\RouterInterface;
+
+use XTAIN\Bundle\JoomlaBundle\Routing\UrlGenerator;
 
 /**
  * Class RoutingCompilerPass
@@ -39,7 +42,7 @@ class RoutingCompilerPass implements CompilerPassInterface
             'joomla.router'
         );
 
-        $interface = '\\Symfony\\Component\\Routing\\RouterInterface';
+        $interface = RouterInterface::class;
 
         $sortedRouters = [];
 
@@ -83,5 +86,8 @@ class RoutingCompilerPass implements CompilerPassInterface
                 [$service[1]]
             );
         }
+
+        $container->setParameter('router.options.generator_class', UrlGenerator::class);
+        $container->setParameter('router.options.generator_base_class', UrlGenerator::class);
     }
 }
