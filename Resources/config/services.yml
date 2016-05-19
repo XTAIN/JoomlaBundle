@@ -8,6 +8,7 @@ parameters:
     joomla.twig.module.class: XTAIN\Bundle\JoomlaBundle\Twig\ModuleExtension
     joomla.logger_proxy.class: XTAIN\Bundle\JoomlaBundle\Joomla\LoggerProxy
 
+    joomla.factory.debug.error_handler.class: XTAIN\Bundle\JoomlaBundle\Factory\Debug\ErrorHandlerFactory
     joomla.factory.loader.class: XTAIN\Bundle\JoomlaBundle\Factory\LoaderFactory
     joomla.factory.config.class: XTAIN\Bundle\JoomlaBundle\Factory\ConfigFactory
     joomla.factory.factory.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\FactoryFactory
@@ -167,6 +168,15 @@ services:
             - { name: monolog.logger }
 
     # Joomla Class Factories
+
+    joomla.factory.debug.error_handler:
+        class: %joomla.factory.debug.error_handler.class%
+        arguments:
+            - "@logger"
+            - "%joomla.root_dir%"
+        tags:
+          - { name: joomla.injector, class: XTAIN\Bundle\JoomlaBundle\Debug\ErrorHandler }
+          - { name: monolog.logger, channel: joomla }
 
     joomla.factory.loader:
         class: %joomla.factory.loader.class%

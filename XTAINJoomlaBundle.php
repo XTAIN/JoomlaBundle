@@ -267,10 +267,10 @@ class XTAINJoomlaBundle extends Bundle
         $exceptionHandler = $this->getCurrentExceptionHandler();
 
         $this->defineConstants();
-
-        ErrorHandler::setJoomlaPath(JPATH_ROOT);
-
         $this->registerAutoloader();
+
+        \XTAIN\Bundle\JoomlaBundle\Library\Loader::injectStaticDependencies(ErrorHandler::class);
+
         $this->registerAlias();
         $this->bootstrapFramework();
 
