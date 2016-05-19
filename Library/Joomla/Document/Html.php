@@ -11,8 +11,8 @@
 namespace XTAIN\Bundle\JoomlaBundle\Library\Joomla\Document;
 
 use Joomla\Registry\Registry;
+use Symfony\Bundle\FrameworkBundle\Templating\Helper\AssetsHelper;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Templating\Asset\PackageInterface;
 use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Uri\Uri;
 
 /**
@@ -36,9 +36,9 @@ class Html extends \JProxy_JDocumentHtml
     public $_generator = 'Symfony 2 (using XTAINJoomlaBundle)';
 
     /**
-     * @var PackageInterface
+     * @var AssetsHelper
      */
-    protected static $package;
+    protected static $helper;
 
     /**
      * @var RouterInterface
@@ -51,14 +51,14 @@ class Html extends \JProxy_JDocumentHtml
     protected static $twigEnvironment;
 
     /**
-     * @param PackageInterface $package
+     * @param AssetsHelper $helper
      *
      * @return void
      * @author Maximilian Ruta <mr@xtain.net>
      */
-    public static function setAssetsPackage(PackageInterface $package)
+    public static function setAssetsHelper(AssetsHelper $helper)
     {
-        self::$package = $package;
+        self::$helper = $helper;
     }
 
     /**
@@ -109,7 +109,7 @@ class Html extends \JProxy_JDocumentHtml
         }
 
         if ($patched) {
-            $url = self::$package->getUrl($url);
+            $url = self::$helper->getUrl($url);
         }
 
         return $url;

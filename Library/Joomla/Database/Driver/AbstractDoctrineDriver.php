@@ -12,6 +12,7 @@ namespace XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\DBAL\Statement;
 use Doctrine\ORM\EntityManagerInterface;
 use JDatabaseQueryPreparable;
@@ -117,6 +118,18 @@ abstract class AbstractDoctrineDriver extends \JDatabaseDriver implements \Seria
         $this->connection = self::$entityManager->getConnection();
         $this->platform = $this->connection->getDatabasePlatform();
         $this->driver = $this->connection->getDriver();
+    }
+
+    /**
+     * Gets the name of the database used by this conneciton.
+     *
+     * @return  string
+     *
+     * @since   11.4
+     */
+    public function getDatabaseName()
+    {
+        return $this->connection->getDatabase();
     }
 
     /**

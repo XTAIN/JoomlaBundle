@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use XTAIN\Bundle\JoomlaBundle\Debug\ErrorHandler;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\DoctrineCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\ModuleCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\OverrideCompilerPass;
@@ -266,6 +267,9 @@ class XTAINJoomlaBundle extends Bundle
         $exceptionHandler = $this->getCurrentExceptionHandler();
 
         $this->defineConstants();
+
+        ErrorHandler::setJoomlaPath(JPATH_ROOT);
+
         $this->registerAutoloader();
         $this->registerAlias();
         $this->bootstrapFramework();

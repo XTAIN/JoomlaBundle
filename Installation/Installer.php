@@ -16,6 +16,7 @@ use XTAIN\Bundle\JoomlaBundle\Installation\Model\Configuration as ConfigurationM
 use XTAIN\Bundle\JoomlaBundle\Installation\Model\Database as DatabaseModel;
 use XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaInterface;
 use XTAIN\Bundle\JoomlaBundle\Library\Config;
+use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver\AbstractDoctrineDriver;
 use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Factory;
 
 /**
@@ -75,6 +76,10 @@ class Installer implements InstallerInterface
         ];
 
         $driver = $db->initialise($dboptions);
+
+        if ($driver instanceof AbstractDoctrineDriver) {
+            $dboptions['db_name'] = $driver->getDatabaseName();
+        }
 
         $pwd = getcwd();
         chdir(JPATH_INSTALLATION);

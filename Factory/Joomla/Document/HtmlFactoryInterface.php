@@ -10,7 +10,7 @@
 
 namespace XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Document;
 
-use Symfony\Component\Templating\Asset\PackageInterface;
+use Symfony\Bundle\FrameworkBundle\Templating\Helper\AssetsHelper;
 use XTAIN\Bundle\JoomlaBundle\Factory\DependencyFactoryInterface;
 
 /**
@@ -21,10 +21,10 @@ use XTAIN\Bundle\JoomlaBundle\Factory\DependencyFactoryInterface;
 interface HtmlFactoryInterface extends DependencyFactoryInterface
 {
     /**
-     * @param PackageInterface $package
+     * @param AssetsHelper $helper
      *
      * @return void
      * @author Maximilian Ruta <mr@xtain.net>
      */
-    public function setAssetsPackage(PackageInterface $package);
+    public function setAssetsHelper(AssetsHelper $helper);
 }

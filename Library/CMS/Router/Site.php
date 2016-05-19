@@ -49,7 +49,7 @@ class Site extends \JProxy_JRouterSite
         $menuId = $uri->getVar('Itemid');
         parent::_buildSefRoute($uri);
 
-        if ($option == 'com_symfony' && !empty($menuId)) {
+        if ($option == 'com_symfony' && !empty($menuId) && isset(self::$menuRepository)) {
             /** @var Menu $item */
             $item = self::$menuRepository->find($menuId);
             if ($item !== null) {

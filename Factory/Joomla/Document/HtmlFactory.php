@@ -10,8 +10,8 @@
 
 namespace XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Document;
 
+use Symfony\Bundle\FrameworkBundle\Templating\Helper\AssetsHelper;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Templating\Asset\PackageInterface;
 use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Document\Html;
 
 /**
@@ -23,9 +23,9 @@ use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Document\Html;
 class HtmlFactory implements HtmlFactoryInterface
 {
     /**
-     * @var PackageInterface
+     * @var AssetsHelper
      */
-    protected $package;
+    protected $helper;
 
     /**
      * @var RouterInterface
@@ -38,13 +38,13 @@ class HtmlFactory implements HtmlFactoryInterface
     protected $twigEnvironment;
 
     /**
-     * @param PackageInterface $package
+     * @param AssetsHelper $package
      *
      * @author Maximilian Ruta <mr@xtain.net>
      */
-    public function setAssetsPackage(PackageInterface $package)
+    public function setAssetsHelper(AssetsHelper $package)
     {
-        $this->package = $package;
+        $this->helper = $package;
     }
 
     /**
@@ -72,7 +72,7 @@ class HtmlFactory implements HtmlFactoryInterface
      */
     public function injectStaticDependencies()
     {
-        Html::setAssetsPackage($this->package);
+        Html::setAssetsHelper($this->helper);
         Html::setRouter($this->router);
         Html::setTwigEnvironment($this->twigEnvironment);
     }
