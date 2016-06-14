@@ -15,6 +15,7 @@ use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use XTAIN\Bundle\JoomlaBundle\Debug\ErrorHandler;
+use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\AdminMenuCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\DoctrineCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\ModuleCompilerPass;
 use XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass\OverrideCompilerPass;
@@ -59,6 +60,7 @@ class XTAINJoomlaBundle extends Bundle
         $container->addCompilerPass(new OverrideCompilerPass());
         $container->addCompilerPass(new RoutingCompilerPass());
         $container->addCompilerPass(new ModuleCompilerPass());
+        $container->addCompilerPass(new AdminMenuCompilerPass());
     }
 
     /**

@@ -21,3 +21,4 @@ override:
     - { class: JPath, static: static, override: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Filesystem\Path, file: "libraries/joomla/filesystem/path.php" }
     - { class: JDatabaseQueryMysqli, override: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Query\JDatabaseQueryMysqli, file: "libraries/joomla/database/query/mysqli.php" }
     - { class: JDatabaseQuerySqlite, override: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Query\JDatabaseQuerySqlite, file: "libraries/joomla/database/query/sqlite.php" }
+    - { class: JAdminCssMenu, static: static, override: XTAIN\Bundle\JoomlaBundle\Component\Menu\View\AdminMenu, file: "administrator/modules/mod_menu/menu.php" }

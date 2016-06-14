@@ -1,0 +1,144 @@
+<style type="text/css">
+    .subhead-collapse {
+        display: none;
+    }
+
+    .container-fluid {
+        padding-left: 0;
+        padding-right: 0;
+        top: 0!important;
+        position: relative;
+    }
+
+    .container-main {
+        padding-bottom: 26px;
+    }
+
+    #framewrapper {
+        border: 0;
+        width: 100%;
+        opacity: 0;
+    }
+</style>
+<iframe scrolling="no" id="framewrapper" src="{{ frame_url }}"></iframe>
+<script type="text/javascript">
+    (function($) {
+        var frameWrapper = $('#framewrapper');
+        var interval;
+        var frameUrl;
+        var currentUrl = window.location.href.toString();
+        var dontPush = false;
+
+        function parseQuery(qstr) {
+            var query = {};
+            var a = qstr.substr(1).split('&');
+            for (var i = 0; i < a.length; i++) {
+                var b = a[i].split('=');
+                query[decodeURIComponent(b[0])] = decodeURIComponent(b[1] || '');
+            }
+            return query;
+        }
+
+        function buildQuery(query) {
+            var str = '';
+
+            for (var key in query) {
+                // skip loop if the property is from prototype
+                if (!query.hasOwnProperty(key)) {
+                    continue;
+                }
+
+                str += encodeURIComponent(key) + '=' + encodeURIComponent(query[key]) + '&';
+            }
+
+            if (str == '') {
+                return '';
+            }
+
+            return '?' + str.replace(/\&$/, '');
+        }
+
+        function parseUrl(url) {
+            var parserParent = document.createElement('a');
+            var parserNew = document.createElement('a');
+            parserParent.href = currentUrl;
+            parserNew.href = url;
+
+            if (parserParent.protocol != parserNew.protocol) {
+                return null;
+            }
+
+            if (parserParent.host != parserNew.host) {
+                return null;
+            }
+
+            var s = parseQuery(parserParent.search);
+
+            s.url = parserNew.pathname + parserNew.search;
+
+            return parserParent.protocol + '//' + parserParent.host + parserParent.pathname + buildQuery(s);
+        }
+
+        function updateFrameUrl() {
+            var frameWindow = frameWrapper.get(0).contentWindow;
+            var currentFrameUrl = frameWindow.location.href;
+
+            if (frameWindow.document.readyState === "complete") {
+                document.title = frameWindow.document.title;
+            }
+
+            if (currentFrameUrl !== frameUrl) {
+                frameUrl = currentFrameUrl;
+
+                var pushUrl = parseUrl(currentFrameUrl);
+
+                if (pushUrl !== null) {
+                    if (!dontPush) {
+                        history.pushState({
+                            url: currentFrameUrl
+                        }, frameWindow.document.title, pushUrl);
+                    }
+                    dontPush = false;
+                }
+            }
+        }
+
+        $(window).bind('popstate', function(event) {
+            var frameWindow = frameWrapper.get(0).contentWindow;
+            dontPush = true;
+            frameWindow.window.location.href = event.originalEvent.state.url;
+        });
+
+        var pushUrl = parseUrl(frameWrapper.attr('src'));
+
+        history.replaceState({
+            url: frameWrapper.attr('src')
+        }, document.title, pushUrl);
+
+        function getFrameHeight() {
+            var height = frameWrapper.get(0).contentWindow.innerHeight;
+            var minHeight = jQuery(window).height() - jQuery('body > nav').height() - jQuery('body > header').height();
+
+            if (height < minHeight) {
+                return minHeight;
+            }
+
+            return height;
+        }
+
+        frameWrapper.load(function () {
+            frameWrapper.height(getFrameHeight());
+            frameWrapper.css('opacity', 1);
+
+            if (typeof interval !== 'undefined') {
+                clearInterval(interval);
+            }
+
+            interval = setInterval(function() {
+
+                updateFrameUrl();
+                frameWrapper.height(getFrameHeight());
+            }, 10);
+        });
+    })(jQuery);
+</script>

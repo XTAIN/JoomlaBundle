@@ -10,6 +10,7 @@
 
 namespace XTAIN\Bundle\JoomlaBundle\Factory\CMS\Module;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use XTAIN\Bundle\JoomlaBundle\Factory\DependencyFactoryInterface;
 use XTAIN\Bundle\JoomlaBundle\Library\CMS\Module\Helper;
 use Symfony\Component\HttpKernel\Config\FileLocator;
@@ -28,6 +29,11 @@ class HelperFactory implements DependencyFactoryInterface
     protected $fileLocator;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    /**
      * @param FileLocator $fileLocator
      *
      * @return void
@@ -39,10 +45,22 @@ class HelperFactory implements DependencyFactoryInterface
     }
 
     /**
+     * @param EventDispatcherInterface $eventDispatcher
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
+    /**
      * @author Maximilian Ruta <mr@xtain.net>
      */
     public function injectStaticDependencies()
     {
         Helper::setFileLocator($this->fileLocator);
+        Helper::setEventDisptacher($this->eventDispatcher);
     }
 }

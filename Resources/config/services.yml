@@ -23,6 +23,7 @@ parameters:
     joomla.factory.application.web.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Application\WebFactory
     joomla.factory.cms.application.site.class: XTAIN\Bundle\JoomlaBundle\Factory\CMS\Application\SiteFactory
     joomla.factory.cms.application.administrator.class: XTAIN\Bundle\JoomlaBundle\Factory\CMS\Application\AdministratorFactory
+    joomla.factory.cms.installer.installer.class: XTAIN\Bundle\JoomlaBundle\Factory\CMS\Installer\InstallerFactory
     joomla.factory.view.legacy.class: XTAIN\Bundle\JoomlaBundle\Factory\View\LegacyFactory
     joomla.factory.document.html.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Document\HtmlFactory
     joomla.factory.legacy.error.class: XTAIN\Bundle\JoomlaBundle\Factory\Legacy\Error\ErrorFactory
@@ -39,6 +40,7 @@ parameters:
 
     joomla.installation.installer.class: XTAIN\Bundle\JoomlaBundle\Installation\Installer
     joomla.installation.extension_installer.class: XTAIN\Bundle\JoomlaBundle\Installation\ExtensionInstaller
+    joomla.installation.asset.class: XTAIN\Bundle\JoomlaBundle\Installation\Asset
     joomla.loader.class: XTAIN\Bundle\JoomlaBundle\Library\Loader
     joomla.factory.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Factory
     joomla.uri.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Uri\Uri
@@ -54,6 +56,7 @@ parameters:
     joomla.application.web.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Application\Web
     joomla.cms.application.site.class: XTAIN\Bundle\JoomlaBundle\Library\CMS\Application\Site
     joomla.cms.application.administrator.class: XTAIN\Bundle\JoomlaBundle\Library\CMS\Application\Administrator
+    joomla.cms.installer.installer.class: XTAIN\Bundle\JoomlaBundle\Library\CMS\Installer\Installer
     joomla.view.legacy.class: XTAIN\Bundle\JoomlaBundle\Library\View\Legacy
     joomla.document.html.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Document\Html
     joomla.legacy.error.class: XTAIN\Bundle\JoomlaBundle\Library\Legacy\Error\Error
@@ -64,6 +67,7 @@ parameters:
     joomla.config.class: XTAIN\Bundle\JoomlaBundle\Library\Config
     joomla.routing.path_matcher.class: XTAIN\Bundle\JoomlaBundle\Routing\PathMatcher
     joomla.routing.url_patcher.class: XTAIN\Bundle\JoomlaBundle\Routing\UrlPatcher
+    joomla.admin.menu_manager.class: XTAIN\Bundle\JoomlaBundle\Admin\MenuManager
 
     joomla.security.authentication.provider.class: XTAIN\Bundle\JoomlaBundle\Security\Authentication\Provider\JoomlaAuthenticationProvider
     joomla.security.authentication.listener.class: XTAIN\Bundle\JoomlaBundle\Security\Firewall\JoomlaListener
@@ -72,6 +76,7 @@ parameters:
     joomla.component.module.module_manager.class: XTAIN\Bundle\JoomlaBundle\Component\Module\ModuleManager
 
     joomla.prefix_subscriber.class: XTAIN\Bundle\JoomlaBundle\Joomla\PrefixSubscriber
+    joomla.resource_locator.class: XTAIN\Bundle\JoomlaBundle\Joomla\ResourceLocator
 
     joomla.menu_repository.class: XTAIN\Bundle\JoomlaBundle\Entity\MenuRepository
     joomla.extension_repository.class: XTAIN\Bundle\JoomlaBundle\Entity\ExtensionRepository
@@ -167,6 +172,10 @@ services:
         tags:
             - { name: monolog.logger }
 
+    joomla.admin.menu_manager:
+        class: %joomla.admin.menu_manager.class%
+        arguments: []
+
     # Joomla Class Factories
 
     joomla.factory.debug.error_handler:
@@ -242,6 +251,7 @@ services:
         class: %joomla.factory.cms.module.helper.class%
         calls:
             - [ setFileLocator, [ @file_locator ] ]
+            - [ setEventDispatcher, [ @event_dispatcher ] ]
 
     joomla.factory.cms.router.site:
         class: %joomla.factory.cms.router.site.class%
@@ -253,6 +263,12 @@ services:
 
     joomla.factory.cms.application.administrator:
         class: %joomla.factory.cms.application.administrator.class%
+
+    joomla.factory.cms.installer.installer:
+        class: %joomla.factory.cms.installer.installer.class%
+        calls:
+            - [ setResourceLocator, [ @joomla.resource_locator ] ]
+            - [ setAssetInstaller, [ @joomla.installation.asset ] ]
 
     joomla.factory.view.legacy:
         class: %joomla.factory.view.legacy.class%
@@ -318,6 +334,7 @@ services:
         class: %joomla.factory.component.menu.view.admin_menu.class%
         calls:
             - [ setRouter, [ @router ] ]
+            - [ setAdminMenuManager, [ @joomla.admin.menu_manager ] ]
         tags:
           - { name: joomla.injector, class: XTAIN\Bundle\JoomlaBundle\Component\Menu\View\AdminMenu }
 
@@ -412,6 +429,11 @@ services:
         tags:
           - { name: joomla.service, class: JApplicationAdministrator, file: "libraries/cms/application/administrator.php" }
 
+    joomla.cms.installer.installer:
+        class: %joomla.cms.installer.installer.class%
+        tags:
+          - { name: joomla.service, factory: joomla.factory.cms.installer.installer, class: JInstaller, file: "libraries/cms/installer/installer.php" }
+
     joomla.view.legacy:
         abstract: true
         class: %joomla.view.legacy.class%
@@ -477,6 +499,14 @@ services:
         class: %joomla.installation.installer.class%
         arguments: [ @joomla, @joomla.config ]
 
+    joomla.installation.asset:
+        class: %joomla.installation.asset.class%
+        arguments: [ @kernel ]
+
+    joomla.resource_locator:
+        class: %joomla.resource_locator.class%
+        arguments: [ @kernel ]
+
     # Joomla Security
 
     joomla.security.authentication.provider:
@@ -502,6 +532,13 @@ services:
         class: %joomla.component.module.module_manager.class%
         calls:
             - [ setContainer, [ @service_container ] ]
+
+    joomla.admin.default_menu:
+        class: XTAIN\Bundle\JoomlaBundle\Admin\DefaultMenu
+        arguments:
+          - "@router"
+        tags:
+          - { name: joomla.admin_menu }
 
     # Joomla Repositories
 

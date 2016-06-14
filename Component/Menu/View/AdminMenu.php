@@ -10,11 +10,12 @@
 
 namespace XTAIN\Bundle\JoomlaBundle\Component\Menu\View;
 
+use JMenuNode;
+use JText;
 use Symfony\Component\Routing\RouterInterface;
-
-if (!class_exists('JAdminCssMenu')) {
-    require JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR . 'mod_menu' . DIRECTORY_SEPARATOR . 'menu.php';
-}
+use XTAIN\Bundle\JoomlaBundle\Admin\MenuItem;
+use XTAIN\Bundle\JoomlaBundle\Admin\MenuLink;
+use XTAIN\Bundle\JoomlaBundle\Admin\MenuManager;
 
 /**
  * Class AdminMenu
@@ -22,12 +23,17 @@ if (!class_exists('JAdminCssMenu')) {
  * @author  Maximilian Ruta <mr@xtain.net>
  * @package XTAIN\Bundle\JoomlaBundle\Component\Menu\View\AdminMenu
  */
-class AdminMenu extends \JAdminCSSMenu
+class AdminMenu extends \JProxy_JAdminCssMenu
 {
     /**
      * @var RouterInterface
      */
     protected static $router;
+
+    /**
+     * @var MenuManager
+     */
+    protected static $menuManager;
 
     /**
      * @param RouterInterface $router
@@ -41,18 +47,21 @@ class AdminMenu extends \JAdminCSSMenu
     }
 
     /**
-     * @param \JMenuNode $root
+     * @param MenuManager $menuManager
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
      */
-    public function __construct(\JMenuNode $root)
+    public static function setMenuManager(MenuManager $menuManager)
     {
-        \XTAIN\Bundle\JoomlaBundle\Library\Loader::injectStaticDependencies(__CLASS__);
-
-        parent::__construct();
-
-        $this->_root = $root;
-        $this->_current = & $this->_root;
+        self::$menuManager = $menuManager;
     }
 
+    /**
+     * @param $link
+     * @return string
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
     protected function route($link)
     {
         $admin = self::$router->generate('joomla_administrator');
@@ -60,116 +69,81 @@ class AdminMenu extends \JAdminCSSMenu
         return $admin . $link;
     }
 
-    public function renderLevel($depth, $childDeep = 0)
+    /**
+     * @param MenuItem|null $link
+     *
+     * @return string|null
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    protected function transformLink(MenuItem $item = null)
     {
-        // Build the CSS class suffix
-        $class = '';
+        $link = $item->getLink();
 
-        if ($this->_current->hasChildren())
-        {
-            $class = ' class="treeview"';
+        if ($link === null) {
+            return '#';
         }
 
-        if ($this->_current->class == 'separator')
-        {
-            return;
+        if ($link->isFramed()) {
+            return $this->route(
+                'index.php?option=com_symfony&view=frame&title=' . urlencode($item->getName()) . '&url=' . urlencode($link->getLink())
+            );
         }
 
-        if ($this->_current->hasChildren() && $this->_current->class)
-        {
-            $class = ' class="treeview"';
-        }
+        return $link->getLink();
+    }
 
-        if ($this->_current->class == 'disabled')
-        {
-            $class = ' class="treeview disabled"';
-        }
+    /**
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    protected function addAdditionalMenuItems(array $items, $level = 0)
+    {
+        /** @var MenuItem $item */
+        foreach ($items as $item) {
+            $children = $item->getChildren();
+            if (count($children) == 0) {
+                $this->addChild(
+                    new \JMenuNode(
+                        $item->getName(),
+                        $this->transformLink($item)
+                    )
+                );
+            } else {
+                $class = null;
 
-        $icon = '';
-        if ($childDeep > 0) {
-            $class = '';
-            $icon = '<i class="fa fa-angle-double-right"></i>';
-        }
-
-        // Print the item
-        echo "<li" . $class . ">";
-
-        // Print a link if it exists
-        $linkClass = array();
-        $dataToggle = '';
-        $dropdownCaret = '';
-
-        if ($this->_current->hasChildren())
-        {
-            $linkClass[] = '';
-            $dataToggle = '';
-
-            if (!$this->_current->getParent()->hasParent())
-            {
-                $dropdownCaret = ' <span class="caret"></span>';
-            }
-        }
-
-        if ($this->_current->link != null && $this->_current->getParent()->title != 'ROOT')
-        {
-            $iconClass = $this->getIconClass($this->_current->class);
-
-            if (!empty($iconClass))
-            {
-                $linkClass[] = $iconClass;
-            }
-        }
-
-        // Implode out $linkClass for rendering
-        $linkClass = ' class="' . implode(' ', $linkClass) . '"';
-
-        if ($this->_current->link != null && $this->_current->target != null)
-        {
-            echo "<a" . $linkClass . " " . $dataToggle . " href=\"" . $this->route($this->_current->link) . "\" target=\"" . $this->_current->target . "\" >" . $icon
-                . $this->_current->title . $dropdownCaret . "</a>";
-        }
-        elseif ($this->_current->link != null && $this->_current->target == null)
-        {
-            echo "<a" . $linkClass . " " . $dataToggle . " href=\"" . $this->route($this->_current->link) . "\">"  . $icon . $this->_current->title . $dropdownCaret . "</a>";
-        }
-        elseif ($this->_current->title != null)
-        {
-            echo "<a" . $linkClass . " " . $dataToggle . ">"  . $icon . $this->route($this->_current->title) . $dropdownCaret . "</a>";
-        }
-        else
-        {
-            echo "<span></span>";
-        }
-
-        // Recurse through children if they exist
-        $childDeep++;
-        while ($this->_current->hasChildren())
-        {
-            if ($this->_current->class)
-            {
-                $id = '';
-
-                if (!empty($this->_current->id))
-                {
-                    $id = ' id="menu-' . strtolower($this->_current->id) . '"';
+                if ($level > 0) {
+                    $class = 'dropdown-submenu';
                 }
 
-                echo '<ul' . $id . ' class="treeview-menu menu-component">' . "\n";
-            }
-            else
-            {
-                echo '<ul class="treeview-menu">' . "\n";
-            }
+                $this->addChild(
+                    new \JMenuNode(
+                        $item->getName(),
+                        $this->transformLink($item),
+                        $class
+                    ),
+                    true
+                );
 
-            foreach ($this->_current->getChildren() as $child)
-            {
-                $this->_current = & $child;
-                $this->renderLevel($depth++, $childDeep);
-            }
+                $this->addAdditionalMenuItems($children, $level + 1);
 
-            echo "</ul>\n";
+                $this->getParent();
+            }
         }
+    }
 
-        echo "</li>\n";
+    /**
+     * @param string $id
+     * @param string $class
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function renderMenu($id = 'menu', $class = '')
+    {
+        $this->addAdditionalMenuItems(self::$menuManager->getMenuItems());
+
+        parent::renderMenu($id, $class);
     }
 }
+
+\XTAIN\Bundle\JoomlaBundle\Library\Loader::injectStaticDependencies(AdminMenu::class);

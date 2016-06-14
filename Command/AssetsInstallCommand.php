@@ -173,8 +173,7 @@ EOT
             );
         }
 
-        $kernel = $this->getContainer()->get('kernel');
-        $kernelRootDir = $kernel->getRootDir();
+        $resourceLocator = $this->getContainer()->get('joomla.resource_locator');
         $rootDir = $this->getContainer()->getParameter('joomla.root_dir');
 
         // install normal roots
@@ -234,11 +233,7 @@ EOT
         foreach ($this->getContainer()->getParameter('joomla.installations') as $name => $installations) {
             $output->writeln(sprintf('Installing asset <comment>%s</comment>', $name));
             foreach ($installations as $installation) {
-                if (substr($installation['resource'], 0, 1) == '@') {
-                    $path = $kernel->locateResource($installation['resource']);
-                } else {
-                    $path = $kernelRootDir . DIRECTORY_SEPARATOR . $installation['resource'];
-                }
+                $path = $resourceLocator->locate($installation['resource']);
                 if (!$this->filesystem->exists($path)) {
                     throw new \RuntimeException(sprintf('File %s not found', $path));
                 }

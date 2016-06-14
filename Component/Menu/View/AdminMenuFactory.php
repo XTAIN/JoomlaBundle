@@ -9,6 +9,8 @@
  */
 
 namespace XTAIN\Bundle\JoomlaBundle\Component\Menu\View;
+
+use XTAIN\Bundle\JoomlaBundle\Admin\MenuManager;
 use XTAIN\Bundle\JoomlaBundle\Factory\DependencyFactoryInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -26,6 +28,11 @@ class AdminMenuFactory implements DependencyFactoryInterface
     protected $router;
 
     /**
+     * @var MenuManager
+     */
+    protected $menuManager;
+
+    /**
      * @param \Symfony\Component\Routing\RouterInterface $router
      *
      * @return void
@@ -37,10 +44,22 @@ class AdminMenuFactory implements DependencyFactoryInterface
     }
 
     /**
+     * @param MenuManager $menuManager
+     *
+     * @return void
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function setAdminMenuManager(MenuManager $menuManager)
+    {
+        $this->menuManager = $menuManager;
+    }
+
+    /**
      * @author Maximilian Ruta <mr@xtain.net>
      */
     public function injectStaticDependencies()
     {
+        AdminMenu::setMenuManager($this->menuManager);
         AdminMenu::setRouter($this->router);
     }
 }

@@ -121,6 +121,12 @@ class PathMatcher implements PathMatcherInterface
         $matchingRoutePath = null;
 
         $baseRoute = $this->router->getRouteCollection()->get($name);
+        if ($baseRoute === null) {
+            return [
+                null,
+                null
+            ];
+        }
         $matchingRouteName = $this->findMatchingPaths($baseRoute);
 
         $item = $this->menuRepository->findByViewRoute($matchingRouteName);
