@@ -116,8 +116,11 @@ class ErrorHandler extends \Symfony\Component\Debug\ErrorHandler
                         'scream' => true
                     );
 
-                    $e['scope_vars'] = $context;
-                    $e['stack'] = $backtrace ?: debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT);
+                    $e['stack'] = $backtrace ?: debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+
+                    foreach ($e['stack'] as $key => $entry) {
+                        unset($e['stack'][$key]['args']);
+                    }
 
                     self::$joomlaLogger->log($level, $message, $e);
                 } catch (\Exception $e) {
