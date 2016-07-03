@@ -33,6 +33,11 @@ class ModuleExtension extends \Twig_Extension implements JoomlaAwareInterface
     protected $joomla;
 
     /**
+     * @var JoomlaHelper
+     */
+    protected $helper;
+
+    /**
      * @param JoomlaInterface $joomla
      *
      * @author Maximilian Ruta <mr@xtain.net>
@@ -42,6 +47,16 @@ class ModuleExtension extends \Twig_Extension implements JoomlaAwareInterface
         $this->joomla = $joomla;
     }
 
+    /**
+     * @param JoomlaHelper $helper
+     *
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function setJoomlaHelper(JoomlaHelper $helper = null)
+    {
+        $this->helper = $helper;
+    }
+
     public function getFunctions()
     {
         return [
@@ -49,10 +64,12 @@ class ModuleExtension extends \Twig_Extension implements JoomlaAwareInterface
             new \Twig_SimpleFunction('joomla_message', [$this, 'message'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('joomla_component', [$this, 'component'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('joomla_head', [$this, 'head'], ['is_safe' => ['html']]),
-            new \Twig_SimpleFunction('joomla_module_position', [$this, 'renderModulePosition'], ['needs_environment' => true, 'is_safe' => ['html']]),
+            new \Twig_SimpleFunction('joomla_module_position', [$this, 'renderModulePosition'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('joomla_trans', [$this, 'trans']),
+            new \Twig_SimpleFunction('joomla_link', [$this, 'link']),
             new \Twig_SimpleFunction('joomla_pagetitle', [$this, 'pagetitle']),
-            new \Twig_SimpleFunction('joomla_pageclass', [$this, 'pageclass'])
+            new \Twig_SimpleFunction('joomla_pageclass', [$this, 'pageclass']),
+            new \Twig_SimpleFunction('joomla_html', [$this, 'html'], ['is_safe' => ['html']])
         ];
     }
 
@@ -61,6 +78,16 @@ class ModuleExtension extends \Twig_Extension implements JoomlaAwareInterface
         return array(
             new \Twig_SimpleFilter('joomla_trans', [$this, 'trans'])
         );
+    }
+
+    public function html()
+    {
+        return \call_user_func_array(array(\JHtml::class, '_'), func_get_args());
+    }
+
+    public function link($item)
+    {
+        return $this->helper->menuLink($item);
     }
 
     public function head()
@@ -86,60 +113,12 @@ class ModuleExtension extends \Twig_Extension implements JoomlaAwareInterface
 
     public function countModulePosition($zone)
     {
-        $this->joomla->getApplication();
-
-        return count(\JModuleHelper::getModules($zone));
+        return $this->helper->countModulePosition($zone);
     }
 
-    protected function overrideParams($module, $override)
+    public function renderModulePosition($zone, array $parameters = [], array $override = [])
     {
-        $params = json_decode($module->params, true);
-
-        if (!is_array($params)) {
-            $params = [];
-        }
-
-        $params = array_merge($params, $override);
-        $module->params = json_encode($params);
-    }
-
-    public function renderModulePosition(\Twig_Environment $twig, $zone, array $parameters = [], array $override = [])
-    {
-        $this->joomla->getApplication();
-        $renderer = $this->joomla->getDocument()->loadRenderer('module');
-        $modules = \JModuleHelper::getModules($zone);
-        $modulesClones = [];
-        foreach ($modules as $module) {
-            $params = $module->params;
-            $this->overrideParams($module, $override);
-            $content = $renderer->render($module, $parameters);
-
-            $moduleRenderer = null;
-            if (isset($module->renderer)) {
-                $moduleRenderer = $module->renderer;
-            }
-
-            unset($module->renderer);
-            $clone = clone $module;
-            $clone->content = $content;
-            $module->renderer = $clone->renderer = $moduleRenderer;
-            $clone->params = json_decode($clone->params, true);
-            $modulesClones[] = $clone;
-            $module->params = $params;
-        }
-
-        $result = '';
-        if (isset($parameters['decorator'])) {
-            $result = $twig->render($parameters['decorator'], [
-                'modules' => $modulesClones
-            ]);
-        } else {
-            foreach ($modulesClones as $moduleClone) {
-                $result .= $moduleClone->content;
-            }
-        }
-
-        return $result;
+        return $this->helper->renderModulePosition($zone, $parameters, $override);
     }
 
     /**
@@ -151,7 +130,7 @@ class ModuleExtension extends \Twig_Extension implements JoomlaAwareInterface
      */
     public function trans($string, $replace = [])
     {
-        return JoomlaHelper::trans($string, $replace);
+        return $this->helper->trans($string, $replace);
     }
 
     /**

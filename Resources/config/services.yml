@@ -1,5 +1,6 @@
 parameters:
     joomla.class: XTAIN\Bundle\JoomlaBundle\Joomla\Joomla
+    joomla.helper.class: XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaHelper
     joomla.controller.class: XTAIN\Bundle\JoomlaBundle\Controller\JoomlaController
     joomla.warmer.patcher.class: XTAIN\Bundle\JoomlaBundle\CacheWarmer\JoomlaMonkeyPatchWarmer
     joomla.locale_listener.class: XTAIN\Bundle\JoomlaBundle\Joomla\JoomlaLocaleListener
@@ -23,7 +24,6 @@ parameters:
     joomla.factory.application.web.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Application\WebFactory
     joomla.factory.cms.application.site.class: XTAIN\Bundle\JoomlaBundle\Factory\CMS\Application\SiteFactory
     joomla.factory.cms.application.administrator.class: XTAIN\Bundle\JoomlaBundle\Factory\CMS\Application\AdministratorFactory
-    joomla.factory.cms.installer.installer.class: XTAIN\Bundle\JoomlaBundle\Factory\CMS\Installer\InstallerFactory
     joomla.factory.view.legacy.class: XTAIN\Bundle\JoomlaBundle\Factory\View\LegacyFactory
     joomla.factory.document.html.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Document\HtmlFactory
     joomla.factory.legacy.error.class: XTAIN\Bundle\JoomlaBundle\Factory\Legacy\Error\ErrorFactory
@@ -40,7 +40,6 @@ parameters:
 
     joomla.installation.installer.class: XTAIN\Bundle\JoomlaBundle\Installation\Installer
     joomla.installation.extension_installer.class: XTAIN\Bundle\JoomlaBundle\Installation\ExtensionInstaller
-    joomla.installation.asset.class: XTAIN\Bundle\JoomlaBundle\Installation\Asset
     joomla.loader.class: XTAIN\Bundle\JoomlaBundle\Library\Loader
     joomla.factory.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Factory
     joomla.uri.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Uri\Uri
@@ -97,6 +96,12 @@ services:
             - [ setFilesystem, [ @filesystem ] ]
             - [ setRootDir, [ %joomla.root_dir% ] ]
 
+    joomla.helper:
+        class: %joomla.helper.class%
+        calls:
+            - [ setJoomla, [ @joomla ] ]
+            - [ setTwigEnvironment, [ @twig ] ]
+
     joomla.controller:
         class: %joomla.controller.class%
         scope: request
@@ -138,6 +143,7 @@ services:
         class: %joomla.twig.module.class%
         calls:
             - [ setJoomla, [ @joomla ] ]
+            - [ setJoomlaHelper, [ @joomla.helper ] ]
         tags:
             - { name: twig.extension }
 
