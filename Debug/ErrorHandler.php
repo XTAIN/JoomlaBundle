@@ -7,13 +7,14 @@ namespace XTAIN\Bundle\JoomlaBundle\Debug;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Symfony\Component\Debug\BufferingLogger;
 
 class ErrorHandler extends \Symfony\Component\Debug\ErrorHandler
 {
     /**
      * @var int
      */
-    private $joomlaErrors = E_ALL - E_DEPRECATED - E_USER_DEPRECATED - E_STRICT - E_NOTICE - E_WARNING;
+    private $joomlaErrors;
 
     /**
      * @var array
@@ -45,6 +46,17 @@ class ErrorHandler extends \Symfony\Component\Debug\ErrorHandler
      * @var LoggerInterface
      */
     protected static $joomlaLogger;
+
+    /**
+     * ErrorHandler constructor.
+     * @param BufferingLogger|null $bootstrappingLogger
+     */
+    public function __construct(BufferingLogger $bootstrappingLogger = null)
+    {
+        $this->joomlaErrors = E_ALL - E_DEPRECATED - E_USER_DEPRECATED - E_STRICT - E_NOTICE - E_WARNING;
+
+        parent::__construct($bootstrappingLogger);
+    }
 
     /**
      * @param string $path
