@@ -408,6 +408,9 @@ class Joomla implements JoomlaInterface
     {
         $this->initialize();
 
+        if ($request->server->get('SERVER_ADDR') === null) {
+            $request->server->set('SERVER_ADDR', gethostbyname($request->getHost()));
+        }
         $request->server->set('REQUEST_URI', $request->getRequestUri());
         $request->overrideGlobals();
 

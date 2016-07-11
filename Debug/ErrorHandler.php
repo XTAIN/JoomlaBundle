@@ -7,13 +7,14 @@ namespace XTAIN\Bundle\JoomlaBundle\Debug;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Symfony\Component\Debug\BufferingLogger;
 
 class ErrorHandler extends \Symfony\Component\Debug\ErrorHandler
 {
     /**
      * @var int
      */
-    private $joomlaErrors = E_ALL - E_DEPRECATED - E_USER_DEPRECATED - E_STRICT - E_NOTICE - E_WARNING;
+    private $joomlaErrors;
 
     /**
      * @var array
@@ -37,9 +38,9 @@ class ErrorHandler extends \Symfony\Component\Debug\ErrorHandler
     );
 
     /**
-     * @var string
+     * @var array
      */
-    protected static $joomlaPath;
+    protected static $joomlaPaths;
 
     /**
      * @var LoggerInterface
@@ -47,14 +48,25 @@ class ErrorHandler extends \Symfony\Component\Debug\ErrorHandler
     protected static $joomlaLogger;
 
     /**
-     * @param string $path
+     * ErrorHandler constructor.
+     * @param BufferingLogger|null $bootstrappingLogger
+     */
+    public function __construct(BufferingLogger $bootstrappingLogger = null)
+    {
+        $this->joomlaErrors = E_ALL - E_DEPRECATED - E_USER_DEPRECATED - E_STRICT - E_NOTICE - E_WARNING;
+
+        parent::__construct($bootstrappingLogger);
+    }
+
+    /**
+     * @param string $paths
      *
      * @return void
      * @author Maximilian Ruta <mr@xtain.net>
      */
-    public static function setJoomlaPath($path)
+    public static function setJoomlaPaths($paths)
     {
-        self::$joomlaPath = $path;
+        self::$joomlaPaths = $paths;
     }
 
     /**
@@ -76,14 +88,12 @@ class ErrorHandler extends \Symfony\Component\Debug\ErrorHandler
      */
     protected function isPartOfJoomla($file)
     {
-        if (static::$joomlaPath === null) {
-            return false;
-        }
+        foreach (static::$joomlaPaths as $joomlaPath) {
+            $file = realpath($file);
 
-        $file = realpath($file);
-
-        if (strpos($file, self::$joomlaPath) === 0) {
-            return true;
+            if (strpos($file, $joomlaPath) === 0) {
+                return true;
+            }
         }
 
         return false;
