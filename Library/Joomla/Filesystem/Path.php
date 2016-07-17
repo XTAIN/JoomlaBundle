@@ -48,8 +48,8 @@ class Path extends \JProxy_JPath
                 $pathFile = new \SplFileInfo($path);
                 $fullnameFile = new \SplFileInfo($fullname);
 
-                $path = $pathFile->getPathInfo()->getRealPath();
-                $fullname = $fullnameFile->getPathInfo()->getRealPath();
+                $path = $pathFile->getPathInfo()->getPathname();
+                $fullname = $fullnameFile->getPathInfo()->getPathname();
 
                 if ($path !== false) {
                     $path .= DIRECTORY_SEPARATOR . $pathFile->getFilename();
