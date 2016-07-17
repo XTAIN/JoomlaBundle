@@ -28,16 +28,23 @@ class ErrorHandlerFactory implements DependencyFactoryInterface
     protected $appPath;
 
     /**
+     * @var string
+     */
+    protected $overridePath;
+
+    /**
      * ErrorHandlerFactory constructor.
      *
      * @param LoggerInterface $logger
      * @param string          $rootPath
+     * @param string          $overridePath
      * @param string          $appPath
      */
-    public function __construct(LoggerInterface $logger, $rootPath, $appPath)
+    public function __construct(LoggerInterface $logger, $rootPath, $overridePath, $appPath)
     {
         $this->logger = $logger;
         $this->rootPath = $rootPath;
+        $this->overridePath = $overridePath;
         $this->appPath = $appPath;
     }
 
@@ -48,8 +55,9 @@ class ErrorHandlerFactory implements DependencyFactoryInterface
     {
         ErrorHandler::setJoomlaLogger($this->logger);
         ErrorHandler::setJoomlaPaths(array(
-            $this->appPath,
-            $this->rootPath
+            $this->overridePath,
+            $this->rootPath,
+            $this->appPath
         ));
     }
 }

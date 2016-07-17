@@ -191,6 +191,7 @@ services:
         arguments:
             - "@logger"
             - "%joomla.root_dir%"
+            - "%joomla.override_dir%"
             - "%kernel.root_dir%/Resources/joomla"
         tags:
           - { name: joomla.injector, class: XTAIN\Bundle\JoomlaBundle\Debug\ErrorHandler }

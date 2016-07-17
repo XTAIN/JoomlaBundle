@@ -59,17 +59,6 @@ class ErrorHandler extends \Symfony\Component\Debug\ErrorHandler
     }
 
     /**
-     * ErrorHandler constructor.
-     * @param BufferingLogger|null $bootstrappingLogger
-     */
-    public function __construct(BufferingLogger $bootstrappingLogger = null)
-    {
-        $this->joomlaErrors = E_ALL - E_DEPRECATED - E_USER_DEPRECATED - E_STRICT - E_NOTICE - E_WARNING;
-
-        parent::__construct($bootstrappingLogger);
-    }
-
-    /**
      * @param string $paths
      *
      * @return void
