@@ -65,8 +65,12 @@ class Installer extends \JProxy_JInstaller
      *
      * @since   3.1
      */
-    public function __construct($basepath = JPATH_LIBRARIES . '/cms/installer', $classprefix = 'JInstallerAdapter', $adapterfolder = 'adapter')
+    public function __construct($basepath = null, $classprefix = 'JInstallerAdapter', $adapterfolder = 'adapter')
     {
+        if ($basepath === null) {
+            $basepath = JPATH_LIBRARIES . '/cms/installer';
+        }
+
         parent::__construct($basepath, $classprefix, $adapterfolder);
     }
 
@@ -81,8 +85,12 @@ class Installer extends \JProxy_JInstaller
      *
      * @since   3.1
      */
-    public static function getInstance($basepath = JPATH_LIBRARIES . '/cms/installer', $classprefix = 'JInstallerAdapter', $adapterfolder = 'adapter')
+    public static function getInstance($basepath = null, $classprefix = 'JInstallerAdapter', $adapterfolder = 'adapter')
     {
+        if ($basepath === null) {
+            $basepath = JPATH_LIBRARIES . '/cms/installer';
+        }
+
         return parent::getInstance($basepath, $classprefix, $adapterfolder);
     }
 
