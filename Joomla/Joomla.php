@@ -233,6 +233,11 @@ class Joomla implements JoomlaInterface
             define('JPATH_CACHE', $cacheDir);
         }
 
+        $filesystem = new Filesystem();
+        if (!$filesystem->exists(JPATH_CACHE)) {
+            $filesystem->mkdir(JPATH_CACHE);
+        }
+
         $this->bootstrapHelpers();
 
         // Mark afterLoad in the profiler.
