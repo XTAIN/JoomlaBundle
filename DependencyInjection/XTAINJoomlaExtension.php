@@ -193,5 +193,13 @@ class XTAINJoomlaExtension extends Extension
                 $responseListenerDef->addMethodCall('addWrapPattern', [ $pattern ]);
             }
         }
+
+        $adminForms = array();
+        if (isset($config['admin']) && isset($config['admin']['form'])) {
+            $adminForms = $config['admin']['form'];
+        }
+
+        $container->setParameter('joomla.admin.forms', $adminForms);
+        $container->setParameter('joomla.installations', $this->installations);
     }
 }

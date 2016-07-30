@@ -70,7 +70,6 @@ class Installer extends \JProxy_JInstaller
         if ($basepath === null) {
             $basepath = JPATH_LIBRARIES . '/cms/installer';
         }
-
         parent::__construct($basepath, $classprefix, $adapterfolder);
     }
 
@@ -90,7 +89,6 @@ class Installer extends \JProxy_JInstaller
         if ($basepath === null) {
             $basepath = JPATH_LIBRARIES . '/cms/installer';
         }
-
         return parent::getInstance($basepath, $classprefix, $adapterfolder);
     }
 

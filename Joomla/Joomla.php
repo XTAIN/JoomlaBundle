@@ -106,6 +106,11 @@ class Joomla implements JoomlaInterface
     ];
 
     /**
+     * @var Response
+     */
+    protected $response;
+
+    /**
      * @author Maximilian Ruta <mr@xtain.net>
      */
     public function __construct()

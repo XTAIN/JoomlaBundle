@@ -82,7 +82,6 @@ class Twig extends \JPlugin
     {
         $loader = self::$twig->getLoader();
         $chainLoader = new \Twig_Loader_Chain([
-            $loader,
             new \Twig_Loader_String()
         ]);
         self::$twig->setLoader($chainLoader);

@@ -186,6 +186,8 @@ class XTAINJoomlaBundle extends Bundle
         jimport('joomla.filesystem.folder');
         jimport('joomla.filesystem.path');
         jimport('joomla.utilities.arrayhelper');
+
+        class_exists(\XTAIN\Bundle\JoomlaBundle\Library\CMS\Module\Helper::class);
     }
 
     /**

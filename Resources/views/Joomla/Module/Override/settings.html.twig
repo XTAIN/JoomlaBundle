@@ -1,0 +1,203 @@
+{% form_theme form_view 'XTAINJoomlaBundle::Joomla/Module/settings_form_theme.html.twig' %}
+
+{% if override_module is not null %}
+    <div>
+        <h4>Parameters of overwrite module</h4>
+        <div>
+            {{ dump(override_module.params) }}
+        </div>
+    </div>
+{% endif %}
+
+{{ form_widget(form_view) }}
+
+<div>
+    <div class="control-group">
+        <div class="control-label">
+            <label for="param_key">Key</label>
+        </div>
+        <div class="controls">
+            <input type="text" id="param_key">
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="control-label">
+            <label for="param_value">Value</label>
+        </div>
+        <div class="controls">
+            <input type="text" id="param_value">
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="control-label">
+            <label for="param_type">Type</label>
+        </div>
+        <div class="controls">
+            <select id="param_type">
+                <option value="value">Value</option>
+                <option value="menu_expr">Menu Expression</option>
+            </select>
+        </div>
+    </div>
+
+    <dl id="keyvalues" class="params">
+
+    </dl>
+
+    <a id="addkey" href="#">Add Key</a>
+</div>
+<a id="addoverride" href="#">Add Override</a>
+
+<ul id="menuoverrides">
+
+</ul>
+
+<div id="hiddenarea" style="display: none">
+
+</div>
+
+<style type="text/css">
+    #jform > .control-group > .controls {
+        margin-left: 0;
+    }
+</style>
+
+<script>
+    {% if overrides | length > 0 %}
+    var overrides = {{ overrides | json_encode | raw }};
+    {% else %}
+    var overrides = {};
+    {% endif %}
+    var currentKeyValue = {};
+
+    function renderCurrentKeyValue() {
+        var k = jQuery('#keyvalues');
+        k.children().remove();
+
+        jQuery.each(currentKeyValue, function(key, value) {
+            k.append(jQuery('<dt class="key"></dt>').text(key));
+            k.append(jQuery('<dd class="value"></dd>').text(JSON.stringify(value)));
+        });
+    }
+
+    function renderOverrides() {
+        var overrideParams = [];
+        var k = jQuery('#menuoverrides');
+        k.children().remove();
+
+        jQuery.each(overrides, function(key, item) {
+            var li = jQuery('<li class="override_item"></li>');
+            li.data('key', key);
+            k.append(li);
+            var rm = jQuery('<a class="remove">remove</a>');
+            li.append(rm);
+            rm.click(function(e) {
+                e.preventDefault();
+                var li = jQuery(this).parent('li');
+                delete overrides[li.data('key')];
+                li.remove();
+
+                renderOverrides();
+            });
+            var menuitem = jQuery('#jform_item_menu option[value="' + item.menu + '"]');
+            li.append(jQuery('<h5 class="menu"></h5>').text(
+                    menuitem.parent().attr('label') + ' ' + menuitem.text()
+            ));
+            overrideParams.push(['jform[params][settings][overrides]['+key+'][menu]', item.menu]);
+
+            if (item.title) {
+                var title = jQuery('<div class="title"><span>Titel: </span></div>');
+                li.append(title);
+                title.append(jQuery('<span class="titleValue"></span>').text(item.title));
+                overrideParams.push(['jform[params][settings][overrides]['+key+'][title]', item.title]);
+            }
+
+            var params = jQuery('<dl class="params"></dl>');
+            li.append(params);
+
+            jQuery.each(item.params, function(pkey, param) {
+                var value = param['value'];
+                var type = param['type'];
+
+                var jmenu = jQuery('<div></div>').text(pkey);
+                var jtype = jQuery('<div></div>').text(type);
+
+                params.append(jQuery('<dt class="key"></dt>').append(jmenu).append(jtype));
+                params.append(jQuery('<dd class="value"></dd>').text(JSON.stringify(value)));
+
+                var p = function(pkey, value, pprefix, prefix) {
+                    var key;
+                    if (pkey != '') {
+                        key = pprefix + '['+pkey+']';
+                    } else {
+                        key = pprefix;
+                    }
+                    if (typeof value == 'number' || typeof value == 'string') {
+                        overrideParams.push([prefix + key, value]);
+                    } else {
+                        jQuery.each(value, function(pkey, value) {
+                            p(pkey, value, key, prefix);
+                        });
+                    }
+                };
+
+                p('', value, '', 'jform[params][settings][overrides]['+key+'][params]['+pkey+'][value]');
+                p('', type, '', 'jform[params][settings][overrides]['+key+'][params]['+pkey+'][type]');
+            });
+        });
+
+        jQuery('#hiddenarea').children().remove();
+        jQuery.each(overrideParams, function(i, v) {
+            jQuery('#hiddenarea').append(jQuery('<input type="hidden" name="" value="" />').attr('name', v[0]).attr('value', v[1]));
+        });
+    }
+
+    jQuery('#addkey').click(function(e) {
+        e.preventDefault();
+
+        var key = jQuery('#param_key').val();
+        var value = jQuery('#param_value').val();
+        var type = jQuery('#param_type').val();
+
+        if (key.length && value.length) {
+            if (value[0] == '{' || value[0] == '[' || value[0] == '"' || value[0] == "'") {
+                value = JSON.parse(value);
+            }
+            currentKeyValue[key] = {
+                value: value,
+                type: type
+            };
+            renderCurrentKeyValue();
+
+            jQuery('#param_key').val('');
+            jQuery('#param_value').val('');
+        }
+    });
+
+    jQuery('#addoverride').click(function(e) {
+        e.preventDefault();
+
+        var menu = jQuery('#jform_item_menu').val();
+
+        var title = jQuery('#jform_item_title').val();
+        jQuery('#jform_item_title').val('');
+        if (title.length == 0) {
+            title = null;
+        }
+
+        jQuery('#param_key').val('');
+        jQuery('#param_value').val('');
+
+        overrides[menu] = {
+            menu: menu,
+            title: title,
+            params: jQuery.extend(true, {}, currentKeyValue)
+        };
+
+        currentKeyValue = {};
+        renderCurrentKeyValue();
+        renderOverrides();
+    });
+
+    renderOverrides();
+</script>

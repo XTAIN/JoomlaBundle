@@ -16,12 +16,12 @@ use Symfony\Component\Routing\RouterInterface;
 use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Uri\Uri;
 
 /**
- * Class Html
+ * Class Document
  *
  * @author  Maximilian Ruta <mr@xtain.net>
  * @package XTAIN\Bundle\JoomlaBundle\Library\Joomla\Document
  */
-class Html extends \JProxy_JDocumentHtml
+class Document extends \JProxy_JDocument
 {
     /**
      * @var string

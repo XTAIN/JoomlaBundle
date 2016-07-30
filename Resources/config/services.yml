@@ -26,7 +26,7 @@ parameters:
     joomla.factory.cms.application.administrator.class: XTAIN\Bundle\JoomlaBundle\Factory\CMS\Application\AdministratorFactory
     joomla.factory.cms.installer.installer.class: XTAIN\Bundle\JoomlaBundle\Factory\CMS\Installer\InstallerFactory
     joomla.factory.view.legacy.class: XTAIN\Bundle\JoomlaBundle\Factory\View\LegacyFactory
-    joomla.factory.document.html.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Document\HtmlFactory
+    joomla.factory.document.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Document\DocumentFactory
     joomla.factory.legacy.error.class: XTAIN\Bundle\JoomlaBundle\Factory\Legacy\Error\ErrorFactory
     joomla.factory.database.driver.doctrine.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Database\Driver\DoctrineDriverFactory
     joomla.factory.user.class: XTAIN\Bundle\JoomlaBundle\Factory\Joomla\User\UserFactory
@@ -59,11 +59,10 @@ parameters:
     joomla.cms.application.administrator.class: XTAIN\Bundle\JoomlaBundle\Library\CMS\Application\Administrator
     joomla.cms.installer.installer.class: XTAIN\Bundle\JoomlaBundle\Library\CMS\Installer\Installer
     joomla.view.legacy.class: XTAIN\Bundle\JoomlaBundle\Library\View\Legacy
-    joomla.document.html.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Document\Html
+    joomla.document.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Document\Document
     joomla.legacy.error.class: XTAIN\Bundle\JoomlaBundle\Library\Legacy\Error\Error
     joomla.router.class: XTAIN\Bundle\JoomlaBundle\Routing\JoomlaRouter
     joomla.router.default.class: XTAIN\Bundle\JoomlaBundle\Routing\DefaultRouter
-    joomla.document.class: JDocument
     joomla.user.class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\User\User
     joomla.config.class: XTAIN\Bundle\JoomlaBundle\Library\Config
     joomla.routing.path_matcher.class: XTAIN\Bundle\JoomlaBundle\Routing\PathMatcher
@@ -285,9 +284,9 @@ services:
         calls:
             - [ setTwigEnvironment, [ @twig ] ]
 
-    joomla.factory.document.html:
+    joomla.factory.document:
         scope: request
-        class: %joomla.factory.document.html.class%
+        class: %joomla.factory.document.class%
         calls:
             - [ setAssetsHelper, [ @templating.helper.assets ] ]
             - [ setRouter, [ @router ] ]
@@ -450,11 +449,11 @@ services:
         tags:
          - { name: joomla.service, factory: joomla.factory.view.legacy, class: JViewLegacy, file: "libraries/legacy/view/legacy.php" }
 
-    joomla.document.html:
+    joomla.document:
         abstract: true
-        class: %joomla.document.html.class%
+        class: %joomla.document.class%
         tags:
-         - { name: joomla.service, factory: joomla.factory.document.html, class: JDocumentHtml, file: "libraries/joomla/document/html.php" }
+         - { name: joomla.service, factory: joomla.factory.document, class: JDocument, file: "libraries/joomla/document/document.php" }
 
     joomla.user:
         class: %joomla.user.class%
@@ -482,10 +481,6 @@ services:
         class: XTAIN\Bundle\JoomlaBundle\Library\Joomla\Database\Driver\SqliteDoctrineDriver
         tags:
           - { name: joomla.database }
-
-    joomla.document:
-        class: %joomla.document.class%
-        factory: [@joomla, getDocument]
 
     joomla.config:
         class: %joomla.config.class%
@@ -549,6 +544,25 @@ services:
           - "@router"
         tags:
           - { name: joomla.admin_menu }
+
+    joomla.module.override:
+        class: XTAIN\Bundle\JoomlaBundle\Module\OverrideModule
+        arguments:
+          - "@joomla.helper"
+          - "@joomla.module_repository"
+        calls:
+          - [ setFormFactory, [ "@form.factory" ] ]
+          - [ setTwigEnvironment, [ "@twig" ] ]
+        tags:
+          - { name: joomla.module }
+
+    joomla.custom_field_subscriber:
+        class: XTAIN\Bundle\JoomlaBundle\Component\Symfony\CustomFieldSubscriber
+        arguments:
+          - "@joomla.resource_locator"
+          - "%joomla.admin.forms%"
+        tags:
+          - { name: kernel.event_subscriber }
 
     # Joomla Repositories
 

@@ -14,11 +14,11 @@ use Symfony\Bundle\FrameworkBundle\Templating\Helper\AssetsHelper;
 use XTAIN\Bundle\JoomlaBundle\Factory\DependencyFactoryInterface;
 
 /**
- * Interface HtmlFactoryInterface
+ * Interface DocumentFactoryInterface
  *
  * @package XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Document
  */
-interface HtmlFactoryInterface extends DependencyFactoryInterface
+interface DocumentFactoryInterface extends DependencyFactoryInterface
 {
     /**
      * @param AssetsHelper $helper

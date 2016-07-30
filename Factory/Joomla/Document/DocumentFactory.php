@@ -12,15 +12,15 @@ namespace XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Document;
 
 use Symfony\Bundle\FrameworkBundle\Templating\Helper\AssetsHelper;
 use Symfony\Component\Routing\RouterInterface;
-use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Document\Html;
+use XTAIN\Bundle\JoomlaBundle\Library\Joomla\Document\Document;
 
 /**
- * Class HtmlFactory
+ * Class DocumentFactory
  *
  * @author  Maximilian Ruta <mr@xtain.net>
  * @package XTAIN\Bundle\JoomlaBundle\Factory\Joomla\Document
  */
-class HtmlFactory implements HtmlFactoryInterface
+class DocumentFactory implements DocumentFactoryInterface
 {
     /**
      * @var AssetsHelper
@@ -72,8 +72,8 @@ class HtmlFactory implements HtmlFactoryInterface
      */
     public function injectStaticDependencies()
     {
-        Html::setAssetsHelper($this->helper);
-        Html::setRouter($this->router);
-        Html::setTwigEnvironment($this->twigEnvironment);
+        Document::setAssetsHelper($this->helper);
+        Document::setRouter($this->router);
+        Document::setTwigEnvironment($this->twigEnvironment);
     }
 }

@@ -103,6 +103,43 @@ class JoomlaHelper
     }
 
     /**
+     * @param object $module
+     * @param array $parameters
+     * @param array $override
+     *
+     * @return object
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function renderModuleObject($module, array $parameters = [], array $override = [])
+    {
+        $this->joomla->getApplication();
+        $renderer = $this->joomla->getDocument()->loadRenderer('module');
+
+        $params = $module->params;
+        $this->overrideParams($module, $override);
+
+        if (!isset($parameters['style'])) {
+            $parameters['style'] = 'none';
+        }
+
+        $content = $renderer->render($module, $parameters);
+
+        $moduleRenderer = null;
+        if (isset($module->renderer)) {
+            $moduleRenderer = $module->renderer;
+        }
+
+        unset($module->renderer);
+        $clone = clone $module;
+        $clone->content = $content;
+        $module->renderer = $clone->renderer = $moduleRenderer;
+        $clone->params = json_decode($clone->params, true);
+        $module->params = $params;
+
+        return $clone;
+    }
+
+    /**
      * @param string $zone
      * @param array $parameters
      * @param array $override
@@ -113,31 +150,11 @@ class JoomlaHelper
     public function renderModulePosition($zone, array $parameters = [], array $override = [])
     {
         $this->joomla->getApplication();
-        $renderer = $this->joomla->getDocument()->loadRenderer('module');
+
         $modules = \JModuleHelper::getModules($zone);
         $modulesClones = [];
         foreach ($modules as $module) {
-            $params = $module->params;
-            $this->overrideParams($module, $override);
-
-            if (!isset($parameters['style'])) {
-                $parameters['style'] = 'none';
-            }
-
-            $content = $renderer->render($module, $parameters);
-
-            $moduleRenderer = null;
-            if (isset($module->renderer)) {
-                $moduleRenderer = $module->renderer;
-            }
-
-            unset($module->renderer);
-            $clone = clone $module;
-            $clone->content = $content;
-            $module->renderer = $clone->renderer = $moduleRenderer;
-            $clone->params = json_decode($clone->params, true);
-            $modulesClones[] = $clone;
-            $module->params = $params;
+            $modulesClones[] = $this->renderModuleObject($module);
         }
 
         $result = '';
@@ -152,5 +169,28 @@ class JoomlaHelper
         }
 
         return $result;
+    }
+
+    /**
+     * @param integer $id
+     *
+     * @return object
+     * @author Maximilian Ruta <mr@xtain.net>
+     */
+    public function getModuleById($id)
+    {
+        $modules = \JModuleHelper::getModules(null);
+
+        $total = count($modules);
+
+        for ($i = 0; $i < $total; $i++)
+        {
+            if ($modules[$i]->id == $id)
+            {
+                return $modules[$i];
+            }
+        }
+
+        return null;
     }
 }
