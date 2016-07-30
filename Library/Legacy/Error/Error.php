@@ -28,6 +28,12 @@ class Error extends \JProxy_JError
     public static function throwError(&$exception)
     {
         if ($exception instanceof \Exception) {
+            if ($exception instanceof \JException) {
+                $level = $exception->get('level');
+                if (!(JOMMLA_ERROR_LEVEL & $level)) {
+                    return parent::throwError($exception);
+                }
+            }
             throw $exception;
         }
 

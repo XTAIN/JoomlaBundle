@@ -102,11 +102,13 @@ class AdminMenu extends \JProxy_JAdminCssMenu
         foreach ($items as $item) {
             $children = $item->getChildren();
             if (count($children) == 0) {
+                $node = new \JMenuNode(
+                    $item->getName(),
+                    $this->transformLink($item)
+                );
+
                 $this->addChild(
-                    new \JMenuNode(
-                        $item->getName(),
-                        $this->transformLink($item)
-                    )
+                    $node
                 );
             } else {
                 $class = null;
@@ -115,12 +117,14 @@ class AdminMenu extends \JProxy_JAdminCssMenu
                     $class = 'dropdown-submenu';
                 }
 
+                $node = new \JMenuNode(
+                    $item->getName(),
+                    $this->transformLink($item),
+                    $class
+                );
+
                 $this->addChild(
-                    new \JMenuNode(
-                        $item->getName(),
-                        $this->transformLink($item),
-                        $class
-                    ),
+                    $node,
                     true
                 );
 

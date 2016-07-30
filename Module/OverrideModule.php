@@ -264,9 +264,9 @@ class OverrideModule extends AbstractModule
         $module = $this->helper->getModuleById($module);
         $override = $this->findOverride();
 
-        //$overrideParams = $this->computeOverrideParmas($override);
+        $overrideParams = $this->computeOverrideParmas($override);
 
-        $this->helper->renderModuleObject($module, [], []);
+        $this->helper->renderModuleObject($module, [], $overrideParams);
 
         return $module->content;
     }
