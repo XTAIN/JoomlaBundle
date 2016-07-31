@@ -120,6 +120,12 @@ class OverrideModule extends AbstractModule
         $itemBuilder->add('title', TextType::class, array(
             'required' => false
         ));
+        $itemBuilder->add('title_type', ChoiceType::class, array(
+            'choices' => array(
+                'value' => 'Value',
+                'menu_expr' => 'Menu Expression'
+            )
+        ));
         $builder->add($itemBuilder);
 
         return $builder->getForm()->createView();
@@ -224,7 +230,9 @@ class OverrideModule extends AbstractModule
 
     protected function computeOverrideParmas($override)
     {
-        $overrideParams = array();
+        $overrideParams = array(
+            'params' => array()
+        );
         $params = array();
 
         if (isset($override['params'])) {
@@ -234,12 +242,26 @@ class OverrideModule extends AbstractModule
         foreach ($params as $name => $param) {
             switch ($param['type']) {
                 case 'value':
-                    $overrideParams[$name] = $param['value'];
+                    $overrideParams['params'][$name] = $param['value'];
                     break;
                 case 'menu_expr':
                     $value = $this->computeMenuExpression($override, $param['value']);
                     if ($value !== null) {
-                        $overrideParams[$name] = $value;
+                        $overrideParams['params'][$name] = $value;
+                    }
+                    break;
+            }
+        }
+
+        if (isset($override['title']) && !empty($override['title'])) {
+            switch ($override['titleType']) {
+                case 'value':
+                    $overrideParams['title'] = $override['title'];
+                    break;
+                case 'menu_expr':
+                    $value = $this->computeMenuExpression($override, $override['title']);
+                    if ($value !== null) {
+                        $overrideParams['title'] = $value;
                     }
                     break;
             }
@@ -261,6 +283,7 @@ class OverrideModule extends AbstractModule
             $module = $params['settings']['module'];
         }
 
+        $overrideModule = $this->helper->getModuleById($this->module->getId());
         $module = $this->helper->getModuleById($module);
 
         if ($module === null) {
@@ -271,7 +294,13 @@ class OverrideModule extends AbstractModule
 
         $overrideParams = $this->computeOverrideParmas($override);
 
-        $this->helper->renderModuleObject($module, [], $overrideParams);
+        $module = clone $module;
+
+        if (isset($overrideParams['title'])) {
+            $overrideModule->title = $overrideParams['title'];
+        }
+
+        $this->helper->renderModuleObject($module, [], $overrideParams['params']);
 
         return $module->content;
     }

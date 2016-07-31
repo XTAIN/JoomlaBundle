@@ -109,7 +109,9 @@
                 var title = jQuery('<div class="title"><span>Titel: </span></div>');
                 li.append(title);
                 title.append(jQuery('<span class="titleValue"></span>').text(item.title));
+                title.append(jQuery('<span class="titleType"></span>').text(' (' + item.titleType + ')'));
                 overrideParams.push(['jform[params][settings][overrides]['+key+'][title]', item.title]);
+                overrideParams.push(['jform[params][settings][overrides]['+key+'][titleType]', item.titleType]);
             }
 
             var params = jQuery('<dl class="params"></dl>');
@@ -141,8 +143,12 @@
                     }
                 };
 
-                p('', value, '', 'jform[params][settings][overrides]['+key+'][params]['+pkey+'][value]');
-                p('', type, '', 'jform[params][settings][overrides]['+key+'][params]['+pkey+'][type]');
+                if (type == 'value') {
+                    p('', value, '', 'jform[params][settings][overrides]['+key+'][params]['+pkey+'][value]');
+                } else {
+                    overrideParams.push(['jform[params][settings][overrides]['+key+'][params]['+pkey+'][value]', value]);
+                }
+                overrideParams.push(['jform[params][settings][overrides]['+key+'][params]['+pkey+'][type]', type]);
             });
         });
 
@@ -160,8 +166,10 @@
         var type = jQuery('#param_type').val();
 
         if (key.length && value.length) {
-            if (value[0] == '{' || value[0] == '[' || value[0] == '"' || value[0] == "'") {
-                value = JSON.parse(value);
+            if (type == 'value') {
+                if (value[0] == '{' || value[0] == '[' || value[0] == '"' || value[0] == "'") {
+                    value = JSON.parse(value);
+                }
             }
             currentKeyValue[key] = {
                 value: value,
@@ -180,6 +188,7 @@
         var menu = jQuery('#jform_item_menu').val();
 
         var title = jQuery('#jform_item_title').val();
+        var titleType = jQuery('#jform_item_title_type').val();
         jQuery('#jform_item_title').val('');
         if (title.length == 0) {
             title = null;
@@ -191,6 +200,7 @@
         overrides[menu] = {
             menu: menu,
             title: title,
+            titleType: titleType,
             params: jQuery.extend(true, {}, currentKeyValue)
         };
 
