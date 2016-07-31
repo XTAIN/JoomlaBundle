@@ -211,6 +211,11 @@ class OverrideModule extends AbstractModule
     protected function computeMenuExpression($override, $expression)
     {
         $languge = new ExpressionLanguage();
+        $languge->register('join', function($context, $data, $glue) {
+            return sprintf('implode(%1$s, %2$s)', var_export($data, true), $glue);
+        }, function($context, $data, $glue) {
+            return implode($glue, $data);
+        });
 
         $parents = $this->findParents();
 
