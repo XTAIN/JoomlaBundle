@@ -154,7 +154,7 @@ class JoomlaHelper
         $modules = \JModuleHelper::getModules($zone);
         $modulesClones = [];
         foreach ($modules as $module) {
-            $modulesClones[] = $this->renderModuleObject($module);
+            $modulesClones[] = $this->renderModuleObject($module, $parameters, $override);
         }
 
         $result = '';

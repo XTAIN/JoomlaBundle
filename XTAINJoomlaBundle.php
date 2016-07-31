@@ -259,7 +259,9 @@ class XTAINJoomlaBundle extends Bundle
             return;
         }
 
-        define('JOMMLA_ERROR_LEVEL', E_ALL - E_DEPRECATED - E_USER_DEPRECATED - E_STRICT - E_NOTICE - E_WARNING);
+        if (!defined('JOMMLA_ERROR_LEVEL')) {
+            define('JOMMLA_ERROR_LEVEL', E_ALL - E_DEPRECATED - E_USER_DEPRECATED - E_STRICT - E_NOTICE - E_WARNING);
+        }
 
         $config = $this->container->get('joomla.config');
         define('JDEBUG', $config->debug);

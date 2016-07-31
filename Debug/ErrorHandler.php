@@ -53,6 +53,10 @@ class ErrorHandler extends \Symfony\Component\Debug\ErrorHandler
      */
     public function __construct(BufferingLogger $bootstrappingLogger = null)
     {
+        if (!defined('JOMMLA_ERROR_LEVEL')) {
+            define('JOMMLA_ERROR_LEVEL', E_ALL - E_DEPRECATED - E_USER_DEPRECATED - E_STRICT - E_NOTICE - E_WARNING);
+        }
+
         $this->joomlaErrors = JOMMLA_ERROR_LEVEL;
 
         parent::__construct($bootstrappingLogger);
