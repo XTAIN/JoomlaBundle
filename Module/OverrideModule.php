@@ -7,6 +7,7 @@ namespace XTAIN\Bundle\JoomlaBundle\Module;
 
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use XTAIN\Bundle\JoomlaBundle\Component\Module\AbstractModule;
 use XTAIN\Bundle\JoomlaBundle\Entity\Module;
@@ -99,6 +100,14 @@ class OverrideModule extends AbstractModule
             'choices' => $modules
         ));
 
+        $settings->add('showExpr', TextType::class, array(
+            'required' => false
+        ));
+
+        $settings->add('showPhp', TextareaType::class, array(
+            'required' => false
+        ));
+
         $paramsBuilder = $builder->create('params', 'form');
         $itemBuilder = $builder->create('item', 'form', [
             'label' => false
@@ -126,6 +135,7 @@ class OverrideModule extends AbstractModule
                 'menu_expr' => 'Menu Expression'
             )
         ));
+
         $builder->add($itemBuilder);
 
         return $builder->getForm()->createView();
@@ -288,6 +298,16 @@ class OverrideModule extends AbstractModule
             $module = $params['settings']['module'];
         }
 
+        $showExpr = null;
+        if (isset($params['settings']) && isset($params['settings']['showExpr'])) {
+            $showExpr = $params['settings']['showExpr'];
+        }
+
+        $showPhp = null;
+        if (isset($params['settings']) && isset($params['settings']['showPhp'])) {
+            $showPhp = $params['settings']['showPhp'];
+        }
+
         $overrideModule = $this->helper->getModuleById($this->module->getId());
         $module = $this->helper->getModuleById($module);
 
@@ -296,6 +316,24 @@ class OverrideModule extends AbstractModule
         }
 
         $override = $this->findOverride();
+
+        if (!empty($showExpr)) {
+            $value = $this->computeMenuExpression($override, $showExpr);
+            if ($value !== null) {
+                if (!$value) {
+                    return '';
+                }
+            }
+        }
+
+        if (!empty($showPhp)) {
+            $show = eval($showPhp);
+            if ($show !== null) {
+                if (!$show) {
+                    return '';
+                }
+            }
+        }
 
         $overrideParams = $this->computeOverrideParmas($override);
 
