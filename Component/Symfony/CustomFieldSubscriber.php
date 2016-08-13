@@ -51,7 +51,7 @@ class CustomFieldSubscriber implements EventSubscriberInterface
 
     public function prepareForm(AfterEvent $event)
     {
-        /** @var \JForm $form */
+        /** @var \JForm $jform */
         list($jform, $data) = $event->getArguments();
 
         $app    = \JFactory::getApplication();
