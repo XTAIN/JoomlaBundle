@@ -20,4 +20,4 @@ if (!isset($module->renderer)) {
     $module->renderer = $manager->getModuleRenderer($moduleEntity);
 }
 
-echo $module->renderer->render();
+echo $module->renderer->render($params);

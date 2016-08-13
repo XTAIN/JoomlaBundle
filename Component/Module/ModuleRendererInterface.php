@@ -21,7 +21,7 @@ interface ModuleRendererInterface
      */
     public function setModule(Module $module);
 
-    public function render();
+    public function render(&$params);
 
     /**
      * @return string

@@ -75,8 +75,8 @@ class OverrideModule extends AbstractModule
 
         /** @var Module $module */
         foreach ($this->moduleRepository->findBy(array(
-            'client' => 0
-        )) as $module) {
+                                                     'client' => 0
+                                                 )) as $module) {
             $items[$module->getId()] = $module->getTitle() . ' (ID: ' . $module->getId() . ')';
         }
 
@@ -285,11 +285,15 @@ class OverrideModule extends AbstractModule
         return $overrideParams;
     }
 
+    protected function evCode($code) {
+        return eval($code);
+    }
+
     /**
      * @return string
      * @author Maximilian Ruta <mr@xtain.net>
      */
-    public function render()
+    public function render(&$paramsRef)
     {
         $params = $this->module->getParams();
 
@@ -327,7 +331,7 @@ class OverrideModule extends AbstractModule
         }
 
         if (!empty($showPhp)) {
-            $show = eval($showPhp);
+            $show = $this->evCode($showPhp);
             if ($show !== null) {
                 if (!$show) {
                     return '';
@@ -335,12 +339,21 @@ class OverrideModule extends AbstractModule
             }
         }
 
+        $parentParams = json_decode($module->params);
+
+        $paramsRef->set('moduleclass_sfx', $parentParams->moduleclass_sfx);
+        $paramsRef->set('header_tag', $parentParams->header_tag);
+        $paramsRef->set('bootstrap_size', $parentParams->bootstrap_size);
+        $paramsRef->set('module_tag', $parentParams->module_tag);
+
         $overrideParams = $this->computeOverrideParmas($override);
 
         $module = clone $module;
 
         if (isset($overrideParams['title'])) {
             $overrideModule->title = $overrideParams['title'];
+        } else {
+            $overrideModule->title = $module->title;
         }
 
         $this->helper->renderModuleObject($module, [], $overrideParams['params']);
