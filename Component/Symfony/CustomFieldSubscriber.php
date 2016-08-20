@@ -65,7 +65,24 @@ class CustomFieldSubscriber implements EventSubscriberInterface
                         throw new \Exception('file ' . $xmlFile . ' dont exists');
                     }
 
-                    $jform->loadFile($xmlFile, false);
+                    $xmlData = file_get_contents($xmlFile);
+
+                    // Attempt to load the XML file.
+                    $previous = libxml_use_internal_errors(true);
+                    libxml_clear_errors();
+                    $xml = simplexml_load_string($xmlData);
+                    libxml_use_internal_errors($previous);
+
+                    if ($xml === false) {
+                        $errors = implode("\n", libxml_get_errors());
+
+                        throw new \Exception(sprintf(
+                            'Cannot load module extensions file. Errors: %s',
+                            $errors
+                        ));
+                    }
+
+                    $jform->load($xml, false);
                 }
             }
         }
