@@ -103,6 +103,59 @@ class JoomlaHelper
     }
 
     /**
+     * @param string $module
+     * @param array $params
+     * @param array $settings
+     *
+     * @return string
+     */
+    public function renderModule($module, $params = array(), $settings = array())
+    {
+        $style = null;
+
+        $object = new \stdClass();
+        $object->published = 1;
+        $object->module = $module;
+        $object->position = '';
+        $object->content = '';
+        $object->menuid = '0';
+        $object->name = preg_replace('/^mod_/', '', $module);
+        $object->style = null;
+        $object->title = '';
+        $object->showtitle = '0';
+
+        if (isset($settings['title'])) {
+            $object->title = $settings['title'];
+            $object->showtitle = '1';
+        }
+
+        if (isset($settings['style'])) {
+            $style = $object->style = $settings['style'];
+        }
+
+        $params = array_merge(array(
+                                  'layout' => 'default',
+                                  'moduleclass_sfx' => '',
+                                  'cache' => 0,
+                                  'cache_time' => 900,
+                                  'cachemode' => 'itemid',
+                                  'module_tag' => 'div',
+                                  'bootstrap_size' => 0,
+                                  'header_tag' => 'h2',
+                                  'header_class' => '',
+                                  'style' => '0'
+                              ), $params);
+
+        $object->params = json_encode($params);
+
+        $this->renderModuleObject($object, array(
+            'style' => $style
+        ));
+
+        return $object->content;
+    }
+
+    /**
      * @param object $module
      * @param array $parameters
      * @param array $override
