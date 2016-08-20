@@ -323,10 +323,11 @@ class OverrideModule extends AbstractModule
 
         if (!empty($showExpr)) {
             $value = $this->computeMenuExpression($override, $showExpr);
-            if ($value !== null) {
-                if (!$value) {
-                    return '';
-                }
+            if ($value === null) {
+                return '';
+            }
+            if (!$value) {
+                return '';
             }
         }
 
