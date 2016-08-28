@@ -282,27 +282,31 @@ class Helper extends \JProxy_JModuleHelper
     public static function getLayoutPath($module, $layout = 'default')
     {
         try {
-            return self::$fileLocator->locate($layout);
-        } catch (\InvalidArgumentException $e) {
+            $file = self::$fileLocator->locate($layout);
 
-            // Do 3rd party stuff to detect layout path for the module
-            // onGetLayoutPath should return the path to the $layout of $module or false
-            // $results holds an array of results returned from plugins, 1 from each plugin.
-            // if a path to the $layout is found and it is a file, return that path
-            $app = \JFactory::getApplication();
-            $result = $app->triggerEvent( 'onGetLayoutPath', array( $module, $layout ) );
-            if (is_array($result))
+            if (is_file($file)) {
+                return $file;
+            }
+        } catch (\InvalidArgumentException $e) {
+        }
+
+        // Do 3rd party stuff to detect layout path for the module
+        // onGetLayoutPath should return the path to the $layout of $module or false
+        // $results holds an array of results returned from plugins, 1 from each plugin.
+        // if a path to the $layout is found and it is a file, return that path
+        $app = \JFactory::getApplication();
+        $result = $app->triggerEvent( 'onGetLayoutPath', array( $module, $layout ) );
+        if (is_array($result))
+        {
+            foreach ($result as $path)
             {
-                foreach ($result as $path)
+                if ($path !== false && is_file ($path))
                 {
-                    if ($path !== false && is_file ($path))
-                    {
-                        return $path;
-                    }
+                    return $path;
                 }
             }
-
-            return parent::getLayoutPath($module, $layout);
         }
+
+        return parent::getLayoutPath($module, $layout);
     }
 }

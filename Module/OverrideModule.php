@@ -342,17 +342,33 @@ class OverrideModule extends AbstractModule
 
         $parentParams = json_decode($module->params);
 
-        $paramsRef->set('moduleclass_sfx', $parentParams->moduleclass_sfx);
-        $paramsRef->set('header_tag', $parentParams->header_tag);
-        $paramsRef->set('bootstrap_size', $parentParams->bootstrap_size);
-        $paramsRef->set('module_tag', $parentParams->module_tag);
+        $inheritParams = array(
+            'moduleclass_sfx',
+            'header_tag',
+            'bootstrap_size',
+            'module_tag',
+            'header_class'
+        );
+
+        foreach ($inheritParams as $inheritParam) {
+            $paramsRef->set($inheritParam, $parentParams->{$inheritParam});
+        }
 
         $overrideParams = $this->computeOverrideParmas($override);
+
+        foreach ($inheritParams as $inheritParam) {
+            if (isset($overrideParams['params'][$inheritParam])) {
+                $paramsRef->set($inheritParam, $overrideParams['params'][$inheritParam]);
+            }
+        }
 
         $module = clone $module;
 
         if (isset($overrideParams['title'])) {
             $overrideModule->title = $overrideParams['title'];
+            if (strlen($overrideModule->title) <= 0) {
+                $overrideModule->showtitle = 0;
+            }
         } else {
             $overrideModule->title = $module->title;
         }
