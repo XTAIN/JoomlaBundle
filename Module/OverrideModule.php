@@ -226,6 +226,11 @@ class OverrideModule extends AbstractModule
         }, function($context, $data, $glue) {
             return implode($glue, $data);
         });
+        $languge->register('length', function($data) {
+            return sprintf('is_array(%1$s) ? count(%2$s) : strlen(%3$s)', var_export($data, true), var_export($data, true), var_export($data, true));
+        }, function($context, $data) {
+            return is_array($data) ? count($data) : strlen($data);
+        });
 
         $parents = $this->findParents();
 
