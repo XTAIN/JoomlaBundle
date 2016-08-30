@@ -103,7 +103,7 @@ class JoomlaHelper
     }
 
     /**
-     * @param string $module
+     * @param string|object $module
      * @param array $params
      * @param array $settings
      *
@@ -113,16 +113,37 @@ class JoomlaHelper
     {
         $style = null;
 
+        if (is_object($module)) {
+            $object = clone $module;
+        }
         $object = new \stdClass();
-        $object->published = 1;
-        $object->module = $module;
-        $object->position = '';
-        $object->content = '';
-        $object->menuid = '0';
-        $object->name = preg_replace('/^mod_/', '', $module);
-        $object->style = null;
-        $object->title = '';
-        $object->showtitle = '0';
+        if (!isset($object->published)) {
+            $object->published = 1;
+        }
+        if (!is_object($module)) {
+            $object->module = $module;
+        }
+        if (!isset($object->position)) {
+            $object->position = '';
+        }
+        if (!isset($object->content)) {
+            $object->content = '';
+        }
+        if (!isset($object->menuid)) {
+            $object->menuid = '0';
+        }
+        if (!is_object($module)) {
+            $object->name = preg_replace('/^mod_/', '', $module);
+        }
+        if (!isset($object->style)) {
+            $object->style = null;
+        }
+        if (!isset($object->title)) {
+            $object->title = '';
+        }
+        if (!isset($object->showtitle)) {
+            $object->showtitle = '0';
+        }
 
         if (isset($settings['title'])) {
             $object->title = $settings['title'];
@@ -134,17 +155,17 @@ class JoomlaHelper
         }
 
         $params = array_merge(array(
-                                  'layout' => 'default',
-                                  'moduleclass_sfx' => '',
-                                  'cache' => 0,
-                                  'cache_time' => 900,
-                                  'cachemode' => 'itemid',
-                                  'module_tag' => 'div',
-                                  'bootstrap_size' => 0,
-                                  'header_tag' => 'h2',
-                                  'header_class' => '',
-                                  'style' => '0'
-                              ), $params);
+            'layout' => 'default',
+            'moduleclass_sfx' => '',
+            'cache' => 0,
+            'cache_time' => 900,
+            'cachemode' => 'itemid',
+            'module_tag' => 'div',
+            'bootstrap_size' => 0,
+            'header_tag' => 'h2',
+            'header_class' => '',
+            'style' => '0'
+        ), $params);
 
         $object->params = json_encode($params);
 
