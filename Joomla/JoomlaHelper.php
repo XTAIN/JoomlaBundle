@@ -115,8 +115,9 @@ class JoomlaHelper
 
         if (is_object($module)) {
             $object = clone $module;
+        } else {
+            $object = new \stdClass();
         }
-        $object = new \stdClass();
         if (!isset($object->published)) {
             $object->published = 1;
         }
