@@ -155,6 +155,13 @@ class JoomlaHelper
             $style = $object->style = $settings['style'];
         }
 
+        if (isset($object->params)) {
+            $params = array_merge(
+                json_decode($object->params, true),
+                $params
+            );
+        }
+
         $params = array_merge(array(
             'layout' => 'default',
             'moduleclass_sfx' => '',
