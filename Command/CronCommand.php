@@ -19,6 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
+use XTAIN\Bundle\JoomlaBundle\Joomla\ApplicationClosedException;
 
 /**
  * Class CronCommand
@@ -87,6 +88,12 @@ class CronCommand extends ContainerAwareCommand
             $filesystem->mkdir(JPATH_CACHE);
         }
 
-        require_once $rootDir . $script . '.php';
+        $this->getContainer()->enterScope('request');
+
+        try {
+            require_once $rootDir . $script . '.php';
+        } catch (ApplicationClosedException $e) {
+            // nothing
+        }
     }
 }

@@ -510,7 +510,8 @@ class Joomla implements JoomlaInterface
         /** @var SplFileInfo $dir */
         foreach ($finder as $dir) {
             if ($dir->getFilename() == 'administrator' ||
-                $dir->getFilename() == 'installation'
+                $dir->getFilename() == 'installation' ||
+                $dir->getFilename() == 'cli'
             ) {
                 continue;
             }
