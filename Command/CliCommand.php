@@ -22,12 +22,12 @@ use Symfony\Component\Process\Process;
 use XTAIN\Bundle\JoomlaBundle\Joomla\ApplicationClosedException;
 
 /**
- * Class CronCommand
+ * Class CliCommand
  *
  * @author Maximilian Ruta <mr@xtain.net>
  * @package XTAIN\Bundle\JoomlaBundle\Command
  */
-class CronCommand extends ContainerAwareCommand
+class CliCommand extends ContainerAwareCommand
 {
     /**
      * {@inheritdoc}
