@@ -356,17 +356,32 @@ class Loader extends \JProxy_JLoader
     {
         // Split the class name into parts separated by camelCase.
         $parts = preg_split('/(?<=[a-z0-9])(?=[A-Z])/x', $class);
+        $partsCount = count($parts);
 
-        // If there is only one part we want to duplicate that part for generating the path.
-        $parts = (count($parts) === 1) ? [$parts[0], $parts[0]] : $parts;
-
-        foreach ($lookup as $base) {
+        foreach ($lookup as $base)
+        {
             // Generate the path based on the class name parts.
             $path = $base . '/' . implode('/', array_map('strtolower', $parts)) . '.php';
 
             // Load the file if it exists.
-            if (file_exists($path)) {
+            if (file_exists($path))
+            {
                 return include $path;
+            }
+
+            // Backwards compatibility patch
+
+            // If there is only one part we want to duplicate that part for generating the path.
+            if ($partsCount === 1)
+            {
+                // Generate the path based on the class name parts.
+                $path = $base . '/' . implode('/', array_map('strtolower', array($parts[0], $parts[0]))) . '.php';
+
+                // Load the file if it exists.
+                if (file_exists($path))
+                {
+                    return include $path;
+                }
             }
         }
 
