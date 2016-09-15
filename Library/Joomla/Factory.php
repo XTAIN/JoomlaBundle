@@ -10,6 +10,7 @@
 
 namespace XTAIN\Bundle\JoomlaBundle\Library\Joomla;
 
+use Joomla\Registry\Registry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -99,5 +100,46 @@ class Factory extends \JProxy_JFactory
         }
 
         static::$application = static::$applicationStack->pop();
+    }
+
+    /**
+     * Create a configuration object
+     *
+     * @param   string  $file       The path to the configuration file.
+     * @param   string  $type       The type of the configuration file.
+     * @param   string  $namespace  The namespace of the configuration file.
+     *
+     * @return  Registry
+     *
+     * @see     Registry
+     * @since   11.1
+     */
+    protected static function createConfig($file, $type = 'PHP', $namespace = '')
+    {
+        // Sanitize the namespace.
+        $namespace = ucfirst((string) preg_replace('/[^A-Z_]/i', '', $namespace));
+
+        // Build the config name.
+        $name = 'JConfig' . $namespace;
+
+        if (!class_exists($name) && is_file($file))
+        {
+            include_once $file;
+        }
+
+        // Create the registry with a default namespace of config
+        $registry = new Registry;
+
+        // Handle the PHP configuration type.
+        if ($type == 'PHP' && class_exists($name))
+        {
+            // Create the JConfig object
+            $config = new $name;
+
+            // Load the configuration values into the registry
+            $registry->loadObject($config);
+        }
+
+        return $registry;
     }
 }
