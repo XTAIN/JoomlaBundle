@@ -529,9 +529,6 @@ services:
 
     joomla.component.module.abstract_module:
         abstract: true
-        calls:
-            - [ setFormFactory, [ @form.factory ] ]
-            - [ setTwigEnvironment, [ @twig ] ]
 
     joomla.component.module.module_manager:
         class: %joomla.component.module.module_manager.class%

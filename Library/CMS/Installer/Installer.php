@@ -184,7 +184,8 @@ class Installer extends \JProxy_JInstaller
 
                 $config[$this->relativeTargetPath($filedest)] = $this->relativeJoomlaTargetPath($filedest);
 
-                $filedest = $this->rewriteTargetPath($filedest);
+                $filedestCopy = $this->rewriteTargetPath($filedest);
+                $filedestCopyContainer = dirname($filedestCopy);
 
                 if (!file_exists(dirname($filedest))) {
                     mkdir(dirname($filedest), 0777, true);
@@ -219,9 +220,18 @@ class Installer extends \JProxy_JInstaller
                     // Copy the folder or file to the new location.
                     if ($filetype == 'folder')
                     {
-                        if (!(JFolder::copy($filesource, $filedest, null, $overwrite)))
-                        {
+                        if (!(JFolder::copy($filesource, $filedest, null, $overwrite))) {
                             JLog::add(JText::sprintf('JLIB_INSTALLER_ERROR_FAIL_COPY_FOLDER', $filesource, $filedest), JLog::WARNING, 'jerror');
+
+                            return false;
+                        }
+
+                        if (!is_dir($filedestCopyContainer)) {
+                            mkdir($filedestCopyContainer, 0775, true);
+                        }
+
+                        if (!(JFolder::copy($filedest, $filedestCopy, null, $overwrite))) {
+                            JLog::add(JText::sprintf('JLIB_INSTALLER_ERROR_FAIL_COPY_FOLDER', $filedest, $filedestCopy), JLog::WARNING, 'jerror');
 
                             return false;
                         }
@@ -230,8 +240,7 @@ class Installer extends \JProxy_JInstaller
                     }
                     else
                     {
-                        if (!(JFile::copy($filesource, $filedest, null)))
-                        {
+                        if (!(JFile::copy($filesource, $filedest, null))) {
                             JLog::add(JText::sprintf('JLIB_INSTALLER_ERROR_FAIL_COPY_FILE', $filesource, $filedest), JLog::WARNING, 'jerror');
 
                             // In 3.2, TinyMCE language handling changed.  Display a special notice in case an older language pack is installed.
@@ -239,6 +248,16 @@ class Installer extends \JProxy_JInstaller
                             {
                                 JLog::add(JText::_('JLIB_INSTALLER_NOT_ERROR'), JLog::WARNING, 'jerror');
                             }
+
+                            return false;
+                        }
+
+                        if (!is_dir($filedestCopyContainer)) {
+                            mkdir($filedestCopyContainer, 0775, true);
+                        }
+
+                        if (!(JFile::copy($filedest, $filedestCopy, null))) {
+                            JLog::add(JText::sprintf('JLIB_INSTALLER_ERROR_FAIL_COPY_FILE', $filedest, $filedestCopy), JLog::WARNING, 'jerror');
 
                             return false;
                         }

@@ -8,6 +8,7 @@ namespace XTAIN\Bundle\JoomlaBundle\DependencyInjection\Pass;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Reference;
 use XTAIN\Bundle\JoomlaBundle\Component\Module\ModuleRendererInterface;
 
 /**
@@ -44,6 +45,8 @@ class ModuleCompilerPass implements CompilerPassInterface
                 ));
             }
 
+            $moduleDefinition->addMethodCall('setFormFactory', [ new Reference('form.factory') ]);
+            $moduleDefinition->addMethodCall('setTwigEnvironment', [ new Reference('twig') ]);
             $moduleDefinition->setScope(ContainerInterface::SCOPE_PROTOTYPE);
             $moduleManagerDefinition->addMethodCall('addModuleService', [ $id ]);
         }
